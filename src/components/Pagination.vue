@@ -10,7 +10,7 @@ const props = defineProps({
     type: Number,
     required: true
   },
-  maxVisible: {
+  maxVisibleButtons: {
     type: Number,
     default: 5
   }
@@ -19,55 +19,88 @@ const props = defineProps({
 const emit = defineEmits(['page-change'])
 
 const pages = computed(() => {
-  const range = []
-  const half = Math.floor(props.maxVisible / 2)
-  let start = Math.max(props.currentPage - half, 1)
-  let end = Math.min(start + props.maxVisible - 1, props.totalPages)
+  const pages = []
   
-  if (end - start + 1 < props.maxVisible) {
-    start = Math.max(end - props.maxVisible + 1, 1)
+  // 计算显示的页码范围
+  let startPage = Math.max(1, props.currentPage - Math.floor(props.maxVisibleButtons / 2))
+  let endPage = Math.min(props.totalPages, startPage + props.maxVisibleButtons - 1)
+  
+  // 调整起始页码，确保显示足够的页码按钮
+  if (endPage - startPage + 1 < props.maxVisibleButtons) {
+    startPage = Math.max(1, endPage - props.maxVisibleButtons + 1)
   }
-
-  for (let i = start; i <= end; i++) {
-    range.push(i)
+  
+  // 生成页码数组
+  for (let i = startPage; i <= endPage; i++) {
+    pages.push(i)
   }
-  return range
+  
+  return pages
 })
 
+const isFirstPage = computed(() => props.currentPage === 1)
+const isLastPage = computed(() => props.currentPage === props.totalPages)
+
 function changePage(page) {
-  if (page !== props.currentPage) {
-    emit('page-change', page)
-  }
+  emit('page-change', page)
 }
 </script>
 
 <template>
-  <div class="pagination">
+  <div class="pagination" v-if="totalPages > 1">
+    <!-- 首页按钮 -->
     <button 
-      class="page-nav"
-      :disabled="currentPage === 1"
-      @click="changePage(currentPage - 1)"
+      class="pagination-button" 
+      :class="{ disabled: isFirstPage }"
+      @click="changePage(1)" 
+      :disabled="isFirstPage"
+    >
+      首页
+    </button>
+    
+    <!-- 上一页按钮 -->
+    <button 
+      class="pagination-button" 
+      :class="{ disabled: isFirstPage }"
+      @click="changePage(currentPage - 1)" 
+      :disabled="isFirstPage"
     >
       上一页
     </button>
     
-    <button
-      v-for="page in pages"
-      :key="page"
-      class="page-number"
+    <!-- 页码按钮 -->
+    <button 
+      v-for="page in pages" 
+      :key="page" 
+      class="pagination-button" 
       :class="{ active: page === currentPage }"
       @click="changePage(page)"
     >
       {{ page }}
     </button>
     
+    <!-- 下一页按钮 -->
     <button 
-      class="page-nav"
-      :disabled="currentPage === totalPages"
-      @click="changePage(currentPage + 1)"
+      class="pagination-button" 
+      :class="{ disabled: isLastPage }"
+      @click="changePage(currentPage + 1)" 
+      :disabled="isLastPage"
     >
       下一页
     </button>
+    
+    <!-- 末页按钮 -->
+    <button 
+      class="pagination-button" 
+      :class="{ disabled: isLastPage }"
+      @click="changePage(totalPages)" 
+      :disabled="isLastPage"
+    >
+      末页
+    </button>
+    
+    <!-- 页码信息 -->
+    <span class="pagination-info">{{ currentPage }} / {{ totalPages }} 页</span>
   </div>
 </template>
 
@@ -75,32 +108,52 @@ function changePage(page) {
 .pagination {
   display: flex;
   justify-content: center;
+  align-items: center;
+  margin: 30px 0;
   gap: 8px;
-  margin-top: 24px;
 }
 
-.page-nav, .page-number {
+.pagination-button {
   padding: 8px 12px;
-  border: 1px solid #ddd;
-  background: white;
-  cursor: pointer;
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+  color: #333;
   border-radius: 4px;
+  cursor: pointer;
   transition: all 0.3s;
+  font-size: 14px;
 }
 
-.page-nav:hover:not(:disabled),
-.page-number:hover:not(.active) {
-  background: #f1f1f1;
+.pagination-button:hover:not(.disabled):not(.active) {
+  background-color: #f5f5f5;
+  border-color: #d0d0d0;
 }
 
-.page-number.active {
-  background: #3498db;
+.pagination-button.active {
+  background-color: #3498db;
   color: white;
   border-color: #3498db;
 }
 
-.page-nav:disabled {
+.pagination-button.disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.pagination-info {
+  margin-left: 15px;
+  color: #666;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .pagination {
+    flex-wrap: wrap;
+  }
+  
+  .pagination-button {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
 }
 </style>

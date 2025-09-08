@@ -11,11 +11,18 @@ const props = defineProps({
   offset: {
     type: Number,
     default: 0
+  },
+  customArticles: {
+    type: Array,
+    default: null
   }
 })
 
 const displayedArticles = computed(() => {
-  return [...articles]
+  // 如果提供了自定义文章列表，则使用它
+  const sourceArticles = props.customArticles || articles
+  
+  return [...sourceArticles]
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(props.offset, props.offset + props.limit)
 })

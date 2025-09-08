@@ -22,6 +22,11 @@ const routes = [
     component: () => import('../views/Columns.vue')
   },
   {
+    path: '/columns/:id',
+    name: 'ColumnArticles',
+    component: () => import('../views/ColumnArticles.vue')
+  },
+  {
     path: '/categories',
     name: 'Categories',
     component: Categories

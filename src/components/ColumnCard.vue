@@ -1,14 +1,22 @@
 <script setup>
-defineProps({
+import { useRouter } from 'vue-router'
+
+const props = defineProps({
   column: {
     type: Object,
     required: true
   }
 })
+
+const router = useRouter()
+
+const navigateToColumn = () => {
+  router.push(`/columns/${props.column.id}`)
+}
 </script>
 
 <template>
-  <div class="column-card">
+  <div class="column-card" @click="navigateToColumn">
     <div class="column-cover">
       <img :src="column.cover" :alt="column.title">
     </div>
