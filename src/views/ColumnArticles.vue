@@ -10,7 +10,7 @@ const route = useRoute()
 const columnId = computed(() => parseInt(route.params.id))
 const loading = ref(true)
 const currentPage = ref(1)
-const articlesPerPage = 3 // 每页显示的文章数量
+const articlesPerPage = 10 // 每页显示的文章数量
 
 // 获取当前专栏信息
 const currentColumn = computed(() => {
