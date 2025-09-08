@@ -1,11 +1,19 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { blogInfo } from '../store/blog.js'
 import { useRoute } from 'vue-router'
 
 // 移动端菜单状态
 const mobileMenuOpen = ref(false)
 const route = useRoute()
+
+// 检查路径是否匹配（支持前缀匹配）
+const isRouteActive = (path) => {
+  if (path === '/') {
+    return route.path === '/'
+  }
+  return route.path.startsWith(path)
+}
 </script>
 
 <template>
@@ -17,12 +25,12 @@ const route = useRoute()
       <!-- 桌面端导航 -->
       <nav class="desktop-nav">
         <ul>
-          <li><router-link to="/" :class="{ active: route.path === '/' }">首页</router-link></li>
-          <li><router-link to="/articles" :class="{ active: route.path === '/articles' }">文章</router-link></li>
-          <li><router-link to="/columns" :class="{ active: route.path === '/columns' }">专栏</router-link></li>
-          <li><router-link to="/categories" :class="{ active: route.path === '/categories' }">分类</router-link></li>
-          <li><router-link to="/tags" :class="{ active: route.path === '/tags' }">标签</router-link></li>
-          <li><router-link to="/about" :class="{ active: route.path === '/about' }">关于</router-link></li>
+          <li><router-link to="/" :class="{ active: isRouteActive('/') }">首页</router-link></li>
+          <li><router-link to="/articles" :class="{ active: isRouteActive('/articles') }">文章</router-link></li>
+          <li><router-link to="/columns" :class="{ active: isRouteActive('/columns') }">专栏</router-link></li>
+          <li><router-link to="/categories" :class="{ active: isRouteActive('/categories') }">分类</router-link></li>
+          <li><router-link to="/tags" :class="{ active: isRouteActive('/tags') }">标签</router-link></li>
+          <li><router-link to="/about" :class="{ active: isRouteActive('/about') }">关于</router-link></li>
         </ul>
       </nav>
       
@@ -37,11 +45,12 @@ const route = useRoute()
     <!-- 移动端导航菜单 -->
     <nav class="mobile-nav" :class="{ 'open': mobileMenuOpen }">
       <ul>
-        <li><router-link to="/" :class="{ active: route.path === '/' }" @click="mobileMenuOpen = false">首页</router-link></li>
-        <li><router-link to="/articles" :class="{ active: route.path === '/articles' }" @click="mobileMenuOpen = false">文章</router-link></li>
-        <li><router-link to="/categories" :class="{ active: route.path === '/categories' }" @click="mobileMenuOpen = false">分类</router-link></li>
-        <li><router-link to="/tags" :class="{ active: route.path === '/tags' }" @click="mobileMenuOpen = false">标签</router-link></li>
-        <li><router-link to="/about" :class="{ active: route.path === '/about' }" @click="mobileMenuOpen = false">关于</router-link></li>
+        <li><router-link to="/" :class="{ active: isRouteActive('/') }" @click="mobileMenuOpen = false">首页</router-link></li>
+        <li><router-link to="/articles" :class="{ active: isRouteActive('/articles') }" @click="mobileMenuOpen = false">文章</router-link></li>
+        <li><router-link to="/columns" :class="{ active: isRouteActive('/columns') }" @click="mobileMenuOpen = false">专栏</router-link></li>
+        <li><router-link to="/categories" :class="{ active: isRouteActive('/categories') }" @click="mobileMenuOpen = false">分类</router-link></li>
+        <li><router-link to="/tags" :class="{ active: isRouteActive('/tags') }" @click="mobileMenuOpen = false">标签</router-link></li>
+        <li><router-link to="/about" :class="{ active: isRouteActive('/about') }" @click="mobileMenuOpen = false">关于</router-link></li>
       </ul>
     </nav>
   </header>
