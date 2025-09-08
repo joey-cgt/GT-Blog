@@ -24,7 +24,11 @@ const routes = [
   {
     path: '/columns/:id',
     name: 'ColumnArticles',
-    component: () => import('../views/ColumnArticles.vue')
+    component: () => import('../views/ColumnArticles.vue'),
+    meta: {
+      hideSidebar: true,
+      hideFooter: true
+    }
   },
   {
     path: '/categories',

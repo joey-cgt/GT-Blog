@@ -2,6 +2,9 @@
 import Header from './components/Header.vue'
 import Sidebar from './components/Sidebar.vue'
 import Footer from './components/Footer.vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 </script>
 
 <template>
@@ -12,17 +15,17 @@ import Footer from './components/Footer.vue'
   <main class="main">
     <div class="container main-container">
       <!-- 内容区 -->
-      <div class="content">
+      <div class="content" :class="{ 'full-width': route.meta.hideSidebar }">
         <router-view />
       </div>
       
       <!-- 侧边栏 -->
-      <Sidebar />
+      <Sidebar v-if="!route.meta.hideSidebar" />
     </div>
   </main>
 
   <!-- 页脚 -->
-  <Footer />
+  <Footer v-if="!route.meta.hideFooter" />
 </template>
 
 <style>
@@ -42,6 +45,10 @@ import Footer from './components/Footer.vue'
 .content {
   display: flex;
   flex-direction: column;
+}
+
+.content.full-width {
+  grid-column: 1 / -1;
 }
 
 /* 响应式布局 */
