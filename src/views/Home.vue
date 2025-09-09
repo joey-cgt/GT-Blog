@@ -25,15 +25,15 @@ import SimpleArticleList from '../components/SimpleArticleList.vue'
 
 <style scoped>
 .home-container {
-  margin: 0 auto;
+  /* margin: 0 auto; */
   padding: 0 20px 20px;
 }
 
 .articles-grid {
   display: flex;
   flex-direction: column;
-  gap: 30px;
-  margin-top: 30px;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .featured-section,

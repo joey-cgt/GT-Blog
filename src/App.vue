@@ -15,17 +15,17 @@ const route = useRoute()
   <main class="main">
     <div class="main-container">
       <!-- 内容区 -->
-      <div class="content" :class="{ 'full-width': route.meta.hideSidebar }">
+      <div class="content">
         <router-view />
       </div>
       
       <!-- 侧边栏 -->
-      <Sidebar v-if="!route.meta.hideSidebar" />
+      <Sidebar />
     </div>
   </main>
 
   <!-- 页脚 -->
-  <Footer v-if="!route.meta.hideFooter" />
+  <Footer v-if="route.meta.showFooter" />
 </template>
 
 <style>
@@ -38,10 +38,10 @@ const route = useRoute()
 }
 
 .main-container {
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns:2fr 1fr;
+  grid-template-columns:6fr 2fr;
   gap: 30px;
 }
 

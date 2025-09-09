@@ -38,9 +38,9 @@ defineProps({
 <style scoped>
 .article-card {
   background-color: #fff;
-  border-radius: 8px;
   overflow: hidden;
   margin-bottom: 10px;
+  border-radius: 8px;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 }
 

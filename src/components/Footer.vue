@@ -42,7 +42,6 @@ import { blogInfo } from '../store/blog.js'
 
 <style scoped>
 .footer {
-  max-width: 80%;
   background-color: #2c3e50;
   color: #ecf0f1;
   padding: 60px 0 20px;

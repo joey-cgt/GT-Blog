@@ -9,7 +9,11 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: {
+      showFooter: true,
+      showSidebar: true
+    }
   },
   {
     path: '/articles',
@@ -24,11 +28,7 @@ const routes = [
   {
     path: '/columns/:id',
     name: 'ColumnArticles',
-    component: () => import('../views/ColumnArticles.vue'),
-    meta: {
-      hideSidebar: true,
-      hideFooter: true
-    }
+    component: () => import('../views/ColumnArticles.vue')
   },
   {
     path: '/categories',

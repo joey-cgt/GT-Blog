@@ -34,7 +34,7 @@ const navigateToColumn = () => {
 
 <style scoped>
 .column-card {
-  border: 1px solid rgba(0,0,0,0.1);
+  /* border: 1px solid rgba(0,0,0,0.1); */
   border-radius: 12px;
   overflow: hidden;
   transition: all 0.3s ease;

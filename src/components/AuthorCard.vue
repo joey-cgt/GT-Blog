@@ -30,15 +30,12 @@ import { blogInfo } from '../store/blog.js'
 .author-card {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 16px;
-  padding: 30px;
+  padding: 40px;
   margin-bottom: 30px;
   box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
   color: white;
   position: relative;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
 }
 
 .author-card::before {
