@@ -4,7 +4,7 @@ import { blogInfo } from '../store/blog.js'
 
 <template>
   <footer class="footer">
-    <div class="container">
+    <div class="footer-container">
       <div class="footer-content">
         <div class="footer-section about">
           <h3>关于博客</h3>
@@ -42,9 +42,16 @@ import { blogInfo } from '../store/blog.js'
 
 <style scoped>
 .footer {
+  max-width: 80%;
   background-color: #2c3e50;
   color: #ecf0f1;
   padding: 60px 0 20px;
+}
+
+.footer-container {
+  max-width: 90%;
+  margin: 0 auto;
+  padding: 0 15px;
 }
 
 .footer-content {

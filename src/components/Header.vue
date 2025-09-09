@@ -19,7 +19,7 @@ const isRouteActive = (path) => {
 <template>
   <!-- 导航栏 -->
   <header class="header">
-    <div class="container header-container">
+    <div class="header-container">
       <div class="logo">{{ blogInfo.title }}</div>
       
       <!-- 桌面端导航 -->
@@ -71,6 +71,9 @@ const isRouteActive = (path) => {
   justify-content: space-between;
   align-items: center;
   height: 70px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
 }
 
 .logo {

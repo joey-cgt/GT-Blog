@@ -13,7 +13,7 @@ const route = useRoute()
 
   <!-- 主要内容区 -->
   <main class="main">
-    <div class="container main-container">
+    <div class="main-container">
       <!-- 内容区 -->
       <div class="content" :class="{ 'full-width': route.meta.hideSidebar }">
         <router-view />
@@ -34,11 +34,14 @@ const route = useRoute()
 /* 主要内容区布局 */
 .main {
   padding: 40px 0;
+  margin: 0 auto;
 }
 
 .main-container {
+  max-width: 1200px;
+  margin: 0 auto;
   display: grid;
-  grid-template-columns: 5fr 2fr;
+  grid-template-columns:2fr 1fr;
   gap: 30px;
 }
 

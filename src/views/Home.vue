@@ -25,7 +25,6 @@ import SimpleArticleList from '../components/SimpleArticleList.vue'
 
 <style scoped>
 .home-container {
-  max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px 20px;
 }
