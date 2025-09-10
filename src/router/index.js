@@ -4,7 +4,7 @@ import Articles from '../views/Articles.vue'
 import Categories from '../views/Categories.vue'
 import Tags from '../views/Tags.vue'
 import About from '../views/About.vue'
-import ArticleContent from '../views/ArticleContent.vue'
+import ArticleContent from '../components/ArticleContent.vue'
 
 const routes = [
   {
