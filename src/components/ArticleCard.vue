@@ -1,10 +1,18 @@
 <script setup>
-defineProps({
+import { useRouter } from 'vue-router'
+
+const props = defineProps({
   article: {
     type: Object,
     required: true
   }
 })
+
+const router = useRouter()
+
+function navigateToArticle(articleId) {
+  router.push(`/article/${articleId}`)
+}
 </script>
 
 <template>
@@ -15,7 +23,7 @@ defineProps({
           <img :src="article.cover" :alt="article.title" />
         </div>
         <div class="article-info">
-          <a href="#" class="article-title-link">
+          <a @click.prevent="navigateToArticle(article.id)" href="#" class="article-title-link">
             <h3 class="article-title">{{ article.title }}</h3>
           </a>
           <p class="article-summary">{{ article.summary }}</p>

@@ -1,7 +1,9 @@
 <script setup>
 import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { articles } from '../store/blog.js'
 
+const router = useRouter()
 
 const props = defineProps({
   limit: {
@@ -17,6 +19,10 @@ const props = defineProps({
     default: null
   }
 })
+
+function navigateToArticle(articleId) {
+  router.push(`/article/${articleId}`)
+}
 
 const displayedArticles = computed(() => {
   // 如果提供了自定义文章列表，则使用它
@@ -42,7 +48,7 @@ const displayedArticles = computed(() => {
           class="article-image"
         >
         <div class="article-details">
-          <h3 class="article-title">{{ article.title }}</h3>
+          <h3 class="article-title" @click="navigateToArticle(article.id)">{{ article.title }}</h3>
           <p class="article-summary">{{ article.summary }}</p>
         </div>
       </div>
@@ -107,6 +113,12 @@ const displayedArticles = computed(() => {
   font-size: 18px;
   margin: 0 0 8px 0;
   color: #2c3e50;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.article-title:hover {
+  color: #3498db;
 }
 
 .article-summary {

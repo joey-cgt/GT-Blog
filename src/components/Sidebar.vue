@@ -25,7 +25,7 @@ const isContentPage = computed(() => ['Articles', 'Columns', 'ColumnArticles', '
     </template>
     
     <!-- 内容页面显示博客信息和热门文章 -->
-    <template v-else-if="isContentPage">
+    <template v-else>
       <BlogInfoCard />
       <RecommendedArticles />
     </template>
