@@ -79,6 +79,6 @@ import { popularArticles } from '../../store/blog.js'
 }
 
 .popular-list .likes {
-  color: #e74c3c;
+  color: #777;
 }
 </style>

@@ -49,7 +49,7 @@ const displayedArticles = computed(() => {
       <div class="article-meta">
         <span class="meta-item">{{ article.date }}</span>
         <span class="meta-item">{{ article.category }}</span>
-        <span class="meta-item">阅读{{ article.views }}次</span>
+        <span class="meta-item">{{ article.views }} 阅读</span>
         <div class="tags-container">
           <span 
             v-for="tag in article.tags" 
@@ -120,8 +120,9 @@ const displayedArticles = computed(() => {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  font-size: 13px;
+  font-size: 12px;
   color: #7f8c8d;
+  margin-top: 8px;
 }
 
 .meta-item {

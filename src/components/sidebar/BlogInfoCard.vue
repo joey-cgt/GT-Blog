@@ -9,7 +9,9 @@ const blogStats = {
   totalLikes: 8920,
   author: {
     name: '技术博主',
-    avatar: '/src/assets/images/avatar.jpg'
+    avatar: '/src/assets/images/avatar.jpg',
+    email: 'joycgt@126.com',
+    wechat: 'wechat_id_123'
   }
 }
 </script>
@@ -19,30 +21,40 @@ const blogStats = {
     <!-- 博主信息 -->
     <div class="author-section">
       <img :src="blogInfo.avatar" alt="博主头像" class="author-avatar">
-      <h3 class="author-name">{{ blogInfo.author }}</h3>
+      <div class="author-info">
+        <h3 class="author-name">{{ blogInfo.author }}</h3>
+        <div class="email-tooltip">
+          <i class="fas fa-envelope email-icon"></i>
+          <span class="tooltip-text">{{ blogInfo.email }}</span>
+        </div>
+        <div class="wechat-tooltip">
+          <i class="fab fa-weixin wechat-icon"></i>
+          <span class="tooltip-text">{{ blogInfo.wechat }}</span>
+        </div>
+      </div>
     </div>
     
-    <!-- 博客统计 -->
+    <!-- 博客统计 -->    
     <div class="stats-section">
-      <div class="stat-item">
+    <div class="stat-item">
         <i class="fas fa-file-alt"></i>
-        <span class="stat-label">文章总数</span>
+        <span class="stat-label">总文章数</span>
         <span class="stat-value">{{ blogStats.totalArticles }}</span>
-      </div>
-      
-      <div class="stat-item">
+    </div>
+    
+    <div class="stat-item">
         <i class="fas fa-eye"></i>
         <span class="stat-label">总浏览量</span>
         <span class="stat-value">{{ blogStats.totalViews.toLocaleString() }}</span>
-      </div>
-      
-      <div class="stat-item">
+    </div>
+    
+    <div class="stat-item">
         <i class="fas fa-heart"></i>
         <span class="stat-label">总点赞数</span>
         <span class="stat-value">{{ blogStats.totalLikes.toLocaleString() }}</span>
-      </div>
     </div>
-  </div>
+    </div>
+    </div>
 </template>
 
 <style scoped>
@@ -56,9 +68,9 @@ const blogStats = {
 
 .author-section {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #eee;
+  /* border-bottom: 1px solid #eee; */
 }
 
 .author-avatar {
@@ -69,6 +81,13 @@ const blogStats = {
   margin-bottom: 12px;
 }
 
+.author-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
 .author-name {
   font-size: 18px;
   font-weight: 600;
@@ -76,21 +95,74 @@ const blogStats = {
   margin: 0;
 }
 
+.email-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.email-icon {
+  color: white;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.email-icon:hover {
+  opacity: 0.8;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  background-color: #333;
+  color: white;
+  text-align: center;
+  border-radius: 4px;
+  padding: 5px 8px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.email-tooltip:hover .tooltip-text,
+.wechat-tooltip:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.wechat-tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.wechat-icon {
+  color: white;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.wechat-icon:hover {
+  opacity: 0.8;
+}
 .stats-section {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 0px;
 }
 
 .stat-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 8px 0;
+  /* justify-content: space-between; */
+  gap: 20px;
+  padding: 2px 0;
 }
 
 .stat-item:not(:last-child) {
-  border-bottom: 1px solid #f0f0f0;
+  /* border-bottom: 1px solid #f0f0f0; */
 }
 
 .stat-label {
@@ -102,8 +174,8 @@ const blogStats = {
 }
 
 .stat-value {
-  font-weight: 600;
-  color: #3498db;
+  /* font-weight: 600; */
+  color: #ffffff;
   font-size: 16px;
 }
 
