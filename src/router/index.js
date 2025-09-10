@@ -18,32 +18,50 @@ const routes = [
   {
     path: '/articles',
     name: 'Articles',
-    component: Articles
+    component: Articles,
+    meta: {
+      showSidebar: true
+    }
   },
   {
     path: '/columns',
     name: 'Columns',
-    component: () => import('../views/Columns.vue')
+    component: () => import('../views/Columns.vue'),
+    meta: {
+      showSidebar: true
+    }
   },
   {
     path: '/columns/:id',
     name: 'ColumnArticles',
-    component: () => import('../views/ColumnArticles.vue')
+    component: () => import('../views/ColumnArticles.vue'),
+    meta: {
+      showSidebar: true
+    }
   },
   {
     path: '/categories',
     name: 'Categories',
-    component: Categories
+    component: Categories,
+    meta: {
+      showSidebar: true
+    }
   },
   {
     path: '/tags',
     name: 'Tags',
-    component: Tags
+    component: Tags,
+    meta: {
+      showSidebar: true
+    }
   },
   {
     path: '/about',
     name: 'About',
-    component: About
+    component: About,
+    meta: {
+      showSidebar: true
+    }
   }
 ]
 
