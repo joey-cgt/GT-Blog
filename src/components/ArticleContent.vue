@@ -74,11 +74,12 @@ in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
 ### 代码示例
 
 \`\`\`javascript
-function example() {
-  console.log("这是一个代码示例");
-  return "Hello Markdown!";
+function hello() {
+  console.log("Hello, World!");
 }
 \`\`\`
+
+[![pV2fyRO.jpg](https://s21.ax1x.com/2025/09/07/pV2fyRO.jpg)](https://imgse.com/i/pV2fyRO)
 
 ## 数学公式支持
 
@@ -87,9 +88,21 @@ function example() {
 独立公式:
 
 $$
-\\frac{d}{dx}\\left( \\int_{0}^{x} f(u)\\,du\
-ight)=f(x)
+\\begin{aligned}
+\\nabla \\cdot \\mathbf{E} &= \\frac{\\rho}{\\varepsilon_0} \\quad &\\text{(高斯电定律)} \\\\
+\\nabla \\cdot \\mathbf{B} &= 0 \\quad &\\text{(高斯磁定律)} \\\\
+\\nabla \\times \\mathbf{E} &= -\\frac{\\partial \\mathbf{B}}{\\partial t} \\quad &\\text{(法拉第电磁感应定律)} \\\\
+\\nabla \\times \\mathbf{B} &= \\mu_0\\mathbf{J} + \\mu_0\\varepsilon_0\\frac{\\partial \\mathbf{E}}{\\partial t} \\quad &\\text{(安培-麦克斯韦定律)}
+\\end{aligned}
 $$
+
+二次方程求根公式：
+
+$$
+x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}
+$$
+
+这是数学中的基本公式。
 
 ## 第三部分
 
