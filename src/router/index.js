@@ -40,22 +40,6 @@ const routes = [
     }
   },
   {
-    path: '/categories',
-    name: 'Categories',
-    component: Categories,
-    meta: {
-      showSidebar: true
-    }
-  },
-  {
-    path: '/tags',
-    name: 'Tags',
-    component: Tags,
-    meta: {
-      showSidebar: true
-    }
-  },
-  {
     path: '/about',
     name: 'About',
     component: About,

@@ -28,8 +28,6 @@ const isRouteActive = (path) => {
           <li><router-link to="/" :class="{ active: isRouteActive('/') }">首页</router-link></li>
           <li><router-link to="/articles" :class="{ active: isRouteActive('/articles') }">文章</router-link></li>
           <li><router-link to="/columns" :class="{ active: isRouteActive('/columns') }">专栏</router-link></li>
-          <li><router-link to="/categories" :class="{ active: isRouteActive('/categories') }">分类</router-link></li>
-          <li><router-link to="/tags" :class="{ active: isRouteActive('/tags') }">标签</router-link></li>
           <li><router-link to="/about" :class="{ active: isRouteActive('/about') }">关于</router-link></li>
         </ul>
       </nav>
@@ -48,8 +46,6 @@ const isRouteActive = (path) => {
         <li><router-link to="/" :class="{ active: isRouteActive('/') }" @click="mobileMenuOpen = false">首页</router-link></li>
         <li><router-link to="/articles" :class="{ active: isRouteActive('/articles') }" @click="mobileMenuOpen = false">文章</router-link></li>
         <li><router-link to="/columns" :class="{ active: isRouteActive('/columns') }" @click="mobileMenuOpen = false">专栏</router-link></li>
-        <li><router-link to="/categories" :class="{ active: isRouteActive('/categories') }" @click="mobileMenuOpen = false">分类</router-link></li>
-        <li><router-link to="/tags" :class="{ active: isRouteActive('/tags') }" @click="mobileMenuOpen = false">标签</router-link></li>
         <li><router-link to="/about" :class="{ active: isRouteActive('/about') }" @click="mobileMenuOpen = false">关于</router-link></li>
       </ul>
     </nav>
