@@ -4,12 +4,15 @@ import { popularArticles } from '../../store/blog.js'
 
 <template>
   <section class="sidebar-section popular-section">
-    <h3 class="sidebar-title">热门文章</h3>
+    <h3 class="sidebar-title">推荐文章</h3>
     <ul class="popular-list">
       <li v-for="article in popularArticles" :key="article.id">
         <a href="#">
           {{ article.title }}
-          <span class="views">{{ article.views }} 阅读</span>
+          <div class="stats">
+            <span class="views">{{ article.views }} 阅读</span>
+            <span class="likes">{{ article.likes }} 点赞</span>
+          </div>
         </a>
       </li>
     </ul>
@@ -63,9 +66,19 @@ import { popularArticles } from '../../store/blog.js'
   color: #3498db;
 }
 
-.popular-list .views {
+.popular-list .stats {
+  display: flex;
+  gap: 12px;
+  margin-top: 5px;
+}
+
+.popular-list .views,
+.popular-list .likes {
   font-size: 12px;
   color: #777;
-  margin-top: 5px;
+}
+
+.popular-list .likes {
+  color: #e74c3c;
 }
 </style>

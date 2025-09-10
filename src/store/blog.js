@@ -235,7 +235,8 @@ export const popularArticles = reactive([
     date: '2025-09-05',
     category: '前端开发',
     tags: ['Vue3', 'JavaScript', '前端框架'],
-    views: 1250
+    views: 1250,
+    likes: 89
   },
   {
     id: 2,
@@ -245,7 +246,8 @@ export const popularArticles = reactive([
     date: '2025-09-03',
     category: '编程语言',
     tags: ['TypeScript', 'JavaScript', '类型系统'],
-    views: 980
+    views: 980,
+    likes: 76
   },
   {
     id: 3,
@@ -255,6 +257,7 @@ export const popularArticles = reactive([
     date: '2025-09-01',
     category: '后端架构',
     tags: ['微服务', '系统设计', '架构'],
-    views: 1560
+    views: 1560,
+    likes: 112
   }
 ])

@@ -20,7 +20,7 @@ const route = useRoute()
       </div>
       
       <!-- 侧边栏 -->
-      <Sidebar />
+      <Sidebar v-if="route.meta.showSidebar" />
     </div>
   </main>
 
