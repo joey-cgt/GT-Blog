@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { articles } from '../store/blog.js'
 
 const props = defineProps({
@@ -15,6 +15,10 @@ const props = defineProps({
 
 const emit = defineEmits(['filter-change'])
 
+// 展开收起状态
+const categoryExpanded = ref(false)
+const tagExpanded = ref(false)
+
 // 获取所有分类和标签
 const allCategories = computed(() => {
   return [...new Set(articles.map(article => article.category))]
@@ -28,8 +32,25 @@ const allTags = computed(() => {
   return Array.from(tagSet)
 })
 
+// 显示的分类和标签（控制展开收起）
+const displayedCategories = computed(() => {
+  return categoryExpanded.value ? allCategories.value : allCategories.value.slice(0, 5)
+})
+
+const displayedTags = computed(() => {
+  return tagExpanded.value ? allTags.value : allTags.value.slice(0, 8)
+})
+
 function handleFilter(type, value = '') {
   emit('filter-change', { type, value })
+}
+
+function toggleCategoryExpand() {
+  categoryExpanded.value = !categoryExpanded.value
+}
+
+function toggleTagExpand() {
+  tagExpanded.value = !tagExpanded.value
 }
 </script>
 
@@ -51,7 +72,7 @@ function handleFilter(type, value = '') {
       <span class="filter-label">分类：</span>
       <div class="filter-items">
         <button 
-          v-for="category in allCategories" 
+          v-for="category in displayedCategories" 
           :key="category"
           :class="['filter-button', { active: filterType === 'category' && filterValue === category }]"
           @click="handleFilter('category', category)"
@@ -59,6 +80,13 @@ function handleFilter(type, value = '') {
           {{ category }}
         </button>
       </div>
+      <button 
+        v-if="allCategories.length > 5"
+        class="expand-button"
+        @click="toggleCategoryExpand"
+      >
+        {{ categoryExpanded ? '收起' : '展开' }}
+      </button>
     </div>
     
     <!-- 标签 -->
@@ -66,7 +94,7 @@ function handleFilter(type, value = '') {
       <span class="filter-label">标签：</span>
       <div class="filter-items">
         <button 
-          v-for="tag in allTags" 
+          v-for="tag in displayedTags" 
           :key="tag"
           :class="['filter-button', { active: filterType === 'tag' && filterValue === tag }]"
           @click="handleFilter('tag', tag)"
@@ -74,6 +102,13 @@ function handleFilter(type, value = '') {
           {{ tag }}
         </button>
       </div>
+      <button 
+        v-if="allTags.length > 8"
+        class="expand-button"
+        @click="toggleTagExpand"
+      >
+        {{ tagExpanded ? '收起' : '展开' }}
+      </button>
     </div>
   </div>
 </template>
@@ -131,5 +166,24 @@ function handleFilter(type, value = '') {
   background: #7048ff;
   color: white;
   border-color: #6338ff;
+}
+
+.expand-button {
+  padding: 6px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: #f8f9fa;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 12px;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+.expand-button:hover {
+  border-color: #3498db;
+  color: #3498db;
+  background: #e3f2fd;
 }
 </style>
