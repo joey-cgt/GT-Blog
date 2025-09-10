@@ -38,7 +38,7 @@ const blogStats = {
     <div class="stats-section">
     <div class="stat-item">
         <i class="fas fa-file-alt"></i>
-        <span class="stat-label">总文章数</span>
+        <span class="stat-label">文章总数</span>
         <span class="stat-value">{{ blogStats.totalArticles }}</span>
     </div>
     
