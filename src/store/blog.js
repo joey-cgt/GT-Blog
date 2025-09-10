@@ -6,6 +6,8 @@ export const blogInfo = reactive({
   title: '欢迎来到 Joey 的个人博客',
   author: 'Joey_Chen',
   avatar: 'https://s21.ax1x.com/2025/09/07/pV2fri6.jpg',
+  email:'joycgt@126.com',
+  wechat: 'joey-cgt',
   description: '这是一个技术博客，专注于前端开发、后端架构和云计算技术的分享。',
   socialLinks: [
     { name: 'GitHub', icon: 'github', url: 'https://github.com/joey-cgt' },
