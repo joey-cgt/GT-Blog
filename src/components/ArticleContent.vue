@@ -8,6 +8,7 @@ import 'highlight.js/styles/github.css'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import texmath from 'markdown-it-texmath'
+import '../assets/styles/themes/github.css'
 
 const route = useRoute()
 const articleId = computed(() => parseInt(route.params.id))
