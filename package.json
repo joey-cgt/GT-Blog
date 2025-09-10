@@ -9,6 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "highlight.js": "^11.11.1",
+    "katex": "^0.16.22",
+    "markdown-it": "^14.1.0",
+    "markdown-it-texmath": "^1.0.0",
     "vue": "^3.5.18",
     "vue-router": "^4.5.1"
   },

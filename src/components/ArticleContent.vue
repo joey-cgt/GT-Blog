@@ -2,6 +2,12 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { articles } from '../store/blog.js'
+import MarkdownIt from 'markdown-it'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/github.css'
+import katex from 'katex'
+import 'katex/dist/katex.min.css'
+import texmath from 'markdown-it-texmath'
 
 const route = useRoute()
 const articleId = computed(() => parseInt(route.params.id))
@@ -11,8 +17,33 @@ const article = computed(() => {
 
 
 
+// 初始化markdown-it实例
+const md = new MarkdownIt({
+  html: true,
+  linkify: true,
+  typographer: true,
+  highlight: function (str, lang) {
+    if (lang && hljs.getLanguage(lang)) {
+      try {
+        return hljs.highlight(str, { language: lang }).value;
+      } catch (__) {}
+    }
+    return ''; // 使用默认的转义
+  }
+})
+
+// 添加数学公式支持
+md.use(texmath, {
+  engine: katex,
+  delimiters: 'dollars',
+  katexOptions: { macros: { "\\RR": "\\mathbb{R}" } }
+});
+
 // 模拟文章内容（实际项目中可能从API获取）
 const content = ref('')
+const renderedContent = computed(() => {
+  return md.render(content.value)
+})
 
 onMounted(() => {
   // 模拟文章内容（实际项目中应该从API获取）
@@ -21,33 +52,56 @@ onMounted(() => {
   }
 })
 
-// 生成模拟内容的辅助函数
+// 生成模拟Markdown内容的辅助函数
 function generateDummyContent(title) {
-  return `
-  <h1>${title}</h1>
-  
-  <p>这是一篇关于${title}的详细文章。在实际应用中，这里应该是从后端API获取的文章详细内容。</p>
-  
-  <h2>第一部分</h2>
-  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget aliquam ultricies, 
-  nunc nisl aliquet nunc, vitae aliquam nisl nunc vitae nisl. Nullam euismod, nisl eget aliquam ultricies, 
-  nunc nisl aliquet nunc, vitae aliquam nisl nunc vitae nisl.</p>
-  
-  <h2>第二部分</h2>
-  <p>Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
-  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor 
-  in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-  
-  <h2>第三部分</h2>
-  <p>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, 
-  totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
-  
-  <h2>总结</h2>
-  <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni 
-  dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor 
-  sit amet, consectetur, adipisci velit.</p>
-  `
+  return `# ${title}
+
+这是一篇关于${title}的详细文章。在实际应用中，这里应该是从后端API获取的文章详细内容。
+
+## 第一部分
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eget aliquam ultricies, 
+nunc nisl aliquet nunc, vitae aliquam nisl nunc vitae nisl. Nullam euismod, nisl eget aliquam ultricies, 
+nunc nisl aliquet nunc, vitae aliquam nisl nunc vitae nisl.
+
+## 第二部分
+
+Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, 
+quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor 
+in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+
+### 代码示例
+
+\`\`\`javascript
+function example() {
+  console.log("这是一个代码示例");
+  return "Hello Markdown!";
+}
+\`\`\`
+
+## 数学公式支持
+
+行内公式: $E = mc^2$
+
+独立公式:
+
+$$
+\\frac{d}{dx}\\left( \\int_{0}^{x} f(u)\\,du\
+ight)=f(x)
+$$
+
+## 第三部分
+
+Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, 
+totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+
+## 总结
+
+Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni 
+dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor 
+sit amet, consectetur, adipisci velit.
+`
 }
 </script>
 
@@ -73,7 +127,7 @@ function generateDummyContent(title) {
     </div>
     
     <!-- 文章内容 -->
-    <div class="article-body" v-html="content"></div>
+    <div class="article-body" v-html="renderedContent"></div>
   </div>
   
   <div v-else class="article-not-found">
@@ -165,6 +219,68 @@ function generateDummyContent(title) {
 
 .article-body p {
   margin-bottom: 20px;
+}
+
+/* Markdown 样式 */
+.article-body pre {
+  background-color: #f5f5f5;
+  padding: 16px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin-bottom: 20px;
+}
+
+.article-body code {
+  font-family: 'Courier New', Courier, monospace;
+  background-color: #f5f5f5;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+
+.article-body pre code {
+  padding: 0;
+  background-color: transparent;
+}
+
+.article-body blockquote {
+  border-left: 4px solid #ddd;
+  padding-left: 16px;
+  color: #666;
+  margin: 0 0 20px;
+}
+
+.article-body img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 20px 0;
+}
+
+.article-body table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.article-body table, .article-body th, .article-body td {
+  border: 1px solid #ddd;
+}
+
+.article-body th, .article-body td {
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.article-body th {
+  background-color: #f5f5f5;
+}
+
+/* KaTeX 样式调整 */
+.article-body .katex-display {
+  margin: 1.5em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .article-not-found {
