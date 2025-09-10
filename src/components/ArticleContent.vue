@@ -9,23 +9,7 @@ const article = computed(() => {
   return articles.find(a => a.id === articleId.value) || null
 })
 
-// 相关文章推荐（同类别或同标签的其他文章）
-const relatedArticles = computed(() => {
-  if (!article.value) return []
-  
-  return articles
-    .filter(a => {
-      // 排除当前文章
-      if (a.id === articleId.value) return false
-      
-      // 同类别或有相同标签的文章
-      const sameCategory = a.category === article.value.category
-      const hasCommonTag = a.tags.some(tag => article.value.tags.includes(tag))
-      
-      return sameCategory || hasCommonTag
-    })
-    .slice(0, 3) // 最多显示3篇相关文章
-})
+
 
 // 模拟文章内容（实际项目中可能从API获取）
 const content = ref('')
@@ -90,24 +74,6 @@ function generateDummyContent(title) {
     
     <!-- 文章内容 -->
     <div class="article-body" v-html="content"></div>
-    
-    <!-- 相关文章推荐 -->
-    <div v-if="relatedArticles.length > 0" class="related-articles">
-      <h3 class="related-title">相关文章</h3>
-      <div class="related-list">
-        <div v-for="relatedArticle in relatedArticles" :key="relatedArticle.id" class="related-item">
-          <router-link :to="`/article/${relatedArticle.id}`" class="related-link">
-            <div class="related-cover">
-              <img :src="relatedArticle.cover" :alt="relatedArticle.title" />
-            </div>
-            <div class="related-info">
-              <h4 class="related-article-title">{{ relatedArticle.title }}</h4>
-              <p class="related-article-date">{{ relatedArticle.date }}</p>
-            </div>
-          </router-link>
-        </div>
-      </div>
-    </div>
   </div>
   
   <div v-else class="article-not-found">
@@ -201,79 +167,6 @@ function generateDummyContent(title) {
   margin-bottom: 20px;
 }
 
-.related-articles {
-  margin-top: 50px;
-  border-top: 1px solid #eee;
-  padding-top: 30px;
-}
-
-.related-title {
-  font-size: 22px;
-  margin-bottom: 20px;
-  color: #2c3e50;
-  text-align: left;
-}
-
-.related-list {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
-}
-
-.related-item {
-  border-radius: 8px;
-  overflow: hidden;
-  transition: transform 0.3s;
-}
-
-.related-item:hover {
-  transform: translateY(-5px);
-}
-
-.related-link {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-}
-
-.related-cover {
-  height: 150px;
-  overflow: hidden;
-}
-
-.related-cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s;
-}
-
-.related-item:hover .related-cover img {
-  transform: scale(1.05);
-}
-
-.related-info {
-  padding: 12px;
-  background-color: #f9f9f9;
-  text-align: left;
-}
-
-.related-article-title {
-  font-size: 16px;
-  margin-bottom: 8px;
-  color: #2c3e50;
-  line-height: 1.4;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-
-.related-article-date {
-  font-size: 12px;
-  color: #7f8c8d;
-}
-
 .article-not-found {
   text-align: center;
   padding: 50px 20px;
@@ -305,10 +198,6 @@ function generateDummyContent(title) {
   
   .article-title {
     font-size: 24px;
-  }
-  
-  .related-list {
-    grid-template-columns: 1fr;
   }
 }
 </style>
