@@ -122,6 +122,33 @@ const setupObserver = () => {
 
 
 
+// 自动滚动到激活的目录项
+const scrollToActiveTocItem = () => {
+  if (!activeHeadingId.value) return
+  
+  const activeElement = document.querySelector(`.toc-item.active`)
+  if (activeElement) {
+    const navElement = document.querySelector('.toc-nav')
+    if (navElement) {
+      // 计算元素在容器中的位置
+      const elementRect = activeElement.getBoundingClientRect()
+      const containerRect = navElement.getBoundingClientRect()
+      
+      // 如果元素在容器可视区域之外，则滚动到可见位置
+      if (elementRect.top < containerRect.top) {
+        // 元素在容器上方，滚动到顶部对齐
+        navElement.scrollTop = activeElement.offsetTop - 10
+      } else if (elementRect.bottom > containerRect.bottom) {
+        // 元素在容器下方，滚动到底部对齐
+        navElement.scrollTop = activeElement.offsetTop - containerRect.height + elementRect.height + 10
+      }
+    }
+  }
+}
+
+// 监听激活标题变化
+watch(activeHeadingId, scrollToActiveTocItem)
+
 // 初始化目录
 const initToc = () => {
   const extractedHeadings = extractHeadings()
