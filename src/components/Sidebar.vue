@@ -7,12 +7,13 @@ import EmailSubscription from './sidebar/EmailSubscription.vue'
 import ColumnsList from './sidebar/ColumnsList.vue'
 import RecommendedArticles from './sidebar/RecommendedArticles.vue'
 import BlogInfoCard from './sidebar/BlogInfoCard.vue'
+import TableOfContents from './sidebar/TableOfContents.vue'
 
 const route = useRoute()
 
 // 使用computed确保响应式更新
 const isHomePage = computed(() => route.name === 'Home')
-const isContentPage = computed(() => ['Articles', 'Columns', 'ColumnArticles', 'Categories', 'Tags', 'About'].includes(route.name))
+const isContentPage = computed(() => ['Articles', 'Columns', 'ColumnArticles', 'Categories', 'Tags', 'About', 'ArticleContent'].includes(route.name))
 </script>
 
 <template>
@@ -27,6 +28,7 @@ const isContentPage = computed(() => ['Articles', 'Columns', 'ColumnArticles', '
     <!-- 内容页面显示博客信息和热门文章 -->
     <template v-else>
       <BlogInfoCard />
+      <TableOfContents v-if="route.name === 'ArticleContent'" />
       <RecommendedArticles />
     </template>
     
