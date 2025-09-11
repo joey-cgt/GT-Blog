@@ -8,7 +8,7 @@ import 'highlight.js/styles/github.css'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import texmath from 'markdown-it-texmath'
-import '../assets/styles/themes/github.css'
+import 'github-markdown-css'
 
 const route = useRoute()
 const articleId = computed(() => parseInt(route.params.id))
@@ -81,6 +81,8 @@ function hello() {
 
 [![pV2fyRO.jpg](https://s21.ax1x.com/2025/09/07/pV2fyRO.jpg)](https://imgse.com/i/pV2fyRO)
 
+![](https://static-cse.canva.cn/blob/229868/.jpg)
+
 ## 数学公式支持
 
 行内公式: $E = mc^2$
@@ -141,7 +143,7 @@ sit amet, consectetur, adipisci velit.
     </div>
     
     <!-- 文章内容 -->
-    <div class="article-body" v-html="renderedContent"></div>
+    <div class="article-body markdown-body" v-html="renderedContent"></div>
   </div>
   
   <div v-else class="article-not-found">
@@ -216,78 +218,12 @@ sit amet, consectetur, adipisci velit.
   font-size: 12px;
 }
 
+/* GitHub Markdown 样式由 github-markdown-css 提供 */
 .article-body {
+  /* 保留必要的容器样式 */
   line-height: 1.8;
-  color: #333;
   font-size: 16px;
   text-align: left;
-}
-
-.article-body h1,
-.article-body h2,
-.article-body h3 {
-  margin-top: 30px;
-  margin-bottom: 15px;
-  color: #2c3e50;
-}
-
-.article-body p {
-  margin-bottom: 20px;
-}
-
-/* Markdown 样式 */
-.article-body pre {
-  background-color: #f5f5f5;
-  padding: 16px;
-  border-radius: 4px;
-  overflow-x: auto;
-  margin-bottom: 20px;
-}
-
-.article-body code {
-  font-family: 'Courier New', Courier, monospace;
-  background-color: #f5f5f5;
-  padding: 2px 4px;
-  border-radius: 3px;
-  font-size: 0.9em;
-}
-
-.article-body pre code {
-  padding: 0;
-  background-color: transparent;
-}
-
-.article-body blockquote {
-  border-left: 4px solid #ddd;
-  padding-left: 16px;
-  color: #666;
-  margin: 0 0 20px;
-}
-
-.article-body img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 20px 0;
-}
-
-.article-body table {
-  border-collapse: collapse;
-  width: 100%;
-  margin-bottom: 20px;
-}
-
-.article-body table, .article-body th, .article-body td {
-  border: 1px solid #ddd;
-}
-
-.article-body th, .article-body td {
-  padding: 8px 12px;
-  text-align: left;
-}
-
-.article-body th {
-  background-color: #f5f5f5;
 }
 
 /* KaTeX 样式调整 */
