@@ -71,13 +71,20 @@ const generateTocStructure = (headings) => {
   return toc
 }
 
-// 平滑滚动到指定标题
+// 平滑滚动到指定标题（考虑Header高度偏移）
 const scrollToHeading = (id) => {
   const element = document.getElementById(id)
   if (element) {
-    element.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
+    // 获取Header高度（从header元素获取实际高度）
+    const header = document.querySelector('header')
+    const headerHeight = header ? header.offsetHeight : 70 // 默认70px，与Header组件一致
+    
+    // 计算目标位置（考虑Header高度和额外间距）
+    const targetPosition = element.offsetTop - headerHeight - 16 // 额外16px间距
+    
+    window.scrollTo({
+      top: targetPosition,
+      behavior: 'smooth'
     })
     // 更新URL hash
     window.history.replaceState(null, null, `#${id}`)
