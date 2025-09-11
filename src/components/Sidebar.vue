@@ -51,7 +51,7 @@ const isContentPage = computed(() => ['Articles', 'Columns', 'ColumnArticles', '
 
 .sticky-sidebar-content {
   position: sticky;
-  top: 20px; /* 距离Header下方20px */
+  top: 90px; /* Header高度70px + 20px间距 */
   display: flex;
   flex-direction: column;
   gap: 20px;
