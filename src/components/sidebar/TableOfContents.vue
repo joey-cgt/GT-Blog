@@ -126,28 +126,37 @@ const setupObserver = () => {
 const scrollToActiveTocItem = () => {
   if (!activeHeadingId.value) return
   
-  const activeElement = document.querySelector(`.toc-item.active`)
-  if (activeElement) {
-    const navElement = document.querySelector('.toc-nav')
-    if (navElement) {
-      // 计算元素在容器中的位置
-      const elementRect = activeElement.getBoundingClientRect()
-      const containerRect = navElement.getBoundingClientRect()
-      
-      // 如果元素在容器可视区域之外，则滚动到可见位置
-      if (elementRect.top < containerRect.top) {
-        // 元素在容器上方，滚动到顶部对齐
-        navElement.scrollTop = activeElement.offsetTop - 10
-      } else if (elementRect.bottom > containerRect.bottom) {
-        // 元素在容器下方，滚动到底部对齐
-        navElement.scrollTop = activeElement.offsetTop - containerRect.height + elementRect.height + 10
+  // 使用nextTick确保DOM已更新
+  setTimeout(() => {
+    const activeElement = document.querySelector(`.toc-item.active`)
+    if (activeElement) {
+      const navElement = document.querySelector('.toc-nav')
+      if (navElement) {
+        // 获取元素和容器的位置信息
+        const elementRect = activeElement.getBoundingClientRect()
+        const containerRect = navElement.getBoundingClientRect()
+        const elementTop = activeElement.offsetTop
+        const elementHeight = activeElement.offsetHeight
+        
+        // 计算元素在容器中的相对位置
+        const elementTopInContainer = elementTop - navElement.scrollTop
+        const elementBottomInContainer = elementTopInContainer + elementHeight
+        
+        // 如果元素不在可视区域内，则滚动到合适位置
+        if (elementTopInContainer < 0) {
+          // 元素在可视区域上方，滚动到顶部对齐（留出8px边距）
+          navElement.scrollTop = elementTop - 8
+        } else if (elementBottomInContainer > containerRect.height) {
+          // 元素在可视区域下方，滚动到底部对齐（留出8px边距）
+          navElement.scrollTop = elementTop - containerRect.height + elementHeight + 8
+        }
       }
     }
-  }
+  }, 0)
 }
 
-// 监听激活标题变化
-watch(activeHeadingId, scrollToActiveTocItem)
+// 监听激活标题变化，使用immediate确保初始化时也执行
+watch(activeHeadingId, scrollToActiveTocItem, { immediate: true })
 
 // 初始化目录
 const initToc = () => {
