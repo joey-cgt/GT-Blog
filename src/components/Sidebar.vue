@@ -28,12 +28,17 @@ const isContentPage = computed(() => ['Articles', 'Columns', 'ColumnArticles', '
     <!-- 内容页面显示博客信息和热门文章 -->
     <template v-else>
       <BlogInfoCard />
-      <TableOfContents v-if="route.name === 'ArticleContent'" />
-      <RecommendedArticles />
+      <div class="sticky-sidebar-content">
+        <TableOfContents v-if="route.name === 'ArticleContent'" />
+        <RecommendedArticles />
+        <EmailSubscription />
+      </div>
     </template>
     
-    <!-- 所有页面都显示邮件订阅 -->
-    <EmailSubscription />
+    <!-- 首页显示邮件订阅 -->
+    <template v-if="isHomePage">
+      <EmailSubscription />
+    </template>
   </aside>
 </template>
 
@@ -41,5 +46,21 @@ const isContentPage = computed(() => ['Articles', 'Columns', 'ColumnArticles', '
 .sidebar {
   display: flex;
   flex-direction: column;
+  gap: 20px;
+}
+
+.sticky-sidebar-content {
+  position: sticky;
+  top: 20px; /* 距离Header下方20px */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .sticky-sidebar-content {
+    position: static; /* 移动端取消粘性定位 */
+  }
 }
 </style>
