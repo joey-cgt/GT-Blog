@@ -41,13 +41,14 @@ const route = useRoute()
   max-width: 1400px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns:6fr 2fr;
+  grid-template-columns:3fr 1fr;
   gap: 30px;
 }
 
 .content {
   display: flex;
   flex-direction: column;
+  max-width: 100%;
 }
 
 .content.full-width {
