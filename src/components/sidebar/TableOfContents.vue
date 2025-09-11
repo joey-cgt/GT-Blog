@@ -170,6 +170,14 @@ defineExpose({
               <a href="#" class="toc-link" @click.prevent="scrollToHeading(child.id)">
                 {{ child.text }}
               </a>
+              <ul v-if="child.children && child.children.length > 0" class="toc-children">
+                <li v-for="grandchild in child.children" :key="grandchild.id" 
+                    :class="['toc-item', `level-${grandchild.level}`, { active: activeHeadingId === grandchild.id }]">
+                  <a href="#" class="toc-link" @click.prevent="scrollToHeading(grandchild.id)">
+                    {{ grandchild.text }}
+                  </a>
+                </li>
+              </ul>
             </li>
           </ul>
         </li>
@@ -242,11 +250,11 @@ defineExpose({
 
 /* 层级缩进 */
 .toc-item.level-1 { padding-left: 0px; }
-.toc-item.level-2 { padding-left: 12px; }
-.toc-item.level-3 { padding-left: 24px; }
-.toc-item.level-4 { padding-left: 36px; }
-.toc-item.level-5 { padding-left: 48px; }
-.toc-item.level-6 { padding-left: 60px; }
+.toc-item.level-2 { padding-left: 2px; }
+.toc-item.level-3 { padding-left: 4px; }
+.toc-item.level-4 { padding-left: 8px; }
+.toc-item.level-5 { padding-left: 12px; }
+.toc-item.level-6 { padding-left: 16px; }
 
 .toc-children {
   list-style: none;
