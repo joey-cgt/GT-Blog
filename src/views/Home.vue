@@ -26,7 +26,7 @@ import SimpleArticleList from '../components/SimpleArticleList.vue'
 <style scoped>
 .home-container {
   /* margin: 0 auto; */
-  padding: 0 20px 20px;
+  padding: 0 0 20px;
 }
 
 .articles-grid {

@@ -51,9 +51,7 @@ const route = useRoute()
   max-width: 100%;
 }
 
-.content.full-width {
-  grid-column: 1 / -1;
-}
+
 
 /* 响应式布局 */
 @media (max-width: 992px) {

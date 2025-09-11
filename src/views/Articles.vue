@@ -64,7 +64,7 @@ function handleFilterChange({ type, value }) {
 
 <style scoped>
 .articles-page {
-  padding: 0 20px 20px;
+  padding: 0 0px 20px;
 }
 
 .page-title {

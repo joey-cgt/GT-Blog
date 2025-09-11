@@ -17,7 +17,7 @@ import ColumnCard from '../components/ColumnCard.vue'
 
 <style scoped>
 .columns-page {
-  padding: 0 20px 20px;
+  padding: 0 0 20px;
 }
 
 .columns-list {
