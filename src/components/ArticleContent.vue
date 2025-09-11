@@ -55,7 +55,8 @@ onMounted(() => {
 
 // 生成模拟Markdown内容的辅助函数
 function generateDummyContent(title) {
-  return `# ${title}
+  return `
+# ${title}
 
 这是一篇关于${title}的详细文章。在实际应用中，这里应该是从后端API获取的文章详细内容。
 
@@ -78,6 +79,8 @@ function hello() {
   console.log("Hello, World!");
 }
 \`\`\`
+
+# 图片
 
 [![pV2fyRO.jpg](https://s21.ax1x.com/2025/09/07/pV2fyRO.jpg)](https://imgse.com/i/pV2fyRO)
 
@@ -112,7 +115,18 @@ Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deseru
 Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, 
 totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
 
-## 总结
+# 第三章
+## 第一节
+## 第二节
+## 第三节
+
+# 第四章
+## 第一节
+## 第二节
+## 第三节
+
+
+# 总结
 
 Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni 
 dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor 

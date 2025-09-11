@@ -194,7 +194,7 @@ defineExpose({
 }
 
 .toc-nav {
-  max-height: 400px;
+  max-height: 500px;
   overflow-y: auto;
 }
 
@@ -202,6 +202,7 @@ defineExpose({
   list-style: none;
   padding: 0;
   margin: 0;
+  text-align: left;
 }
 
 .toc-item {
@@ -227,8 +228,8 @@ defineExpose({
 
 .toc-item.active .toc-link {
   color: #3498db;
-  background-color: #e3f2fd;
-  border-left-color: #3498db;
+  background-color: #f0f0f0;
+  /* border-left-color: #3498db; */
   font-weight: 500;
 }
 
