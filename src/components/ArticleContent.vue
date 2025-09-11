@@ -117,14 +117,46 @@ totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architec
 
 # 第三章
 ## 第一节
+$$
+\\begin{aligned}
+\\nabla \\cdot \\mathbf{E} &= \\frac{\\rho}{\\varepsilon_0} \\quad &\\text{(高斯电定律)} \\\\
+\\nabla \\cdot \\mathbf{B} &= 0 \\quad &\\text{(高斯磁定律)} \\\\
+\\nabla \\times \\mathbf{E} &= -\\frac{\\partial \\mathbf{B}}{\\partial t} \\quad &\\text{(法拉第电磁感应定律)} \\\\
+\\nabla \\times \\mathbf{B} &= \\mu_0\\mathbf{J} + \\mu_0\\varepsilon_0\\frac{\\partial \\mathbf{E}}{\\partial t} \\quad &\\text{(安培-麦克斯韦定律)}
+\\end{aligned}
+$$
 ## 第二节
+$$
+\\begin{aligned}
+\\nabla \\cdot \\mathbf{E} &= \\frac{\\rho}{\\varepsilon_0} \\quad &\\text{(高斯电定律)} \\\\
+\\nabla \\cdot \\mathbf{B} &= 0 \\quad &\\text{(高斯磁定律)} \\\\
+\\nabla \\times \\mathbf{E} &= -\\frac{\\partial \\mathbf{B}}{\\partial t} \\quad &\\text{(法拉第电磁感应定律)} \\\\
+\\nabla \\times \\mathbf{B} &= \\mu_0\\mathbf{J} + \\mu_0\\varepsilon_0\\frac{\\partial \\mathbf{E}}{\\partial t} \\quad &\\text{(安培-麦克斯韦定律)}
+\\end{aligned}
+$$
 ## 第三节
 
 # 第四章
 ## 第一节
 ## 第二节
+### 4.2.1
+$$
+\\begin{aligned}
+\\nabla \\cdot \\mathbf{E} &= \\frac{\\rho}{\\varepsilon_0} \\quad &\\text{(高斯电定律)} \\\\
+\\nabla \\cdot \\mathbf{B} &= 0 \\quad &\\text{(高斯磁定律)} \\\\
+\\nabla \\times \\mathbf{E} &= -\\frac{\\partial \\mathbf{B}}{\\partial t} \\quad &\\text{(法拉第电磁感应定律)} \\\\
+\\nabla \\times \\mathbf{B} &= \\mu_0\\mathbf{J} + \\mu_0\\varepsilon_0\\frac{\\partial \\mathbf{E}}{\\partial t} \\quad &\\text{(安培-麦克斯韦定律)}
+\\end{aligned}
+$$
 ## 第三节
-
+$$
+\\begin{aligned}
+\\nabla \\cdot \\mathbf{E} &= \\frac{\\rho}{\\varepsilon_0} \\quad &\\text{(高斯电定律)} \\\\
+\\nabla \\cdot \\mathbf{B} &= 0 \\quad &\\text{(高斯磁定律)} \\\\
+\\nabla \\times \\mathbf{E} &= -\\frac{\\partial \\mathbf{B}}{\\partial t} \\quad &\\text{(法拉第电磁感应定律)} \\\\
+\\nabla \\times \\mathbf{B} &= \\mu_0\\mathbf{J} + \\mu_0\\varepsilon_0\\frac{\\partial \\mathbf{E}}{\\partial t} \\quad &\\text{(安培-麦克斯韦定律)}
+\\end{aligned}
+$$
 
 # 总结
 
