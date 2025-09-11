@@ -277,7 +277,7 @@ defineExpose({
   background-color: #f8f9fa;
 }
 
-.toc-item.active .toc-link {
+.toc-item.active > .toc-link {
   color: #3498db;
   background-color: #f0f0f0;
   /* border-left-color: #3498db; */
