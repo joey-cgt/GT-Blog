@@ -23,6 +23,7 @@ const isContentPage = computed(() => ['Articles', 'Columns', 'ColumnArticles', '
       <CategoryList />
       <ColumnsList />
       <TagCloud />
+      <EmailSubscription />
     </template>
     
     <!-- 内容页面显示博客信息和热门文章 -->
@@ -35,10 +36,6 @@ const isContentPage = computed(() => ['Articles', 'Columns', 'ColumnArticles', '
       </div>
     </template>
     
-    <!-- 首页显示邮件订阅 -->
-    <template v-if="isHomePage">
-      <EmailSubscription />
-    </template>
   </aside>
 </template>
 
