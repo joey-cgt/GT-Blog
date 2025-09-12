@@ -73,6 +73,12 @@ const navigateToColumn = () => {
   font-size: 18px;
   margin: 0 0 10px 0;
   color: #2c3e50;
+  transition: color 0.2s ease;
+  cursor: pointer;
+}
+
+.column-title:hover {
+  color: #3498db;
 }
 
 .column-desc {
