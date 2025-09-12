@@ -46,6 +46,25 @@ const renderedContent = computed(() => {
   return md.render(content.value)
 })
 
+// 点赞功能
+const likeCount = ref(0)
+const handleLike = () => {
+  likeCount.value++
+  // 这里可以添加API调用保存点赞数据
+  console.log('点赞成功', likeCount.value)
+}
+
+// 滚动到评论区
+const scrollToComments = () => {
+  // 这里假设评论区有一个id为"comments"的元素
+  const commentsSection = document.getElementById('comments')
+  if (commentsSection) {
+    commentsSection.scrollIntoView({ behavior: 'smooth' })
+  } else {
+    console.log('评论区未找到')
+  }
+}
+
 onMounted(() => {
   // 模拟文章内容（实际项目中应该从API获取）
   if (article.value) {
@@ -203,28 +222,43 @@ Web3是一场深刻的社会技术实验。它试图用密码学和分布式系�
 
 <template>
   <div v-if="article" class="article-content-page">
-    <!-- 文章头部信息 -->
-    <div class="article-header">
-      <!-- <div class="article-cover">
-        <img :src="article.cover" :alt="article.title" />
-      </div> -->
-      
-      <h1 class="article-title">{{ article.title }}</h1>
-      
-      <div class="article-meta">
-        <span class="meta-item date">{{ article.date }}</span>
-        <span class="meta-item category">{{ article.category }}</span>
-        <span class="meta-item views">{{ article.views }} 阅读</span>
+    <div class="article-content">
+      <!-- 文章头部信息 -->
+      <div class="article-header">
+        <!-- <div class="article-cover">
+          <img :src="article.cover" :alt="article.title" />
+        </div> -->
+        
+        <h1 class="article-title">{{ article.title }}</h1>
+        
+        <div class="article-meta">
+          <span class="meta-item date">{{ article.date }}</span>
+          <span class="meta-item category">{{ article.category }}</span>
+          <span class="meta-item views">{{ article.views }} 阅读</span>
+        </div>
+        
+        <div class="article-tags">
+          <span v-for="tag in article.tags" :key="tag" class="tag">{{ tag }}</span>
+        </div>
       </div>
       
-      <div class="article-tags">
-        <span v-for="tag in article.tags" :key="tag" class="tag">{{ tag }}</span>
-      </div>
+      <!-- 文章内容 -->
+      <div class="article-body markdown-body" v-html="renderedContent"></div>
     </div>
-    
-    <!-- 文章内容 -->
-    <div class="article-body markdown-body" v-html="renderedContent"></div>
+    <!-- 底部粘性操作栏 -->
+    <div class="sticky-action-bar">
+      <button class="action-btn like-btn" @click="handleLike">
+        <span class="icon">👍</span>
+        <span class="text">点赞</span>
+        <span class="count" v-if="likeCount > 0">{{ likeCount }}</span>
+      </button>
+      <button class="action-btn comment-btn" @click="scrollToComments">
+        <span class="icon">💬</span>
+        <span class="text">评论</span>
+      </button>
+    </div>
   </div>
+    
   
   <div v-else class="article-not-found">
     <h2>文章不存在</h2>
@@ -238,12 +272,15 @@ Web3是一场深刻的社会技术实验。它试图用密码学和分布式系�
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  padding: 30px;
+  /* padding: 30px; */
   margin-bottom: 30px;
 }
 
+.article-content {
+  margin: 30px 30px 0;
+}
+
 .article-header {
-  margin-bottom: 30px;
   text-align: left;
 }
 
@@ -332,6 +369,66 @@ Web3是一场深刻的社会技术实验。它试图用密码学和分布式系�
   text-decoration: underline;
 }
 
+/* 底部粘性操作栏 */
+.sticky-action-bar {
+  position: sticky;
+  bottom: 0px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 40px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  /* border-radius: 50px; */
+  /* box-shadow: 0 1px 12px rgba(0, 0, 0, 0.15); */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  z-index: 20;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+  color: #555;
+}
+
+.action-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.like-btn:hover {
+  background: #e8f5e8;
+  color: #27ae60;
+}
+
+.comment-btn:hover {
+  background: #e8f4fd;
+  color: #3498db;
+}
+
+.action-btn .icon {
+  font-size: 16px;
+}
+
+.action-btn .count {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-size: 12px;
+  min-width: 18px;
+  text-align: center;
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .article-content-page {
@@ -344,6 +441,20 @@ Web3是一场深刻的社会技术实验。它试图用密码学和分布式系�
   
   .article-title {
     font-size: 24px;
+  }
+
+  .sticky-action-bar {
+    bottom: 10px;
+    padding: 10px 16px;
+  }
+
+  .action-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .action-btn .icon {
+    font-size: 14px;
   }
 }
 </style>
