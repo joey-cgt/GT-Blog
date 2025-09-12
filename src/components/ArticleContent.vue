@@ -9,6 +9,7 @@ import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import texmath from 'markdown-it-texmath'
 import 'github-markdown-css'
+import Comments from './Comments.vue'
 
 const route = useRoute()
 const articleId = computed(() => parseInt(route.params.id))
@@ -56,7 +57,6 @@ const handleLike = () => {
 
 // 滚动到评论区
 const scrollToComments = () => {
-  // 这里假设评论区有一个id为"comments"的元素
   const commentsSection = document.getElementById('comments')
   if (commentsSection) {
     commentsSection.scrollIntoView({ behavior: 'smooth' })
@@ -257,6 +257,9 @@ Web3是一场深刻的社会技术实验。它试图用密码学和分布式系�
         <span class="text">评论</span>
       </button>
     </div>
+    
+    <!-- 评论区组件 -->
+    <Comments />
   </div>
     
   
@@ -428,6 +431,8 @@ Web3是一场深刻的社会技术实验。它试图用密码学和分布式系�
   min-width: 18px;
   text-align: center;
 }
+
+
 
 /* 响应式设计 */
 @media (max-width: 768px) {
