@@ -205,9 +205,9 @@ Web3是一场深刻的社会技术实验。它试图用密码学和分布式系�
   <div v-if="article" class="article-content-page">
     <!-- 文章头部信息 -->
     <div class="article-header">
-      <div class="article-cover">
+      <!-- <div class="article-cover">
         <img :src="article.cover" :alt="article.title" />
-      </div>
+      </div> -->
       
       <h1 class="article-title">{{ article.title }}</h1>
       
