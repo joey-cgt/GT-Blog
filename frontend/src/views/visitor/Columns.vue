@@ -1,6 +1,6 @@
 <script setup>
-import { columns } from '../store/blog.js'
-import ColumnCard from '../components/ColumnCard.vue'
+import { columns } from '../../store/blog.js'
+import ColumnCard from '../../components/ColumnCard.vue'
 </script>
 
 <template>

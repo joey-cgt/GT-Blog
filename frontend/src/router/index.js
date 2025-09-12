@@ -1,10 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
-import Articles from '../views/Articles.vue'
-import Categories from '../views/Categories.vue'
-import Tags from '../views/Tags.vue'
-import About from '../views/About.vue'
+import Home from '../views/visitor/Home.vue'
+import Articles from '../views/visitor/Articles.vue'
+import Categories from '../views/visitor/Categories.vue'
+import Tags from '../views/visitor/Tags.vue'
+import About from '../views/visitor/About.vue'
 import ArticleContent from '../components/ArticleContent.vue'
+import Columns from '../views/visitor/Columns.vue'
+import ColumnArticles from '../views/visitor/ColumnArticles.vue'
 
 const routes = [
   {
@@ -27,7 +29,7 @@ const routes = [
   {
     path: '/columns',
     name: 'Columns',
-    component: () => import('../views/Columns.vue'),
+    component: Columns,
     meta: {
       showSidebar: true
     }
@@ -35,7 +37,7 @@ const routes = [
   {
     path: '/columns/:id',
     name: 'ColumnArticles',
-    component: () => import('../views/ColumnArticles.vue'),
+    component: ColumnArticles,
     meta: {
       showSidebar: true
     }

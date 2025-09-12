@@ -1,6 +1,6 @@
 <script setup>
-import AuthorCard from '../components/AuthorCard.vue'
-import SimpleArticleList from '../components/SimpleArticleList.vue'
+import AuthorCard from '../../components/AuthorCard.vue'
+import SimpleArticleList from '../../components/SimpleArticleList.vue'
 </script>
 
 <template>
