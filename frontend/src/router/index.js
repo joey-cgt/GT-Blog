@@ -9,6 +9,7 @@ import Columns from '../views/visitor/Columns.vue'
 import ColumnArticles from '../views/visitor/ColumnArticles.vue'
 import AdminLogin from '../views/admin/Login.vue'
 import AdminDashboard from '../views/admin/Dashboard.vue'
+import AdminLayout from '../layouts/AdminLayout.vue'
 
 const routes = [
   // 前台访客路由
@@ -64,22 +65,18 @@ const routes = [
   
   // 后台管理路由
   {
-    path: '/admin/login',
+    path: '/login',
     name: 'AdminLogin',
     component: AdminLogin,
     meta: {
-      showFooter: false,
-      showSidebar: false,
       requiresAuth: false
     }
   },
   {
-    path: '/admin',
+    path: '/admin/dashboard',
     name: 'AdminDashboard',
     component: AdminDashboard,
     meta: {
-      showFooter: false,
-      showSidebar: false,
       requiresAuth: true
     }
   }

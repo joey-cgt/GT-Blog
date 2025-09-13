@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
+    "element-plus": "^2.11.2",
     "github-markdown-css": "^5.8.1",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.22",

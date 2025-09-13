@@ -1,82 +1,27 @@
 <script setup>
-import Header from './components/Header.vue'
-import Sidebar from './components/Sidebar.vue'
-import Footer from './components/Footer.vue'
 import { useRoute } from 'vue-router'
 import { computed } from 'vue'
+import AdminLayout from './layouts/AdminLayout.vue'
+import VisitorLayout from './layouts/VisitorLayout.vue'
+import Login from './views/admin/Login.vue'
 
 const route = useRoute()
 
-// 判断当前是否为管理后台路由
-const isAdminRoute = computed(() => {
-  return route.path.startsWith('/admin')
+const layout = computed(()=>{
+  // 如果是管理后台路由，则使用 AdminLayout，否则使用 VisitorLayout
+  // 如果是login，返回Login
+  if(route.path === '/login') return Login
+  else if(route.path.startsWith('/admin')) return AdminLayout
+  else return VisitorLayout
 })
+
 </script>
 
 <template>
-  <!-- 管理后台布局 -->
-  <div v-if="isAdminRoute" class="admin-layout">
-    <router-view />
-  </div>
-  
-  <!-- 前台访客布局 -->
-  <div v-else>
-    <!-- 导航栏 -->
-    <Header />
-
-    <!-- 主要内容区 -->
-    <main class="main">
-      <div class="main-container">
-        <!-- 内容区 -->
-        <div class="content">
-          <router-view />
-        </div>
-        
-        <!-- 侧边栏 -->
-        <Sidebar v-if="route.meta.showSidebar" />
-      </div>
-    </main>
-
-    <!-- 页脚 -->
-    <Footer v-if="route.meta.showFooter" />
-  </div>
+  <component :is="layout">
+  </component>>
 </template>
 
 <style>
-@import './assets/styles/global.css';
 
-/* 管理后台布局 */
-.admin-layout {
-  min-height: 100vh;
-  width: 100%;
-}
-
-/* 主要内容区布局 */
-.main {
-  padding: 40px 0;
-  margin: 0 auto;
-}
-
-.main-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns:3fr 1fr;
-  gap: 30px;
-}
-
-.content {
-  display: flex;
-  flex-direction: column;
-  max-width: 100%;
-}
-
-
-
-/* 响应式布局 */
-@media (max-width: 992px) {
-  .main-container {
-    grid-template-columns: 1fr;
-  }
-}
 </style>
