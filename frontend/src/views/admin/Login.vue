@@ -20,14 +20,24 @@
         </div>
         <div class="form-group">
           <label for="password">密　码：</label>
-          <div class="input-container">
+          <div class="input-container password-container">
             <input 
-              type="password" 
+              :type="showPassword ? 'text' : 'password'" 
               id="password" 
               v-model="loginForm.password" 
               placeholder="请输入密码"
               @keyup.enter="handleLogin"
             >
+            <span class="password-toggle" @click="showPassword = !showPassword">
+              {{ showPassword ? '🙈' : '👁️' }}
+            </span>
+          </div>
+        </div>
+        <div class="form-group remember-group">
+          <div class="empty-label"></div>
+          <div class="input-container">
+            <input type="checkbox" id="remember" v-model="loginForm.remember">
+            <label for="remember">记住我</label>
           </div>
         </div>
         <div class="form-group">
@@ -60,6 +70,8 @@ const loginForm = reactive({
   password: '',
   remember: false
 })
+
+const showPassword = ref(false)
 
 const handleLogin = async () => {
   // 表单验证
@@ -171,6 +183,24 @@ const handleLogin = async () => {
   transition: border-color 0.3s;
 }
 
+.password-container {
+  position: relative;
+}
+
+.password-container input {
+  padding-right: 40px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  user-select: none;
+  font-size: 16px;
+}
+
 .form-group input:focus {
   border-color: #1890ff;
   outline: none;
@@ -189,6 +219,7 @@ const handleLogin = async () => {
 
 .login-button {
   width: 100%;
+  padding: 10px 12px;
   background-color: #1890ff;
   color: white;
   border: none;
