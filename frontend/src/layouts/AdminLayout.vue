@@ -3,7 +3,7 @@
     <!-- 顶部工具栏 -->
     <header class="admin-header">
       <div class="header-left">
-        <h1 class="logo">博客管理系统</h1>
+        <h1 class="logo">GT-Blog 博客管理系统</h1>
       </div>
       <div class="header-right">
         <el-dropdown>

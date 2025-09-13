@@ -10,58 +10,66 @@ import ColumnArticles from '../views/visitor/ColumnArticles.vue'
 import AdminLogin from '../views/admin/Login.vue'
 import AdminDashboard from '../views/admin/Dashboard.vue'
 import AdminLayout from '../layouts/AdminLayout.vue'
+import VisitorLayout from '../layouts/VisitorLayout.vue'
 
 const routes = [
   // 前台访客路由
   {
     path: '/',
-    name: 'Home',
-    component: Home,
-    meta: {
-      showFooter: true,
-      showSidebar: true
-    }
+    component: VisitorLayout,
+    children: [
+      {
+        path: '', // 首页
+        name: 'Home',
+        component: Home,
+        meta: {
+          showSidebar: true,
+          showFooter: true
+        }
+      },
+      {
+        path: 'articles', // 文章列表页
+        name: 'Articles', 
+        component: Articles,
+        meta: {
+          showSidebar: true
+        }
+      },
+      {
+        path: 'columns', // 专栏页面
+        name: 'Columns',
+        component: Columns,
+        meta: {
+          showSidebar: true
+        }
+      },
+      {
+        path: 'columns/:id',
+        name: 'ColumnArticles',
+        component: ColumnArticles,
+        meta: {
+          showSidebar: true
+        }
+      },
+      {
+        path: 'about',
+        name: 'About',
+        component: About,
+        meta: {
+          showSidebar: true
+        }
+      },
+      {
+        path: 'article/:id',
+        name: 'ArticleContent',
+        component: ArticleContent,
+        meta: {
+          showSidebar: true
+        }
+      },
+    ]
   },
-  {
-    path: '/articles',
-    name: 'Articles',
-    component: Articles,
-    meta: {
-      showSidebar: true
-    }
-  },
-  {
-    path: '/columns',
-    name: 'Columns',
-    component: Columns,
-    meta: {
-      showSidebar: true
-    }
-  },
-  {
-    path: '/columns/:id',
-    name: 'ColumnArticles',
-    component: ColumnArticles,
-    meta: {
-      showSidebar: true
-    }
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: About,
-    meta: {
-      showSidebar: true
-    }
-  },
-  {
-    path: '/article/:id',
-    name: 'ArticleContent',
-    component: ArticleContent,
-    meta: {
-      showSidebar: true
-    }
-  },
+
   
   // 后台管理路由
   {
@@ -73,12 +81,18 @@ const routes = [
     }
   },
   {
-    path: '/admin/dashboard',
-    name: 'AdminDashboard',
-    component: AdminDashboard,
-    meta: {
-      requiresAuth: true
-    }
+    path: '/admin',
+    component: AdminLayout,
+    redirect: '/admin/dashboard',
+    children: [
+      {
+        path: 'dashboard',
+        component: AdminDashboard,
+        meta: {
+          requiresAuth: true
+        }
+      },
+    ]
   }
 ]
 
@@ -97,7 +111,7 @@ router.beforeEach((to, from, next) => {
     const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
     if (!isLoggedIn) {
       // 未登录，跳转到登录页面
-      next('/admin/login')
+      next('/login')
     } else {
       next()
     }
