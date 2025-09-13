@@ -72,26 +72,26 @@ const handleLogin = async () => {
     isLoading.value = true
     errorMessage.value = ''
     
-    // TODO: 实现实际的登录API调用
-    // 这里是模拟登录过程
+    // 模拟登录过程
     await new Promise(resolve => setTimeout(resolve, 1000))
     
-    // 模拟登录成功
-    // 实际项目中，这里应该调用后端API进行身份验证
-    console.log('登录信息:', loginForm)
-    
-    // 存储登录状态
-    localStorage.setItem('isLoggedIn', 'true')
-    
-    // 如果选择了"记住我"，可以存储用户名
-    if (loginForm.remember) {
-      localStorage.setItem('rememberedUsername', loginForm.username)
+    // 验证用户名和密码
+    if (loginForm.username === 'admin' && loginForm.password === '123456') {
+      // 存储登录状态
+      localStorage.setItem('isLoggedIn', 'true')
+      
+      // 如果选择了"记住我"，可以存储用户名
+      if (loginForm.remember) {
+        localStorage.setItem('rememberedUsername', loginForm.username)
+      } else {
+        localStorage.removeItem('rememberedUsername')
+      }
+      
+      // 登录成功后跳转到管理后台首页
+      router.push('/admin')
     } else {
-      localStorage.removeItem('rememberedUsername')
+      errorMessage.value = '用户名或密码错误'
     }
-    
-    // 登录成功后跳转到管理后台首页
-    router.push('/admin')
   } catch (error) {
     console.error('登录失败:', error)
     errorMessage.value = '登录失败，请检查用户名和密码'

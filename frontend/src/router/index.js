@@ -8,6 +8,7 @@ import ArticleContent from '../components/ArticleContent.vue'
 import Columns from '../views/visitor/Columns.vue'
 import ColumnArticles from '../views/visitor/ColumnArticles.vue'
 import AdminLogin from '../views/admin/Login.vue'
+import AdminDashboard from '../views/admin/Dashboard.vue'
 
 const routes = [
   // 前台访客路由
@@ -71,6 +72,16 @@ const routes = [
       showSidebar: false,
       requiresAuth: false
     }
+  },
+  {
+    path: '/admin',
+    name: 'AdminDashboard',
+    component: AdminDashboard,
+    meta: {
+      showFooter: false,
+      showSidebar: false,
+      requiresAuth: true
+    }
   }
 ]
 
@@ -83,7 +94,19 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   // 确保每次路由切换时滚动到顶部
   window.scrollTo(0, 0)
-  next()
+  
+  // 检查是否需要登录验证
+  if (to.meta.requiresAuth) {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
+    if (!isLoggedIn) {
+      // 未登录，跳转到登录页面
+      next('/admin/login')
+    } else {
+      next()
+    }
+  } else {
+    next()
+  }
 })
 
 export default router
