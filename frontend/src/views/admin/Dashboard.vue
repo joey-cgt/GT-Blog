@@ -101,6 +101,73 @@
         </div>
       </el-card>
     </div>
+
+    <!-- 热门文章区域 -->
+    <div class="popular-articles">
+      <div class="article-column">
+        <el-card class="article-card">
+          <template #header>
+            <div class="card-header">
+              <h3>📈 浏览量最高文章</h3>
+            </div>
+          </template>
+          <el-table :data="mostViewedArticles" size="small" stripe>
+            <el-table-column prop="rank" label="排名" width="60">
+              <template #default="{ $index }">
+                <div class="rank-badge">{{ $index + 1 }}</div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="title" label="文章标题" min-width="200">
+              <template #default="{ row }">
+                <div class="article-title">{{ row.title }}</div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="views" label="浏览量" width="80" align="center">
+              <template #default="{ row }">
+                <span class="views-count">{{ row.views }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="日期" width="100" align="center">
+              <template #default="{ row }">
+                <span class="article-date">{{ row.date }}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </div>
+
+      <div class="article-column">
+        <el-card class="article-card">
+          <template #header>
+            <div class="card-header">
+              <h3>⭐ 点赞最多文章</h3>
+            </div>
+          </template>
+          <el-table :data="mostLikedArticles" size="small" stripe>
+            <el-table-column prop="rank" label="排名" width="60">
+              <template #default="{ $index }">
+                <div class="rank-badge">{{ $index + 1 }}</div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="title" label="文章标题" min-width="200">
+              <template #default="{ row }">
+                <div class="article-title">{{ row.title }}</div>
+              </template>
+            </el-table-column>
+            <el-table-column prop="likes" label="点赞数" width="80" align="center">
+              <template #default="{ row }">
+                <span class="likes-count">{{ row.likes }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column prop="date" label="日期" width="100" align="center">
+              <template #default="{ row }">
+                <span class="article-date">{{ row.date }}</span>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -112,6 +179,23 @@ import * as echarts from 'echarts'
 const timeRange = ref('7d')
 const chartRef = ref(null)
 let chartInstance = null
+
+// 模拟热门文章数据
+const mostViewedArticles = ref([
+  { id: 1, title: 'Vue 3 组合式API最佳实践', views: 2456, date: '2024-01-15' },
+  { id: 2, title: 'TypeScript 高级类型技巧', views: 1987, date: '2024-01-12' },
+  { id: 3, title: 'Element Plus 组件库深度解析', views: 1765, date: '2024-01-10' },
+  { id: 4, title: '前端性能优化完全指南', views: 1543, date: '2024-01-08' },
+  { id: 5, title: 'CSS Grid 布局实战教程', views: 1321, date: '2024-01-05' }
+])
+
+const mostLikedArticles = ref([
+  { id: 1, title: 'Vue 3 组合式API最佳实践', likes: 324, date: '2024-01-15' },
+  { id: 2, title: 'TypeScript 高级类型技巧', likes: 287, date: '2024-01-12' },
+  { id: 6, title: 'JavaScript 异步编程详解', likes: 256, date: '2024-01-18' },
+  { id: 3, title: 'Element Plus 组件库深度解析', likes: 234, date: '2024-01-10' },
+  { id: 7, title: 'Webpack 5 配置优化指南', likes: 198, date: '2024-01-20' }
+])
 
 // 模拟数据
 const generateChartData = (days) => {
@@ -223,14 +307,24 @@ const initChart = () => {
 onMounted(() => {
   nextTick(() => {
     initChart()
+    // 添加窗口resize事件监听
+    window.addEventListener('resize', handleResize)
   })
 })
 
-// 组件卸载时销毁图表
+// 窗口大小变化处理
+const handleResize = () => {
+  if (chartInstance) {
+    chartInstance.resize()
+  }
+}
+
+// 组件卸载时销毁图表和移除事件监听
 onUnmounted(() => {
   if (chartInstance) {
     chartInstance.dispose()
   }
+  window.removeEventListener('resize', handleResize)
 })
 </script>
 
@@ -276,6 +370,91 @@ onUnmounted(() => {
 
 .chart-container {
   padding: 10px;
+}
+
+.popular-articles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+  margin-top: 30px;
+}
+
+@media (max-width: 900px) {
+  .popular-articles {
+    grid-template-columns: 1fr;
+  }
+}
+
+.article-column {
+  height: 100%;
+}
+
+.article-card {
+  height: 100%;
+  border-radius: 8px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #303133;
+}
+
+.rank-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.article-title {
+  font-size: 16px;
+  color: #303133;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+.views-count,
+.likes-count {
+  font-weight: 600;
+  color: #409EFF;
+}
+
+.article-date {
+  font-size: 12px;
+  color: #909399;
+}
+
+/* 表格表头样式 */
+:deep(.el-table__header-wrapper) .el-table__cell {
+  font-size: 14px;
+  font-weight: 600;
+  color: #303133;
+}
+
+/* 表格内容样式 */
+:deep(.el-table__body-wrapper) .el-table__cell {
+  font-size: 14px;
+}
+
+:deep(.el-table__row) {
+  height: 48px;  /* 增加行高，改善行间距 */
 }
 
 .stat-card {
