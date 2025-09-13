@@ -7,8 +7,10 @@ import About from '../views/visitor/About.vue'
 import ArticleContent from '../components/ArticleContent.vue'
 import Columns from '../views/visitor/Columns.vue'
 import ColumnArticles from '../views/visitor/ColumnArticles.vue'
+import AdminLogin from '../views/admin/Login.vue'
 
 const routes = [
+  // 前台访客路由
   {
     path: '/',
     name: 'Home',
@@ -56,6 +58,18 @@ const routes = [
     component: ArticleContent,
     meta: {
       showSidebar: true
+    }
+  },
+  
+  // 后台管理路由
+  {
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: AdminLogin,
+    meta: {
+      showFooter: false,
+      showSidebar: false,
+      requiresAuth: false
     }
   }
 ]

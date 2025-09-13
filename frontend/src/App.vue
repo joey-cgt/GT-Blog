@@ -3,33 +3,53 @@ import Header from './components/Header.vue'
 import Sidebar from './components/Sidebar.vue'
 import Footer from './components/Footer.vue'
 import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 
 const route = useRoute()
+
+// 判断当前是否为管理后台路由
+const isAdminRoute = computed(() => {
+  return route.path.startsWith('/admin')
+})
 </script>
 
 <template>
-  <!-- 导航栏 -->
-  <Header />
+  <!-- 管理后台布局 -->
+  <div v-if="isAdminRoute" class="admin-layout">
+    <router-view />
+  </div>
+  
+  <!-- 前台访客布局 -->
+  <div v-else>
+    <!-- 导航栏 -->
+    <Header />
 
-  <!-- 主要内容区 -->
-  <main class="main">
-    <div class="main-container">
-      <!-- 内容区 -->
-      <div class="content">
-        <router-view />
+    <!-- 主要内容区 -->
+    <main class="main">
+      <div class="main-container">
+        <!-- 内容区 -->
+        <div class="content">
+          <router-view />
+        </div>
+        
+        <!-- 侧边栏 -->
+        <Sidebar v-if="route.meta.showSidebar" />
       </div>
-      
-      <!-- 侧边栏 -->
-      <Sidebar v-if="route.meta.showSidebar" />
-    </div>
-  </main>
+    </main>
 
-  <!-- 页脚 -->
-  <Footer v-if="route.meta.showFooter" />
+    <!-- 页脚 -->
+    <Footer v-if="route.meta.showFooter" />
+  </div>
 </template>
 
 <style>
 @import './assets/styles/global.css';
+
+/* 管理后台布局 */
+.admin-layout {
+  min-height: 100vh;
+  width: 100%;
+}
 
 /* 主要内容区布局 */
 .main {
