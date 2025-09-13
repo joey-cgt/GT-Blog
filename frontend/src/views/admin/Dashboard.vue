@@ -1,84 +1,120 @@
 <template>
-  <div class="admin-dashboard">    
-    <div class="stats-cards">
+  <div class="admin-dashboard">
+    <!-- 操作和统计卡片区域 -->
+    <div class="dashboard-main">
+      <!-- 左侧操作卡片 -->
+      <div class="action-cards">
+        <!-- 发布文章卡片 -->
+        <el-card class="action-card publish-card">
+          <div class="card-content">
+            <div class="action-icon">
+              <el-icon size="32px"><Notebook /></el-icon>
+            </div>
+            <div class="action-info">
+              <div class="action-title">发布文章</div>
+              <div class="action-desc">创建新的博客内容</div>
+            </div>
+          </div>
+        </el-card>
+
+        <!-- 草稿箱卡片 -->
+        <el-card class="action-card draft-card">
+          <div class="card-content">
+            <div class="action-icon">
+              <el-icon size="32px"><Files /></el-icon>
+            </div>
+            <div class="action-info">
+              <div class="action-title">草稿箱</div>
+              <div class="action-desc">3篇草稿待完成</div>
+            </div>
+          </div>
+        </el-card>
+      </div>
+
+      <!-- 垂直分隔线 -->
+      <div class="divider"></div>
+
+      <!-- 右侧统计卡片 -->
+      <div class="stats-cards">
       <!-- 文章数量卡片 -->
-      <el-card class="stat-card">
-        <div class="card-content">
-          <div class="stat-icon">
-            <el-icon size="24px"><Document /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-label">文章数量</div>
-            <div class="stat-value">1,248</div>
-          </div>
-        </div>
-      </el-card>
+        <el-card class="stat-card">
+            <div class="card-content">
+            <div class="stat-icon">
+                <el-icon size="24px"><Document /></el-icon>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">文章数量</div>
+                <div class="stat-value">1,248</div>
+            </div>
+            </div>
+        </el-card>
    
-      <!-- 总浏览量卡片 -->
-      <el-card class="stat-card">
-        <div class="card-content">
-          <div class="stat-icon">
-            <el-icon size="24px"><View /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-label">总浏览量</div>
-            <div class="stat-value">24,891</div>
-          </div>
-        </div>
-      </el-card>
+        <!-- 总浏览量卡片 -->
+        <el-card class="stat-card">
+            <div class="card-content">
+            <div class="stat-icon">
+                <el-icon size="24px"><View /></el-icon>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">总浏览量</div>
+                <div class="stat-value">24,891</div>
+            </div>
+            </div>
+        </el-card>
 
-      <!-- 总点赞数卡片 -->
-      <el-card class="stat-card">
-        <div class="card-content">
-          <div class="stat-icon">
-            <el-icon size="24px"><Star /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-label">总点赞数</div>
-            <div class="stat-value">5,672</div>
-          </div>
-        </div>
-      </el-card>
+        <!-- 总点赞数卡片 -->
+        <el-card class="stat-card">
+            <div class="card-content">
+            <div class="stat-icon">
+                <el-icon size="24px"><Star /></el-icon>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">总点赞数</div>
+                <div class="stat-value">5,672</div>
+            </div>
+            </div>
+        </el-card>
 
-      <!-- 专栏数量卡片 -->
-      <el-card class="stat-card">
-        <div class="card-content">
-          <div class="stat-icon">
-            <el-icon size="24px"><Collection /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-label">专栏数量</div>
-            <div class="stat-value">24</div>
-          </div>
-        </div>
-      </el-card>
+        <!-- 专栏数量卡片 -->
+        <el-card class="stat-card">
+            <div class="card-content">
+            <div class="stat-icon">
+                <el-icon size="24px"><Collection /></el-icon>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">专栏数量</div>
+                <div class="stat-value">24</div>
+            </div>
+            </div>
+        </el-card>
 
-      <!-- 分类数量卡片 -->
-      <el-card class="stat-card">
-        <div class="card-content">
-          <div class="stat-icon">
-            <el-icon size="24px"><Folder /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-label">分类数量</div>
-            <div class="stat-value">12</div>
-          </div>
-        </div>
-      </el-card>
+        <!-- 分类数量卡片 -->
+        <el-card class="stat-card">
+            <div class="card-content">
+            <div class="stat-icon">
+                <el-icon size="24px"><Folder /></el-icon>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">分类数量</div>
+                <div class="stat-value">12</div>
+            </div>
+            </div>
+        </el-card>
 
-      <!-- 标签数量卡片 -->
-      <el-card class="stat-card">
-        <div class="card-content">
-          <div class="stat-icon">
-            <el-icon size="24px"><PriceTag /></el-icon>
-          </div>
-          <div class="stat-info">
-            <div class="stat-label">标签数量</div>
-            <div class="stat-value">156</div>
-          </div>
-        </div>
-      </el-card>
-    </div>
+        <!-- 标签数量卡片 -->
+        <el-card class="stat-card">
+            <div class="card-content">
+            <div class="stat-icon">
+                <el-icon size="24px"><PriceTag /></el-icon>
+            </div>
+            <div class="stat-info">
+                <div class="stat-label">标签数量</div>
+                <div class="stat-value">156</div>
+            </div>
+            </div>
+        </el-card>
+      </div>
+  </div>
 
     <!-- 趋势图表区域 -->
     <div class="chart-section">
@@ -173,7 +209,7 @@
 
 <script setup>
 import { ref, onMounted, watch, nextTick, onUnmounted } from 'vue'
-import { Document, Star, View, Top, Collection, Folder, PriceTag, Right } from '@element-plus/icons-vue'
+import { Document, Star, View, Top, Collection, Folder, PriceTag, Right, Notebook, Files } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
 
 const timeRange = ref('7d')
@@ -333,12 +369,133 @@ onUnmounted(() => {
   padding: 20px;
 }
 
+.dashboard-main {
+  display: grid;
+  grid-template-columns: 280px 1px 1fr;
+  gap: 24px;
+  align-items: start;
+  margin-bottom: 30px;
+}
+
+.action-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.action-card {
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+}
+
+.action-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.publish-card {
+  border-left-color: #409EFF !important;
+}
+
+.publish-card .action-icon {
+  color: #409EFF;
+}
+
+.draft-card {
+  border-left-color: #E6A23C !important;
+}
+
+.draft-card .action-icon {
+  color: #E6A23C;
+}
+
+.action-card .card-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px;
+}
+
+.action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  background: rgba(64, 158, 255, 0.1);
+}
+
+.draft-card .action-icon {
+  background: rgba(230, 162, 60, 0.1);
+}
+
+.action-info {
+  flex: 1;
+}
+
+.action-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #303133;
+  margin-bottom: 4px;
+}
+
+.action-desc {
+  font-size: 14px;
+  color: #909399;
+}
+
+.divider {
+  width: 1px;
+  background: #e4e7ed;
+  height: 100%;
+  min-height: 200px;
+}
+
 .stats-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(2, auto);
   gap: 20px;
-  margin-top: 20px;
+}
+
+@media (max-width: 1200px) {
+  .dashboard-main {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .divider {
+    display: none;
+  }
+  
+  .stats-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .stats-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .stats-cards {
+    grid-template-columns: 1fr;
+  }
+  
+  .action-card .card-content {
+    padding: 16px;
+  }
+  
+  .action-icon {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 .chart-section {
@@ -472,8 +629,8 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   border-radius: 8px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
@@ -492,10 +649,10 @@ onUnmounted(() => {
 }
 
 .stat-value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: bold;
   color: #303133;
-  margin-bottom: 4px;
+  /* margin-bottom: 4px; */
 }
 
 </style>
