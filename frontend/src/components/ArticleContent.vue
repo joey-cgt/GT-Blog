@@ -8,8 +8,8 @@ import 'highlight.js/styles/github.css'
 import katex from 'katex'
 import 'katex/dist/katex.min.css'
 import texmath from 'markdown-it-texmath'
-import 'github-markdown-css'
 import Comments from './Comments.vue'
+import 'github-markdown-css'
 
 const route = useRoute()
 const articleId = computed(() => parseInt(route.params.id))
@@ -76,6 +76,18 @@ onMounted(() => {
 function generateDummyContent(title) {
   return `
 # Web3：下一代互联网的范式革命
+- 选项一
+  - 选项二
+
+- 选项二
+
+- 选项三
+
+\`\`\`java
+public static void main(String[] args) {
+  System.out.println("Hello, World!");
+}
+\`\`\`
 
 ## 引言：从"只读"到"读写"，再到"拥有"
 
@@ -462,4 +474,5 @@ Web3是一场深刻的社会技术实验。它试图用密码学和分布式系�
     font-size: 14px;
   }
 }
+
 </style>
