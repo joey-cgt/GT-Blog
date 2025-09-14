@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { articles } from '../../store/blog.js'
 import ArticleList from '../../components/visitor/ArticleList.vue'
 import Pagination from '../../components/visitor/Pagination.vue'
@@ -11,6 +11,32 @@ const currentPage = ref(1)
 const itemsPerPage = 10
 const filterType = ref('all') // all, category, tag
 const filterValue = ref('')
+
+// 监听路由参数变化
+watch(() => route.query, (newQuery) => {
+  if (newQuery.tag) {
+    filterType.value = 'tag'
+    filterValue.value = newQuery.tag
+  } else if (newQuery.category) {
+    filterType.value = 'category'
+    filterValue.value = newQuery.category
+  } else {
+    filterType.value = 'all'
+    filterValue.value = ''
+  }
+  currentPage.value = 1
+})
+
+// 初始化时检查URL参数
+onMounted(() => {
+  if (route.query.tag) {
+    filterType.value = 'tag'
+    filterValue.value = route.query.tag
+  } else if (route.query.category) {
+    filterType.value = 'category'
+    filterValue.value = route.query.category
+  }
+})
 
 // 筛选文章
 const displayedArticles = computed(() => {
@@ -39,7 +65,40 @@ function handleFilterChange({ type, value }) {
   filterType.value = type
   filterValue.value = value
   currentPage.value = 1
+  
+  // 更新URL参数
+  if (type === 'tag') {
+    router.push({
+      path: '/articles',
+      query: { tag: value }
+    })
+  } else if (type === 'category') {
+    router.push({
+      path: '/articles',
+      query: { category: value }
+    })
+  } else {
+    router.push({
+      path: '/articles',
+      query: {}
+    })
+  }
 }
+
+// 监听路由变化，处理URL参数
+watch(() => route.query, (query) => {
+  if (query.tag) {
+    filterType.value = 'tag'
+    filterValue.value = query.tag
+  } else if (query.category) {
+    filterType.value = 'category'
+    filterValue.value = query.category
+  } else {
+    filterType.value = 'all'
+    filterValue.value = ''
+  }
+  currentPage.value = 1
+}, { immediate: true })
 </script>
 
 <template>

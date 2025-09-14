@@ -50,6 +50,7 @@ import { popularArticles } from '../../../store/blog.js'
   border-bottom: 1px solid #eee;
   padding: 12px 0;
   text-align: left;
+  list-style-type: none;
 }
 
 .popular-list li:last-child {

@@ -1,5 +1,15 @@
 <script setup>
 import { tags } from '../../../store/blog.js'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const handleTagClick = (tagName) => {
+  router.push({
+    path: '/articles',
+    query: { tag: tagName }
+  })
+}
 </script>
 
 <template>
@@ -9,9 +19,10 @@ import { tags } from '../../../store/blog.js'
       <a 
         v-for="tag in tags" 
         :key="tag.name" 
-        href="#" 
+        href="javascript:void(0)" 
         class="tag-cloud-item"
         :class="tag.size"
+        @click="handleTagClick(tag.name)"
       >
         {{ tag.name }}
       </a>
