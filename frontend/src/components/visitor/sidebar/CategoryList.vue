@@ -1,5 +1,15 @@
 <script setup>
 import { categories } from '../../../store/blog.js'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const handleCategoryClick = (categoryName) => {
+  router.push({
+    path: '/articles',
+    query: { category: categoryName }
+  })
+}
 </script>
 
 <template>
@@ -7,7 +17,7 @@ import { categories } from '../../../store/blog.js'
     <h3 class="sidebar-title">文章分类</h3>
     <ul class="categories-list">
       <li v-for="category in categories" :key="category.name">
-        <a href="#">
+        <a href="javascript:void(0)" @click="handleCategoryClick(category.name)">
           {{ category.name }}
           <span class="count">{{ category.count }}</span>
         </a>
