@@ -92,6 +92,34 @@ const routes = [
           requiresAuth: true
         }
       },
+      {
+        path: 'articles',
+        component: () => import('../views/admin/ArticlesManagement.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: 'columns',
+        component: () => import('../views/admin/ColumnsManagement.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: 'categories',
+        component: () => import('../views/admin/CategoriesManagement.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: 'tags',
+        component: () => import('../views/admin/TagsManagement.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      },
     ]
   }
 ]
