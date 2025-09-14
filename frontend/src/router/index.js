@@ -11,6 +11,7 @@ import AdminLogin from '../views/admin/Login.vue'
 import AdminDashboard from '../views/admin/Dashboard.vue'
 import AdminLayout from '../layouts/AdminLayout.vue'
 import VisitorLayout from '../layouts/VisitorLayout.vue'
+import ArticleEditor from '../views/admin/ArticleEditor.vue'
 
 const routes = [
   // 前台访客路由
@@ -121,6 +122,24 @@ const routes = [
         }
       },
     ]
+  },
+
+  // 独立文章编辑器路由（不使用AdminLayout）
+  {
+    path: '/editor/drafts/new',
+    name: 'NewArticleEditor',
+    component: ArticleEditor,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
+    path: '/editor/drafts/:id',
+    name: 'DraftArticleEditor',
+    component: ArticleEditor,
+    meta: {
+      requiresAuth: true
+    }
   }
 ]
 

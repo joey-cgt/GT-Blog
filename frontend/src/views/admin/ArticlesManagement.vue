@@ -39,7 +39,10 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import ArticleList from './components/ArticleList.vue'
+
+const router = useRouter()
 
 // 当前激活的标签页
 const activeTab = ref('published')
@@ -155,14 +158,12 @@ const handleDraftPageChange = (page) => {
 
 // 新建文章
 const handleCreate = () => {
-  console.log('新建文章')
-  // 跳转到文章编辑页面
+  router.push('/editor/drafts/new')
 }
 
 // 编辑文章
 const handleEditArticle = (article) => {
-  console.log('编辑文章:', article)
-  // 跳转到文章编辑页面
+  router.push(`/editor/drafts/${article.id}?status=${article.status}`)
 }
 
 // 删除文章

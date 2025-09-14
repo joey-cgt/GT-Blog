@@ -128,25 +128,9 @@
               编辑
             </el-button>
             
-            <el-button
-              v-if="row.status === 'published'"
-              size="small"
-              type="warning"
-              link
-              @click="handleChangeStatus(row, 'draft')"
-            >
-              撤回
-            </el-button>
+
             
-            <el-button
-              v-if="row.status === 'draft'"
-              size="small"
-              type="success"
-              link
-              @click="handleChangeStatus(row, 'published')"
-            >
-              发布
-            </el-button>
+
             
             <el-button
               size="small"

@@ -1,11 +1,11 @@
-<template>
+ <template>
   <div class="admin-dashboard">
     <!-- 操作和统计卡片区域 -->
     <div class="dashboard-main">
       <!-- 左侧操作卡片 -->
       <div class="action-cards">
         <!-- 发布文章卡片 -->
-        <el-card class="action-card publish-card">
+        <el-card class="action-card publish-card" @click="handlePublishArticle">
           <div class="card-content">
             <div class="action-icon">
               <el-icon size="32px"><Notebook /></el-icon>
@@ -209,12 +209,19 @@
 
 <script setup>
 import { ref, onMounted, watch, nextTick, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { Document, Star, View, Top, Collection, Folder, PriceTag, Right, Notebook, Files } from '@element-plus/icons-vue'
 import * as echarts from 'echarts'
 
+const router = useRouter()
 const timeRange = ref('7d')
 const chartRef = ref(null)
 let chartInstance = null
+
+// 发布新文章
+const handlePublishArticle = () => {
+  router.push('/editor/drafts/new')
+}
 
 // 模拟热门文章数据
 const mostViewedArticles = ref([
