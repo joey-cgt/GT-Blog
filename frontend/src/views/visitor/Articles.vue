@@ -4,9 +4,10 @@ import { articles } from '../../store/blog.js'
 import ArticleList from '../../components/visitor/ArticleList.vue'
 import Pagination from '../../components/visitor/Pagination.vue'
 import ArticleFilter from '../../components/visitor/ArticleFilter.vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
+const router = useRouter()
 const currentPage = ref(1)
 const itemsPerPage = 10
 const filterType = ref('all') // all, category, tag
@@ -65,7 +66,7 @@ function handleFilterChange({ type, value }) {
   filterType.value = type
   filterValue.value = value
   currentPage.value = 1
-  
+
   // 更新URL参数
   if (type === 'tag') {
     router.push({
@@ -87,17 +88,20 @@ function handleFilterChange({ type, value }) {
 
 // 监听路由变化，处理URL参数
 watch(() => route.query, (query) => {
-  if (query.tag) {
+  // 只有当URL参数与当前筛选状态不同时才更新
+  if (query.tag && (filterType.value !== 'tag' || filterValue.value !== query.tag)) {
     filterType.value = 'tag'
     filterValue.value = query.tag
-  } else if (query.category) {
+    currentPage.value = 1
+  } else if (query.category && (filterType.value !== 'category' || filterValue.value !== query.category)) {
     filterType.value = 'category'
     filterValue.value = query.category
-  } else {
+    currentPage.value = 1
+  } else if (!query.tag && !query.category && filterType.value !== 'all') {
     filterType.value = 'all'
     filterValue.value = ''
+    currentPage.value = 1
   }
-  currentPage.value = 1
 }, { immediate: true })
 </script>
 
