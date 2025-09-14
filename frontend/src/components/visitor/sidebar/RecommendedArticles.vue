@@ -60,6 +60,7 @@ const handleArticleClick = (articleId) => {
   padding: 12px 0;
   text-align: left;
   list-style-type: none;
+  cursor: pointer;
 }
 
 .popular-list li:last-child {
