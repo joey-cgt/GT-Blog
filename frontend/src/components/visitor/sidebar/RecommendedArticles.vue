@@ -1,5 +1,14 @@
 <script setup>
 import { popularArticles } from '../../../store/blog.js'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const handleArticleClick = (articleId) => {
+  router.push({
+    path: `/article/${articleId}`
+  })
+}
 </script>
 
 <template>
@@ -7,7 +16,7 @@ import { popularArticles } from '../../../store/blog.js'
     <h3 class="sidebar-title">推荐文章</h3>
     <ul class="popular-list">
       <li v-for="article in popularArticles" :key="article.id">
-        <a href="#">
+        <a @click="handleArticleClick(article.id)">
           {{ article.title }}
           <div class="stats">
             <span class="views">{{ article.views }} 阅读</span>
