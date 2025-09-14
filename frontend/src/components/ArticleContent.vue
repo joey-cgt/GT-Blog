@@ -2,14 +2,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { articles } from '../store/blog.js'
-import MarkdownIt from 'markdown-it'
-import hljs from 'highlight.js'
-import 'highlight.js/styles/github.css'
-import katex from 'katex'
-import 'katex/dist/katex.min.css'
-import texmath from 'markdown-it-texmath'
 import Comments from './Comments.vue'
-import 'github-markdown-css'
+import MarkdownRenderer from './MarkdownRenderer.vue'
 
 const route = useRoute()
 const articleId = computed(() => parseInt(route.params.id))
@@ -17,35 +11,8 @@ const article = computed(() => {
   return articles.find(a => a.id === articleId.value) || null
 })
 
-
-
-// 初始化markdown-it实例
-const md = new MarkdownIt({
-  html: true,
-  linkify: true,
-  typographer: true,
-  highlight: function (str, lang) {
-    if (lang && hljs.getLanguage(lang)) {
-      try {
-        return hljs.highlight(str, { language: lang }).value;
-      } catch (__) {}
-    }
-    return ''; // 使用默认的转义
-  }
-})
-
-// 添加数学公式支持
-md.use(texmath, {
-  engine: katex,
-  delimiters: 'dollars',
-  katexOptions: { macros: { "\\RR": "\\mathbb{R}" } }
-});
-
 // 模拟文章内容（实际项目中可能从API获取）
 const content = ref('')
-const renderedContent = computed(() => {
-  return md.render(content.value)
-})
 
 // 点赞功能
 const likeCount = ref(0)
@@ -255,7 +222,7 @@ Web3是一场深刻的社会技术实验。它试图用密码学和分布式系�
       </div>
       
       <!-- 文章内容 -->
-      <div class="article-body markdown-body" v-html="renderedContent"></div>
+      <MarkdownRenderer :content="content" />
     </div>
     <!-- 底部粘性操作栏 -->
     <div class="sticky-action-bar">

@@ -46,7 +46,9 @@
 
       <!-- 右侧预览区 -->
       <div class="preview-panel">
-        <div class="markdown-preview markdown-body" v-html="compiledMarkdown"></div>
+        <div class="markdown-preview">
+          <MarkdownRenderer :content="compiledMarkdown" />
+        </div>
       </div>
     </div>
 
@@ -150,7 +152,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
-import MarkdownIt from 'markdown-it'
+import MarkdownRenderer from '../../components/MarkdownRenderer.vue'
 import 'github-markdown-css/github-markdown.css'
 
 const router = useRouter()
@@ -182,18 +184,9 @@ const publishForm = reactive({
 })
 
 // 初始化markdown-it实例
-const md = new MarkdownIt({
-  html: true,
-  linkify: true,
-  typographer: true,
-  highlight: function (str, lang) {
-    return `<pre class="hljs"><code>${md.utils.escapeHtml(str)}</code></pre>`
-  }
-})
-
-// 实时编译Markdown
+// 实时编译Markdown - 使用MarkdownRenderer组件处理
 const compiledMarkdown = computed(() => {
-  return md.render(articleForm.content || '请输入Markdown内容...')
+  return articleForm.content || '请输入Markdown内容...'
 })
 
 // 加载文章数据（如果是编辑现有文章）
@@ -386,6 +379,7 @@ const loadArticleData = async () => {
     console.error('加载文章失败:', error)
   }
 }
+
 </script>
 
 <style scoped>
@@ -431,7 +425,6 @@ const loadArticleData = async () => {
 .editor-main {
   flex: 1;
   display: flex;
-  height: calc(100vh - 80px);
   overflow: hidden;
 }
 
@@ -459,93 +452,12 @@ const loadArticleData = async () => {
   background: #fafafa;
 }
 
+.markdown-preview {
+    padding: 24px;
+}
+
 .markdown-editor:focus {
   background: #fff;
-}
-
-.markdown-preview {
-  height: 100%;
-  padding: 24px;
-  overflow-y: auto;
-  background: #fff;
-  text-align: left !important;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-.markdown-preview * {
-  text-align: left !important;
-}
-
-/* GitHub Markdown样式增强 */
-.markdown-preview h1,
-.markdown-preview h2,
-.markdown-preview h3,
-.markdown-preview h4,
-.markdown-preview h5,
-.markdown-preview h6 {
-  margin-top: 24px;
-  margin-bottom: 16px;
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.markdown-preview p {
-  margin-bottom: 16px;
-}
-
-.markdown-preview code {
-  padding: 0.2em 0.4em;
-  margin: 0;
-  font-size: 85%;
-  background-color: rgba(175, 184, 193, 0.2);
-  border-radius: 6px;
-  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-}
-
-.markdown-preview pre {
-  padding: 16px;
-  overflow: auto;
-  font-size: 85%;
-  line-height: 1.45;
-  background-color: #f6f8fa;
-  border-radius: 6px;
-  margin-bottom: 16px;
-}
-
-.markdown-preview pre code {
-  padding: 0;
-  background: transparent;
-  border-radius: 0;
-}
-
-.markdown-preview blockquote {
-  padding: 0 1em;
-  color: #57606a;
-  border-left: 0.25em solid #d0d7de;
-  margin: 0 0 16px 0;
-}
-
-.markdown-preview table {
-  border-collapse: collapse;
-  width: 100%;
-  margin-bottom: 16px;
-}
-
-.markdown-preview table th,
-.markdown-preview table td {
-  padding: 6px 13px;
-  border: 1px solid #d0d7de;
-}
-
-.markdown-preview table th {
-  font-weight: 600;
-  background: #f6f8fa;
-}
-
-.markdown-preview img {
-  max-width: 100%;
-  height: auto;
 }
 
 .cover-uploader {
