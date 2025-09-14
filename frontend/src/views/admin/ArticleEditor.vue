@@ -41,6 +41,7 @@
           placeholder="请输入文章内容（支持Markdown语法）"
           class="markdown-editor"
           @input="handleContentInput"
+          @keydown.tab.prevent="handleTabKey"
         ></textarea>
       </div>
 
@@ -380,6 +381,22 @@ const loadArticleData = async () => {
   }
 }
 
+const handleTabKey = (event) => {
+  const textarea = event.target
+  const start = textarea.selectionStart
+  const end = textarea.selectionEnd
+  
+  // 在光标位置插入4个空格
+  articleForm.content = 
+    articleForm.content.substring(0, start) +
+    '    ' + // 4个空格
+    articleForm.content.substring(end)
+  
+  // 设置光标位置
+  nextTick(() => {
+    textarea.selectionStart = textarea.selectionEnd = start + 4
+  })
+}
 </script>
 
 <style scoped>
