@@ -214,6 +214,7 @@ Web3是一场深刻的社会技术实验。它试图用密码学和分布式系�
           <span class="meta-item date">{{ article.date }}</span>
           <span class="meta-item category">{{ article.category }}</span>
           <span class="meta-item views">{{ article.views }} 阅读</span>
+          <span class="meta-item likes">{{ article.likes }} 赞</span>
         </div>
         
         <div class="article-tags">

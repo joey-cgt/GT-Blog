@@ -7,8 +7,8 @@ export const blogInfo = reactive({
   author: 'Joey_Chen',
   avatar: 'https://s21.ax1x.com/2025/09/07/pV2fri6.jpg',
   email:'joycgt@126.com',
-  wechat: 'joey-cgt',
-  description: '这是一个技术博客，专注于前端开发、后端架构和云计算技术的分享。',
+  wechat: 'joycgt',
+  description: '让学习成为一种习惯',
   socialLinks: [
     { name: 'GitHub', icon: 'github', url: 'https://github.com/joey-cgt' },
     { name: '稀土掘金', icon: 'weibo', url: 'https://juejin.cn/user/2522755752011596/posts' },
@@ -25,7 +25,8 @@ export const articles = reactive([
     date: '2025-09-05',
     category: '前端开发',
     tags: ['Vue3', 'JavaScript', '前端框架'],
-    views: 1250
+    views: 1250,
+    likes: 100
   },
   {
     id: 2,
@@ -45,7 +46,8 @@ export const articles = reactive([
     date: '2025-09-01',
     category: '后端架构',
     tags: ['微服务', '系统设计', '架构'],
-    views: 1560
+    views: 1560,
+    likes: 100
   },
   {
     id: 4,
@@ -55,7 +57,8 @@ export const articles = reactive([
     date: '2025-08-28',
     category: 'DevOps',
     tags: ['Docker', '容器化', 'CI/CD'],
-    views: 1120
+    views: 1120,
+    likes: 100
   },
   {
     id: 5,
@@ -65,7 +68,8 @@ export const articles = reactive([
     date: '2025-08-25',
     category: '前端开发',
     tags: ['React', 'Vue', '框架对比'],
-    views: 2100
+    views: 2100,
+    likes: 100
   },
   {
     id: 6,
@@ -75,7 +79,8 @@ export const articles = reactive([
     date: '2025-08-20',
     category: '后端架构',
     tags: ['Node.js', '性能优化', 'JavaScript'],
-    views: 890
+    views: 890,
+    likes: 100
   },
   {
     id: 7,
@@ -85,7 +90,8 @@ export const articles = reactive([
     date: '2025-08-18',
     category: '前端开发',
     tags: ['Webpack', '构建工具', '前端工程化'],
-    views: 1020
+    views: 1020,
+    likes: 100
   },
   {
     id: 8,
@@ -95,7 +101,8 @@ export const articles = reactive([
     date: '2025-08-15',
     category: '数据库',
     tags: ['MySQL', '数据库', '索引优化'],
-    views: 1350
+    views: 1350,
+    likes: 100
   },
   {
     id: 9,
@@ -105,7 +112,8 @@ export const articles = reactive([
     date: '2025-08-12',
     category: 'DevOps',
     tags: ['Git', '版本控制', '团队协作'],
-    views: 780
+    views: 780,
+    likes: 100
   },
   {
     id: 10,
@@ -115,7 +123,8 @@ export const articles = reactive([
     date: '2025-08-10',
     category: '前端开发',
     tags: ['CSS', 'Grid布局', '响应式设计'],
-    views: 950
+    views: 950,
+    likes: 100
   },
   {
     id: 11,
@@ -125,7 +134,8 @@ export const articles = reactive([
     date: '2025-08-08',
     category: '后端架构',
     tags: ['RESTful', 'API设计', '后端开发'],
-    views: 1100
+    views: 1100,
+    likes: 100
   },
   {
     id: 12,
@@ -135,7 +145,8 @@ export const articles = reactive([
     date: '2025-08-05',
     category: '前端开发',
     tags: ['Web安全', 'XSS', 'CSRF'],
-    views: 870
+    views: 870,
+    likes: 100
   },
   {
     id: 13,
@@ -145,7 +156,8 @@ export const articles = reactive([
     date: '2025-08-03',
     category: 'DevOps',
     tags: ['Docker', 'Compose', '容器编排'],
-    views: 980
+    views: 980,
+    likes: 100
   },
   {
     id: 14,
@@ -155,7 +167,8 @@ export const articles = reactive([
     date: '2025-08-01',
     category: '编程语言',
     tags: ['JavaScript', '异步编程', 'Promise'],
-    views: 1250
+    views: 1250,
+    likes: 100
   },
   {
     id: 15,
@@ -165,7 +178,8 @@ export const articles = reactive([
     date: '2025-07-28',
     category: '前端开发',
     tags: ['React', 'Hooks', '函数式组件'],
-    views: 1450
+    views: 1450,
+    likes: 100
   }
 ])
 
