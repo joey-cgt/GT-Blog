@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { articles } from '../store/blog.js'
+import { articles } from '../../store/blog.js'
 import Comments from './Comments.vue'
-import MarkdownRenderer from './MarkdownRenderer.vue'
+import MarkdownRenderer from '../common/MarkdownRenderer.vue'
 
 const route = useRoute()
 const articleId = computed(() => parseInt(route.params.id))

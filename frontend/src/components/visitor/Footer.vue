@@ -1,5 +1,5 @@
 <script setup>
-import { blogInfo } from '../store/blog.js'
+import { blogInfo } from '../../store/blog.js'
 </script>
 
 <template>
@@ -45,6 +45,10 @@ import { blogInfo } from '../store/blog.js'
   background-color: #2c3e50;
   color: #ecf0f1;
   padding: 60px 0 20px;
+}
+
+.footer-section li {
+  list-style-type: none;
 }
 
 .footer-container {

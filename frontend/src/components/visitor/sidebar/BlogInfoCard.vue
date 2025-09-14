@@ -1,7 +1,7 @@
 <script setup>
 // 这里需要从API获取博客统计信息
 // 暂时使用模拟数据
-import { blogInfo } from '../../store/blog.js'
+import { blogInfo } from '../../../store/blog.js'
 
 const blogStats = {
   totalArticles: 156,

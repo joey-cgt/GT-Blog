@@ -1,10 +1,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { columns, articles } from '../store/blog.js'
-import ColumnCard from '../components/ColumnCard.vue'
-import ArticleList from '../components/ArticleList.vue'
-import Pagination from '../components/Pagination.vue'
+import { columns, articles } from '../../store/blog.js'
+import ColumnCard from '../ColumnCard.vue'
+import ArticleList from '../ArticleList.vue'
+import Pagination from '../Pagination.vue'
 
 const route = useRoute()
 const columnId = computed(() => parseInt(route.params.id))

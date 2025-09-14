@@ -1,5 +1,5 @@
 <script setup>
-import { categories } from '../../store/blog.js'
+import { categories } from '../../../store/blog.js'
 </script>
 
 <template>
@@ -46,6 +46,7 @@ import { categories } from '../../store/blog.js'
 .categories-list li {
   border-bottom: 1px solid #eee;
   padding: 10px 0;
+  list-style-type: none;
 }
 
 .categories-list li:last-child {

@@ -1,6 +1,6 @@
 <script setup>
 import { computed } from 'vue'
-import { articles, popularArticles } from '../store/blog.js'
+import { articles, popularArticles } from '../../store/blog.js'
 import ArticleCard from './ArticleCard.vue'
 
 const props = defineProps({

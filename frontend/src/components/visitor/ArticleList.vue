@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { articles } from '../store/blog.js'
+import { articles } from '../../store/blog.js'
 
 const router = useRouter()
 

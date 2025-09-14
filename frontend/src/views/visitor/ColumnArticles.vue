@@ -2,9 +2,9 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { columns, articles } from '../../store/blog.js'
-import ColumnCard from '../../components/ColumnCard.vue'
-import ArticleList from '../../components/ArticleList.vue'
-import Pagination from '../../components/Pagination.vue'
+import ColumnCard from '../../components/visitor/ColumnCard.vue'
+import ArticleList from '../../components/visitor/ArticleList.vue'
+import Pagination from '../../components/visitor/Pagination.vue'
 
 const route = useRoute()
 const columnId = computed(() => parseInt(route.params.id))

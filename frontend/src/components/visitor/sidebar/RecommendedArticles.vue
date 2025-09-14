@@ -1,5 +1,5 @@
 <script setup>
-import { popularArticles } from '../../store/blog.js'
+import { popularArticles } from '../../../store/blog.js'
 </script>
 
 <template>

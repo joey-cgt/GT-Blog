@@ -1,5 +1,5 @@
 <script setup>
-import { columns } from '../../store/blog.js'
+import { columns } from '../../../store/blog.js'
 </script>
 
 <template>
@@ -46,6 +46,7 @@ import { columns } from '../../store/blog.js'
 .columns-list li {
   border-bottom: 1px solid #eee;
   padding: 10px 0;
+  list-style-type: none;
 }
 
 .columns-list li:last-child {

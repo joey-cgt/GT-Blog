@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { articles } from '../store/blog.js'
+import { articles } from '../../store/blog.js'
 
 const props = defineProps({
   filterType: {

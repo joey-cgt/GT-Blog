@@ -153,7 +153,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
-import MarkdownRenderer from '../../components/MarkdownRenderer.vue'
+import MarkdownRenderer from '../../components/common/MarkdownRenderer.vue'
 import 'github-markdown-css/github-markdown.css'
 
 const router = useRouter()

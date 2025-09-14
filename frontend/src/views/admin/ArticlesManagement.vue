@@ -40,7 +40,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import ArticleList from './components/ArticleList.vue'
+import ArticleList from '../../components/admin/ArticleList.vue'
 
 const router = useRouter()
 const route = useRoute()

@@ -1,9 +1,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { articles } from '../../store/blog.js'
-import ArticleList from '../../components/ArticleList.vue'
-import Pagination from '../../components/Pagination.vue'
-import ArticleFilter from '../../components/ArticleFilter.vue'
+import ArticleList from '../../components/visitor/ArticleList.vue'
+import Pagination from '../../components/visitor/Pagination.vue'
+import ArticleFilter from '../../components/visitor/ArticleFilter.vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()

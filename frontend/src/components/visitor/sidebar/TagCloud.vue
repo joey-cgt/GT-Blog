@@ -1,5 +1,5 @@
 <script setup>
-import { tags } from '../../store/blog.js'
+import { tags } from '../../../store/blog.js'
 </script>
 
 <template>

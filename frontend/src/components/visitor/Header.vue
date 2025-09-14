@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { blogInfo } from '../store/blog.js'
+import { blogInfo } from '../../store/blog.js'
 import { useRoute } from 'vue-router'
 
 // 移动端菜单状态
@@ -60,6 +60,10 @@ const isRouteActive = (path) => {
   position: sticky;
   top: 0;
   z-index: 1000;
+}
+
+.header li {
+  list-style-type: none;
 }
 
 .header-container {
