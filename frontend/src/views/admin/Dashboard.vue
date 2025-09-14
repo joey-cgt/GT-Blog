@@ -18,7 +18,7 @@
         </el-card>
 
         <!-- 草稿箱卡片 -->
-        <el-card class="action-card draft-card">
+        <el-card class="action-card draft-card" @click="handleDraftArticle">
           <div class="card-content">
             <div class="action-icon">
               <el-icon size="32px"><Files /></el-icon>
@@ -37,7 +37,7 @@
       <!-- 右侧统计卡片 -->
       <div class="stats-cards">
       <!-- 文章数量卡片 -->
-        <el-card class="stat-card">
+        <el-card class="stat-card link-info" @click="handleViewArticle">
             <div class="card-content">
             <div class="stat-icon">
                 <el-icon size="24px"><Document /></el-icon>
@@ -221,6 +221,14 @@ let chartInstance = null
 // 发布新文章
 const handlePublishArticle = () => {
   router.push('/editor/drafts/new')
+}
+
+const handleDraftArticle = () => {
+  router.push('/admin/articles?tab=drafts')
+}
+
+const handleViewArticle = () => {
+  router.push('/admin/articles?tab=published')
 }
 
 // 模拟热门文章数据
@@ -624,6 +632,13 @@ onUnmounted(() => {
 .stat-card {
   position: relative;
   border-radius: 8px;
+}
+
+.stat-card.link-info {
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
 }
 
 .card-content {

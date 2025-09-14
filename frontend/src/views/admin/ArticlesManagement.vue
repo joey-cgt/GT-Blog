@@ -39,10 +39,11 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import ArticleList from './components/ArticleList.vue'
 
 const router = useRouter()
+const route = useRoute()
 
 // 当前激活的标签页
 const activeTab = ref('published')
@@ -129,6 +130,10 @@ const draftPagination = ref({
 
 // 页面加载时获取数据
 onMounted(() => {
+  // 根据查询参数设置激活的标签页
+  if (route.query.tab === 'drafts') {
+    activeTab.value = 'drafts'
+  }
   loadArticles()
 })
 
