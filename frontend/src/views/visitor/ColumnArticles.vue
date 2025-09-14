@@ -1,11 +1,12 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { columns, articles } from '../../store/blog.js'
 import ColumnCard from '../../components/visitor/ColumnCard.vue'
 import ArticleList from '../../components/visitor/ArticleList.vue'
 import Pagination from '../../components/visitor/Pagination.vue'
 
+const router = useRouter()
 const route = useRoute()
 const columnId = computed(() => parseInt(route.params.id))
 const loading = ref(true)
@@ -68,7 +69,7 @@ onMounted(() => {
     <div v-else-if="!currentColumn" class="not-found">
       <h2>未找到该专栏</h2>
       <p>您访问的专栏不存在或已被删除</p>
-      <router-link to="/columns" class="back-link">返回专栏列表</router-link>
+      <router-link to="/columns" class="back-link" >返回专栏列表</router-link>
     </div>
     
     <!-- 专栏内容 -->
@@ -78,7 +79,10 @@ onMounted(() => {
       
       <!-- 文章列表 -->
       <div class="articles-section">
-        <h2 class="section-title">文章列表</h2>
+        <div class="section-header">
+          <h2 class="section-title">文章列表</h2>
+          <router-link to="/columns" class="back-link">返回专栏列表</router-link>
+        </div>
         
         <div v-if="columnArticles.length === 0" class="no-articles">
           <p>该专栏暂无文章</p>
@@ -151,9 +155,22 @@ onMounted(() => {
   background-color: #2980b9;
 }
 
+.section-header .back-link {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 5px 10px;
+  background-color: #3498db;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.section-header .back-link:hover {
+  background-color: #2980b9;
+}
+
 /* 专栏头部 */
-
-
 .column-info {
   display: flex;
   gap: 30px;
@@ -196,16 +213,40 @@ onMounted(() => {
 
 /* 文章列表部分 */
 .articles-section {
-  margin-top: 40px;
+  margin-top: 10px;
 }
 
 .section-title {
   font-size: 22px;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 2px solid #f0f0f0;
+  margin: 20px 0;
+  /* padding-bottom: 10px; */
+  border-bottom: 4px solid #e6e6e6;
   color: #2c3e50;
 }
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-header a {
+  font-size: 14px;
+  margin: 20px 0;
+  /* padding-bottom: 10px; */
+  border: 1px solid #3498db;
+  color:#3498db;
+  border-radius: 4px;
+  transition: all 0.3s;
+  padding: 5px;
+}
+
+.section-header a:hover {
+  background-color: #3498db;
+  color: white;
+  cursor: pointer;
+}
+
+
 
 .no-articles {
   text-align: center;

@@ -45,12 +45,6 @@ const navigateToColumn = () => {
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
-.column-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-  background: linear-gradient(135deg, #f1f3f5 0%, #ffffff 100%);
-}
-
 .column-cover {
   flex: 0 0 200px;
 }

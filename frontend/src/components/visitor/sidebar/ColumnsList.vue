@@ -1,13 +1,22 @@
 <script setup>
+import { useRouter } from 'vue-router'
 import { columns } from '../../../store/blog.js'
+
+const router = useRouter()
+
+const handleColumnClick = (id) => {
+  router.push(`/columns/${id}`)
+}
+
 </script>
+
 
 <template>
   <section class="sidebar-section columns-section">
     <h3 class="sidebar-title">专栏</h3>
     <ul class="columns-list">
-      <li v-for="column in columns" :key="column.title">
-        <a href="#">
+      <li v-for="column in columns" :key="column.id">
+        <a @click="handleColumnClick(column.id)">
           {{ column.title }}
           <span class="count">{{ column.articleCount }}</span>
         </a>
@@ -47,6 +56,7 @@ import { columns } from '../../../store/blog.js'
   border-bottom: 1px solid #eee;
   padding: 10px 0;
   list-style-type: none;
+  cursor: pointer;
 }
 
 .columns-list li:last-child {

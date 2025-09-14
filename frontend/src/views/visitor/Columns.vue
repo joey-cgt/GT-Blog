@@ -20,6 +20,12 @@ import ColumnCard from '../../components/visitor/ColumnCard.vue'
   padding: 0 0 20px;
 }
 
+.columns-page .column-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  background: linear-gradient(135deg, #f1f3f5 0%, #ffffff 100%);
+}
+
 .columns-list {
   display: flex;
   flex-direction: column;
