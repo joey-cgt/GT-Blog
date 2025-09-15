@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue'
-import { articles } from '../../store/blog.js'
+import { articles, tags } from '../../store/blog.js'
 
 const props = defineProps({
   filterType: {
@@ -29,11 +29,7 @@ const allCategories = computed(() => {
 })
 
 const allTags = computed(() => {
-  const tagSet = new Set()
-  articles.forEach(article => {
-    article.tags.forEach(tag => tagSet.add(tag))
-  })
-  return Array.from(tagSet)
+  return tags.map(tag => ({ id: tag.id, name: tag.name }))
 })
 
 // 显示的分类和标签（控制展开收起）
@@ -99,11 +95,11 @@ function toggleTagExpand() {
       <div class="filter-items">
         <button 
           v-for="tag in displayedTags" 
-          :key="tag"
-          :class="['filter-button', { active: filterType === 'tag' && filterValue === tag }]"
-          @click="handleFilter('tag', tag)"
+          :key="tag.id"
+          :class="['filter-button', { active: filterType === 'tag' && filterValue === tag.id.toString() }]"
+          @click="handleFilter('tag', tag.id.toString())"
         >
-          {{ tag }}
+          {{ tag.name }}
         </button>
       </div>
       <button 

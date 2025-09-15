@@ -1,4 +1,4 @@
-<template>
+ <template>
   <div class="tags-management">
     <div class="page-header">
       <h2 class="page-title">标签管理</h2>
@@ -76,7 +76,7 @@
       title="管理标签"
       width="700px"
     >
-      <el-table :data="tags" stripe>
+      <el-table :data="paginatedTags" stripe>
         <el-table-column prop="name" label="标签名称" min-width="120" />
         <el-table-column prop="articleCount" label="文章数量" width="100" align="center">
           <template #default="{ row }">
@@ -96,6 +96,19 @@
           </template>
         </el-table-column>
       </el-table>
+      
+      <!-- 分页组件 -->
+      <div class="pagination-container">
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :total="tags.length"
+          :page-sizes="[10, 20, 50, 100]"
+          layout="total, sizes, prev, pager, next, jumper"
+          @current-change="handlePageChange"
+          @size-change="handlePageChange"
+        />
+      </div>
       
       <template #footer>
         <span class="dialog-footer">
@@ -149,7 +162,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -162,6 +175,10 @@ const manageDialogVisible = ref(false)
 const editDialogVisible = ref(false)
 const formLoading = ref(false)
 const editingTag = ref(null)
+
+// 分页相关
+const currentPage = ref(1)
+const pageSize = ref(10)
 
 // 表单数据
 const tagForm = ref({
@@ -218,6 +235,19 @@ const openCreateDialog = () => {
 // 打开管理标签对话框
 const openManageDialog = () => {
   manageDialogVisible.value = true
+  currentPage.value = 1 // 重置到第一页
+}
+
+// 分页数据
+const paginatedTags = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  return tags.value.slice(start, end)
+})
+
+// 处理页码变化
+const handlePageChange = (page) => {
+  currentPage.value = page
 }
 
 // 编辑标签
@@ -452,5 +482,12 @@ const handleTagClick = (tag) => {
     padding: 6px 12px;
     font-size: 12px;
   }
+}
+
+/* 分页样式 */
+.pagination-container {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
 }
 </style>

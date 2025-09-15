@@ -242,18 +242,18 @@ export const columns = reactive([
 
 // 标签云
 export const tags = reactive([
-  { name: 'JavaScript', size: 'large', count: 42 },
-  { name: 'Vue', size: 'large', count: 38 },
-  { name: 'React', size: 'medium', count: 25 },
-  { name: 'TypeScript', size: 'large', count: 30 },
-  { name: 'Node.js', size: 'medium', count: 22 },
-  { name: 'Docker', size: 'medium', count: 18 },
-  { name: 'Kubernetes', size: 'small', count: 12 },
-  { name: 'MongoDB', size: 'small', count: 15 },
-  { name: 'MySQL', size: 'medium', count: 20 },
-  { name: 'Python', size: 'small', count: 16 },
-  { name: 'Go', size: 'small', count: 10 },
-  { name: 'Redis', size: 'small', count: 8 }
+  { id: 1, name: 'JavaScript', size: 'large', count: 42 },
+  { id: 2, name: 'Vue', size: 'large', count: 38 },
+  { id: 3, name: 'React', size: 'medium', count: 25 },
+  { id: 4, name: 'TypeScript', size: 'large', count: 30 },
+  { id: 5, name: 'Node.js', size: 'medium', count: 22 },
+  { id: 6, name: 'Docker', size: 'medium', count: 18 },
+  { id: 7, name: 'Kubernetes', size: 'small', count: 12 },
+  { id: 8, name: 'MongoDB', size: 'small', count: 15 },
+  { id: 9, name: 'MySQL', size: 'medium', count: 20 },
+  { id: 10, name: 'Python', size: 'small', count: 16 },
+  { id: 11, name: 'Go', size: 'small', count: 10 },
+  { id: 12, name: 'Redis', size: 'small', count: 8 }
 ])
 
 // 热门文章

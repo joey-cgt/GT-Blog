@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { articles } from '../../store/blog.js'
+import { articles, tags } from '../../store/blog.js'
 import ArticleList from '../../components/visitor/ArticleList.vue'
 import Pagination from '../../components/visitor/Pagination.vue'
 import ArticleFilter from '../../components/visitor/ArticleFilter.vue'
@@ -15,9 +15,9 @@ const filterValue = ref('')
 
 // 监听路由参数变化
 watch(() => route.query, (newQuery) => {
-  if (newQuery.tag) {
+  if (newQuery.tagId) {
     filterType.value = 'tag'
-    filterValue.value = newQuery.tag
+    filterValue.value = newQuery.tagId
   } else if (newQuery.categoryId) {
     filterType.value = 'category'
     filterValue.value = newQuery.categoryId
@@ -30,9 +30,9 @@ watch(() => route.query, (newQuery) => {
 
 // 初始化时检查URL参数
 onMounted(() => {
-  if (route.query.tag) {
+  if (route.query.tagId) {
     filterType.value = 'tag'
-    filterValue.value = route.query.tag
+    filterValue.value = route.query.tagId
   } else if (route.query.categoryId) {
     filterType.value = 'category'
     filterValue.value = route.query.categoryId
@@ -46,7 +46,11 @@ const displayedArticles = computed(() => {
   if (filterType.value === 'category' && filterValue.value) {
     filtered = filtered.filter(article => article.categoryId === Number(filterValue.value))
   } else if (filterType.value === 'tag' && filterValue.value) {
-    filtered = filtered.filter(article => article.tags.includes(filterValue.value))
+    // 根据tagId找到对应的标签名称
+    const tag = tags.find(t => t.id === Number(filterValue.value))
+    if (tag) {
+      filtered = filtered.filter(article => article.tags.includes(tag.name))
+    }
   }
   
   // 按时间从近到远排序
@@ -71,7 +75,7 @@ function handleFilterChange({ type, value }) {
   if (type === 'tag') {
     router.push({
       path: '/articles',
-      query: { tag: value }
+      query: { tagId: value }
     })
   } else if (type === 'category') {
     router.push({
@@ -89,15 +93,15 @@ function handleFilterChange({ type, value }) {
 // 监听路由变化，处理URL参数
 watch(() => route.query, (query) => {
   // 只有当URL参数与当前筛选状态不同时才更新
-  if (query.tag && (filterType.value !== 'tag' || filterValue.value !== query.tag)) {
+  if (query.tagId && (filterType.value !== 'tag' || filterValue.value !== query.tagId)) {
     filterType.value = 'tag'
-    filterValue.value = query.tag
+    filterValue.value = query.tagId
     currentPage.value = 1
   } else if (query.categoryId && (filterType.value !== 'category' || filterValue.value !== query.categoryId)) {
     filterType.value = 'category'
     filterValue.value = query.categoryId
     currentPage.value = 1
-  } else if (!query.tag && !query.categoryId && filterType.value !== 'all') {
+  } else if (!query.tagId && !query.categoryId && filterType.value !== 'all') {
     filterType.value = 'all'
     filterValue.value = ''
     currentPage.value = 1
