@@ -54,8 +54,14 @@
         </div>
         <div class="setting-item">
           <span class="label">关于我</span>
-          <el-input v-model="about" placeholder="请输入关于我的Markdown内容" type="textarea" :rows="5" style="width: 500px; height: 100px; resize: none;" @input="handleAboutInput" />
+          <el-input v-model="about" placeholder="请输入关于我的Markdown内容" type="textarea" :rows="5" style="width: 500px; resize: none;" @input="handleAboutInput" />
         </div>
+        <div class="setting-item">
+          <span class="label">关于博客</span>
+          <el-input v-model="blogAbout" placeholder="请输入博客简介" type="textarea" :rows="3" style="width: 500px; resize: none;" @input="handleBlogAboutInput" />
+        </div>
+        
+        
       </div>
       <div class="preview-about">
         <h3>"关于我"预览</h3>
@@ -75,6 +81,7 @@ const bio = ref('')
 const email = ref('')
 const wechat = ref('')
 const about = ref('')
+const blogAbout = ref('')
 const avatarUrl = ref('')
 
 const beforeAvatarUpload = (file) => {
@@ -112,6 +119,11 @@ const socialMedia = ref([
 const handleAboutInput = () => {
   // 输入时触发更新，确保实时渲染
   // about ref 已经通过 v-model 更新，这里主要是确保响应性
+}
+
+const handleBlogAboutInput = () => {
+  // 输入时触发更新，确保实时渲染
+  // blogAbout ref 已经通过 v-model 更新，这里主要是确保响应性
 }
 
 const handleUpdateInfo = async () => {
@@ -195,7 +207,7 @@ const handleUpdateInfo = async () => {
 .setting-item {
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 16px; 
 }
 
 .setting-item .label {
