@@ -24,6 +24,7 @@ export const articles = reactive([
     summary: 'Vue3的组合式API（Composition API）是Vue3最重要的特性之一，它提供了一种更灵活的方式来组织组件逻辑...',
     date: '2025-09-05',
     category: '前端开发',
+    categoryId: 1,
     tags: ['Vue3', 'JavaScript', '前端框架'],
     views: 1250,
     likes: 100
@@ -35,6 +36,7 @@ export const articles = reactive([
     summary: 'TypeScript的类型系统非常强大，本文将深入探讨条件类型、映射类型、类型守卫等高级特性的使用方法...',
     date: '2025-09-03',
     category: '编程语言',
+    categoryId: 4,
     tags: ['TypeScript', 'JavaScript', '类型系统'],
     views: 980
   },
@@ -45,6 +47,7 @@ export const articles = reactive([
     summary: '本文分享了在大型项目中实施微服务架构的经验，包括服务拆分、通信方式选择、数据一致性保证等关键问题的解决方案...',
     date: '2025-09-01',
     category: '后端架构',
+    categoryId: 2,
     tags: ['微服务', '系统设计', '架构'],
     views: 1560,
     likes: 100
@@ -56,6 +59,7 @@ export const articles = reactive([
     summary: '容器化技术已成为现代应用部署的标准方式，本文将介绍如何使用Docker高效部署和管理你的应用...',
     date: '2025-08-28',
     category: 'DevOps',
+    categoryId: 3,
     tags: ['Docker', '容器化', 'CI/CD'],
     views: 1120,
     likes: 100
@@ -67,6 +71,7 @@ export const articles = reactive([
     summary: '在前端框架选型时，React和Vue常常是主要的候选者。本文从多个维度对比这两个框架，帮助你做出更明智的技术选择...',
     date: '2025-08-25',
     category: '前端开发',
+    categoryId: 1,
     tags: ['React', 'Vue', '框架对比'],
     views: 2100,
     likes: 100
@@ -78,6 +83,7 @@ export const articles = reactive([
     summary: 'Node.js作为高性能的JavaScript运行时，性能优化至关重要。本文分享Node.js应用性能优化的实用技巧和最佳实践...',
     date: '2025-08-20',
     category: '后端架构',
+    categoryId: 2,
     tags: ['Node.js', '性能优化', 'JavaScript'],
     views: 890,
     likes: 100
@@ -89,6 +95,7 @@ export const articles = reactive([
     summary: 'Webpack 5带来了许多新特性和改进，本文将详细介绍Webpack 5的配置方法和优化技巧，帮助你构建更高效的前端项目...',
     date: '2025-08-18',
     category: '前端开发',
+    categoryId: 1,
     tags: ['Webpack', '构建工具', '前端工程化'],
     views: 1020,
     likes: 100
@@ -100,6 +107,7 @@ export const articles = reactive([
     summary: '数据库索引是提升查询性能的关键技术。本文深入探讨MySQL索引的工作原理，并分享实际项目中的索引优化实践经验...',
     date: '2025-08-15',
     category: '数据库',
+    categoryId: 5,
     tags: ['MySQL', '数据库', '索引优化'],
     views: 1350,
     likes: 100
@@ -111,6 +119,7 @@ export const articles = reactive([
     summary: 'Git是现代软件开发中不可或缺的版本控制工具。本文分享Git的高级使用技巧和团队协作中的最佳实践...',
     date: '2025-08-12',
     category: 'DevOps',
+    categoryId: 3,
     tags: ['Git', '版本控制', '团队协作'],
     views: 780,
     likes: 100
@@ -122,6 +131,7 @@ export const articles = reactive([
     summary: 'CSS Grid是强大的二维布局系统，本文将通过实际案例展示如何使用CSS Grid创建复杂而响应式的网页布局...',
     date: '2025-08-10',
     category: '前端开发',
+    categoryId: 1,
     tags: ['CSS', 'Grid布局', '响应式设计'],
     views: 950,
     likes: 100
@@ -133,6 +143,7 @@ export const articles = reactive([
     summary: '良好的API设计是构建可维护后端服务的基础。本文详细介绍RESTful API的设计原则、最佳实践和常见陷阱...',
     date: '2025-08-08',
     category: '后端架构',
+    categoryId: 2,
     tags: ['RESTful', 'API设计', '后端开发'],
     views: 1100,
     likes: 100
@@ -144,6 +155,7 @@ export const articles = reactive([
     summary: 'Web应用安全是每个开发者都需要重视的问题。本文介绍常见的前端安全漏洞和防护措施，帮助构建更安全的Web应用...',
     date: '2025-08-05',
     category: '前端开发',
+    categoryId: 1,
     tags: ['Web安全', 'XSS', 'CSRF'],
     views: 870,
     likes: 100
@@ -155,6 +167,7 @@ export const articles = reactive([
     summary: 'Docker Compose简化了多容器应用的部署和管理。本文通过实际案例演示如何使用Docker Compose编排复杂的应用环境...',
     date: '2025-08-03',
     category: 'DevOps',
+    categoryId: 3,
     tags: ['Docker', 'Compose', '容器编排'],
     views: 980,
     likes: 100
@@ -166,6 +179,7 @@ export const articles = reactive([
     summary: '异步编程是JavaScript的核心特性之一。本文深入探讨Promise、async/await等异步编程模式的使用方法和最佳实践...',
     date: '2025-08-01',
     category: '编程语言',
+    categoryId: 4,
     tags: ['JavaScript', '异步编程', 'Promise'],
     views: 1250,
     likes: 100
@@ -177,6 +191,7 @@ export const articles = reactive([
     summary: 'React Hooks彻底改变了React组件的编写方式。本文分析Hooks的工作原理，并分享在实际项目中的使用经验和最佳实践...',
     date: '2025-07-28',
     category: '前端开发',
+    categoryId: 1,
     tags: ['React', 'Hooks', '函数式组件'],
     views: 1450,
     likes: 100
@@ -185,13 +200,13 @@ export const articles = reactive([
 
 // 分类列表
 export const categories = reactive([
-  { name: '前端开发', count: 28 },
-  { name: '后端架构', count: 16 },
-  { name: 'DevOps', count: 12 },
-  { name: '编程语言', count: 22 },
-  { name: '数据库', count: 9 },
-  { name: '云计算', count: 14 },
-  { name: '人工智能', count: 7 }
+  { id: 1, name: '前端开发', count: 28 },
+  { id: 2, name: '后端架构', count: 16 },
+  { id: 3, name: 'DevOps', count: 12 },
+  { id: 4, name: '编程语言', count: 22 },
+  { id: 5, name: '数据库', count: 9 },
+  { id: 6, name: '云计算', count: 14 },
+  { id: 7, name: '人工智能', count: 7 }
 ])
 
 // 专栏列表
@@ -250,6 +265,7 @@ export const popularArticles = reactive([
     summary: 'Vue3的组合式API（Composition API）是Vue3最重要的特性之一，它提供了一种更灵活的方式来组织组件逻辑...',
     date: '2025-09-05',
     category: '前端开发',
+    categoryId: 1,
     tags: ['Vue3', 'JavaScript', '前端框架'],
     views: 1250,
     likes: 89
@@ -261,6 +277,7 @@ export const popularArticles = reactive([
     summary: 'TypeScript的类型系统非常强大，本文将深入探讨条件类型、映射类型、类型守卫等高级特性的使用方法...',
     date: '2025-09-03',
     category: '编程语言',
+    categoryId: 4,
     tags: ['TypeScript', 'JavaScript', '类型系统'],
     views: 980,
     likes: 76
@@ -272,6 +289,7 @@ export const popularArticles = reactive([
     summary: '本文分享了在大型项目中实施微服务架构的经验，包括服务拆分、通信方式选择、数据一致性保证等关键问题的解决方案...',
     date: '2025-09-01',
     category: '后端架构',
+    categoryId: 2,
     tags: ['微服务', '系统设计', '架构'],
     views: 1560,
     likes: 112

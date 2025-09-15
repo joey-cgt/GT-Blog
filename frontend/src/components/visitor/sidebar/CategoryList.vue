@@ -4,10 +4,10 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const handleCategoryClick = (categoryName) => {
+const handleCategoryClick = (categoryId) => {
   router.push({
     path: '/articles',
-    query: { category: categoryName }
+    query: { categoryId: categoryId }
   })
 }
 </script>
@@ -17,7 +17,7 @@ const handleCategoryClick = (categoryName) => {
     <h3 class="sidebar-title">文章分类</h3>
     <ul class="categories-list">
       <li v-for="category in categories" :key="category.name">
-        <a href="javascript:void(0)" @click="handleCategoryClick(category.name)">
+        <a href="javascript:void(0)" @click="handleCategoryClick(category.id)">
           {{ category.name }}
           <span class="count">{{ category.count }}</span>
         </a>

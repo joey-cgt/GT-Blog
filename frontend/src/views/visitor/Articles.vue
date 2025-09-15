@@ -18,9 +18,9 @@ watch(() => route.query, (newQuery) => {
   if (newQuery.tag) {
     filterType.value = 'tag'
     filterValue.value = newQuery.tag
-  } else if (newQuery.category) {
+  } else if (newQuery.categoryId) {
     filterType.value = 'category'
-    filterValue.value = newQuery.category
+    filterValue.value = newQuery.categoryId
   } else {
     filterType.value = 'all'
     filterValue.value = ''
@@ -33,9 +33,9 @@ onMounted(() => {
   if (route.query.tag) {
     filterType.value = 'tag'
     filterValue.value = route.query.tag
-  } else if (route.query.category) {
+  } else if (route.query.categoryId) {
     filterType.value = 'category'
-    filterValue.value = route.query.category
+    filterValue.value = route.query.categoryId
   }
 })
 
@@ -44,7 +44,7 @@ const displayedArticles = computed(() => {
   let filtered = [...articles]
   
   if (filterType.value === 'category' && filterValue.value) {
-    filtered = filtered.filter(article => article.category === filterValue.value)
+    filtered = filtered.filter(article => article.categoryId === Number(filterValue.value))
   } else if (filterType.value === 'tag' && filterValue.value) {
     filtered = filtered.filter(article => article.tags.includes(filterValue.value))
   }
@@ -76,7 +76,7 @@ function handleFilterChange({ type, value }) {
   } else if (type === 'category') {
     router.push({
       path: '/articles',
-      query: { category: value }
+      query: { categoryId: value }
     })
   } else {
     router.push({
@@ -93,11 +93,11 @@ watch(() => route.query, (query) => {
     filterType.value = 'tag'
     filterValue.value = query.tag
     currentPage.value = 1
-  } else if (query.category && (filterType.value !== 'category' || filterValue.value !== query.category)) {
+  } else if (query.categoryId && (filterType.value !== 'category' || filterValue.value !== query.categoryId)) {
     filterType.value = 'category'
-    filterValue.value = query.category
+    filterValue.value = query.categoryId
     currentPage.value = 1
-  } else if (!query.tag && !query.category && filterType.value !== 'all') {
+  } else if (!query.tag && !query.categoryId && filterType.value !== 'all') {
     filterType.value = 'all'
     filterValue.value = ''
     currentPage.value = 1

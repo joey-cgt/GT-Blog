@@ -21,7 +21,11 @@ const tagExpanded = ref(false)
 
 // 获取所有分类和标签
 const allCategories = computed(() => {
-  return [...new Set(articles.map(article => article.category))]
+  const categoriesMap = new Map()
+  articles.forEach(article => {
+    categoriesMap.set(article.categoryId, article.category)
+  })
+  return Array.from(categoriesMap, ([id, name]) => ({ id, name }))
 })
 
 const allTags = computed(() => {
@@ -73,11 +77,11 @@ function toggleTagExpand() {
       <div class="filter-items">
         <button 
           v-for="category in displayedCategories" 
-          :key="category"
-          :class="['filter-button', { active: filterType === 'category' && filterValue === category }]"
-          @click="handleFilter('category', category)"
+          :key="category.id"
+          :class="['filter-button', { active: filterType === 'category' && filterValue === category.id.toString() }]"
+          @click="handleFilter('category', category.id.toString())"
         >
-          {{ category }}
+          {{ category.name }}
         </button>
       </div>
       <button 
