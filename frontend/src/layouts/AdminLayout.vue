@@ -55,10 +55,14 @@
             <el-icon><user /></el-icon>
             <span>用户管理</span>
           </el-menu-item>
-          <el-menu-item index="/admin/settings">
-            <el-icon><setting /></el-icon>
-            <span>系统设置</span>
-          </el-menu-item>
+          <el-sub-menu index="/admin/settings">
+            <template #title>
+              <el-icon><setting /></el-icon>
+              <span>博客设置</span>
+            </template>
+            <el-menu-item index="/admin/settings/profile">个人设置</el-menu-item>
+            <el-menu-item index="/admin/settings/system">系统管理</el-menu-item>
+          </el-sub-menu>
         </el-menu>
       </aside>
 

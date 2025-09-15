@@ -142,6 +142,20 @@ const routes = [
           requiresAuth: true
         }
       },
+      {
+        path: 'settings/profile',
+        component: () => import('../views/admin/Profiles.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: 'settings/system',
+        component: () => import('../views/admin/SystemSettings.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      }
     ]
   },
 
