@@ -135,6 +135,13 @@ const routes = [
           requiresAuth: true
         }
       },
+      {
+        path: 'tags/tag-articles',
+        component: () => import('../components/admin/TagArticles.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      },
     ]
   },
 
