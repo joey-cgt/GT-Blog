@@ -86,7 +86,20 @@ const router = useRouter()
 const route = useRoute()
 
 const userAvatar = ref('')
-const activeMenu = computed(() => route.path)
+const activeMenu = computed(() => {
+  const path = route.path
+  
+  // 处理 /admin/xxx/xxx 格式的路由
+  if (path.startsWith('/admin/')) {
+    const parts = path.split('/').filter(part => part)
+    // 如果路径格式为 /admin/something/other，则返回 /admin/something
+    if (parts.length >= 3) {
+      return `/${parts.slice(0, 2).join('/')}`
+    }
+  }
+  
+  return path
+})
 
 const handleLogout = () => {
   localStorage.removeItem('isLoggedIn')

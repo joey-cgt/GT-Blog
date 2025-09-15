@@ -47,7 +47,7 @@ const renderedContent = computed(() => {
 </template>
 
 <style scoped>
-:deep.markdown-body {
+:deep(.markdown-body) {
     text-align: left;
 }
 </style>

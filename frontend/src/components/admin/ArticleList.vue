@@ -30,7 +30,7 @@
       <el-select
         v-model="filterTag"
         placeholder="选择标签"
-        style="width: 200px;"
+        style="width: 200px; margin-right: 16px;"
         clearable
         @change="handleFilterChange"
       >
@@ -38,6 +38,19 @@
         <el-option label="React" value="react" />
         <el-option label="TypeScript" value="typescript" />
         <el-option label="JavaScript" value="javascript" />
+      </el-select>
+
+      <el-select
+        v-model="filterColumn"
+        placeholder="选择专栏"
+        style="width: 200px;"
+        clearable
+        @change="handleFilterChange"
+      >
+        <el-option label="专栏一" value="col1" />
+        <el-option label="专栏二" value="col2" />
+        <el-option label="专栏三" value="col3" />
+        <el-option label="专栏四" value="col4" />
       </el-select>
     </div>
 
@@ -85,6 +98,12 @@
           </div>
         </template>
       </el-table-column>
+
+      <el-table-column label="专栏" width="180">
+        <template #default="{ row }">
+          <span class="column">{{ row.column }}</span>
+        </template>
+      </el-table-column>
       
       <el-table-column label="发布时间" width="150" v-if="props.articles[0]?.publishTime">
         <template #default="{ row }">
@@ -127,11 +146,6 @@
             >
               编辑
             </el-button>
-            
-
-            
-
-            
             <el-button
               size="small"
               type="danger"
@@ -191,6 +205,8 @@ const searchKeyword = ref('')
 const filterCategory = ref('')
 // 筛选标签
 const filterTag = ref('')
+// 筛选专栏
+const filterColumn = ref('')
 
 // 过滤后的文章列表
 const filteredArticles = computed(() => {
@@ -207,7 +223,11 @@ const filteredArticles = computed(() => {
     const matchesTag = !filterTag.value || 
       article.tags.includes(filterTag.value)
     
-    return matchesSearch && matchesCategory && matchesTag
+    // 专栏筛选
+    const matchesColumn = !filterColumn.value || 
+      article.column.includes(filterColumn.value)
+    
+    return matchesSearch && matchesCategory && matchesTag && matchesColumn
   })
 })
 
@@ -221,7 +241,8 @@ const handleSearch = () => {
 const handleFilterChange = () => {
   console.log('筛选条件变化:', {
     category: filterCategory.value,
-    tag: filterTag.value
+    tag: filterTag.value,
+    column: filterColumn.value
   })
 }
 
@@ -274,6 +295,9 @@ const handleChangeStatus = (article, newStatus) => {
 }
 
 .category {
+  color: #606266;
+}
+.column {
   color: #606266;
 }
 

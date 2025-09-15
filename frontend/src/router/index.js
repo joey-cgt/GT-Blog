@@ -108,6 +108,13 @@ const routes = [
         }
       },
       {
+        path: 'columns/column-articles',
+        component: () => import('../views/admin/ColumnArticles.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
         path: 'categories',
         component: () => import('../views/admin/CategoriesManagement.vue'),
         meta: {

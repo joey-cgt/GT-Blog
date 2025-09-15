@@ -1,5 +1,6 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 // 模拟专栏数据
@@ -38,6 +39,16 @@ const columns = ref([
 
 const searchQuery = ref('')
 const activeMenu = ref(null)
+const dialogVisible = ref(false)
+const router = useRouter()
+// 分页状态
+const currentPage = ref(1)
+const pageSize = ref(5)
+const newColumn = reactive({
+  name: '',
+  description: '',
+  cover: ''
+})
 
 // 过滤专栏列表
 const filteredColumns = computed(() => {
@@ -46,6 +57,18 @@ const filteredColumns = computed(() => {
     column.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
     column.description.toLowerCase().includes(searchQuery.value.toLowerCase())
   )
+})
+
+// 分页后的专栏列表
+const paginatedColumns = computed(() => {
+  const start = (currentPage.value - 1) * pageSize.value
+  const end = start + pageSize.value
+  return filteredColumns.value.slice(start, end)
+})
+
+// 总页数
+const totalPages = computed(() => {
+  return Math.ceil(filteredColumns.value.length / pageSize.value)
 })
 
 // 操作菜单
@@ -96,9 +119,67 @@ const deleteColumn = async (column) => {
   activeMenu.value = null
 }
 
-// 新建专栏
-const createColumn = () => {
-  ElMessage.info('新建专栏功能待实现')
+// 新建专栏 - 打开弹窗
+const openCreateDialog = () => {
+  // 重置表单
+  newColumn.name = ''
+  newColumn.description = ''
+  newColumn.cover = ''
+  dialogVisible.value = true
+}
+
+// 确认创建专栏
+const confirmCreateColumn = async () => {
+  if (!newColumn.name.trim()) {
+    ElMessage.warning('请输入专栏名称')
+    return
+  }
+
+  if (!newColumn.description.trim()) {
+    ElMessage.warning('请输入专栏简介')
+    return
+  }
+
+  try {
+    // 模拟创建专栏
+    const newColumnData = {
+      id: columns.value.length + 1,
+      name: newColumn.name.trim(),
+      description: newColumn.description.trim(),
+      cover: newColumn.cover.trim() || 'https://th.bing.com/th/id/OIP.dIrXao1MUcqjeluUf9m8XAHaEl?w=229&h=180&c=7&r=0&o=7&pid=1.7&rm=3',
+      createdAt: new Date().toISOString().split('T')[0],
+      articleCount: 0,
+      totalViews: 0,
+      isTop: false
+    }
+
+    columns.value.unshift(newColumnData)
+    dialogVisible.value = false
+    ElMessage.success('专栏创建成功')
+  } catch (error) {
+    ElMessage.error('创建专栏失败')
+  }
+}
+
+// 取消创建
+const cancelCreate = () => {
+  dialogVisible.value = false
+}
+
+// 跳转到专栏文章列表
+const gotoColumnArticles = (column) => {
+  router.push(`/admin/columns/column-articles?columnid=${column.id}`)
+}
+
+// 处理页码变化
+const handlePageChange = (page) => {
+  currentPage.value = page
+}
+
+// 处理每页数量变化
+const handleSizeChange = (size) => {
+  pageSize.value = size
+  currentPage.value = 1 // 重置到第一页
 }
 </script>
 
@@ -119,7 +200,7 @@ const createColumn = () => {
             </template>
         </el-input>
     
-        <el-button type="primary" @click="createColumn">
+        <el-button type="primary" @click="openCreateDialog">
             <el-icon><plus /></el-icon>
             新建专栏
         </el-button>
@@ -130,19 +211,19 @@ const createColumn = () => {
     <!-- 专栏列表 -->
     <div class="columns-list">
       <div 
-        v-for="column in filteredColumns" 
+        v-for="column in paginatedColumns" 
         :key="column.id" 
         class="column-item"
         :class="{ 'top-column': column.isTop }"
       >
         <!-- 左侧封面 -->
-        <div class="column-cover">
+        <div class="column-cover" @click="gotoColumnArticles(column)">
           <img :src="column.cover" :alt="column.name" class="cover-image">
           <div v-if="column.isTop" class="top-badge">置顶</div>
         </div>
 
         <!-- 中间内容 -->
-        <div class="column-content">
+        <div class="column-content" @click="gotoColumnArticles(column)">
           <h3 class="column-name">{{ column.name }}</h3>
           <p class="column-description">{{ column.description }}</p>
           
@@ -191,7 +272,67 @@ const createColumn = () => {
         </div>
       </div>
     </div>
+
+    <!-- 分页组件 -->
+    <div class="pagination-section" v-if="filteredColumns.length > pageSize">
+      <el-pagination
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :page-sizes="[5, 10, 20, 50]"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="filteredColumns.length"
+        @size-change="handleSizeChange"
+        @current-change="handlePageChange"
+      />
+    </div>
   </div>
+
+  <!-- 新建专栏弹窗 -->
+  <el-dialog
+    v-model="dialogVisible"
+    title="新建专栏"
+    width="500px"
+    :close-on-click-modal="false"
+  >
+    <el-form :model="newColumn" label-width="80px">
+      <el-form-item label="专栏名称" required>
+        <el-input
+          v-model="newColumn.name"
+          placeholder="请输入专栏名称"
+          maxlength="50"
+          show-word-limit
+        />
+      </el-form-item>
+
+      <el-form-item label="专栏简介" required>
+        <el-input
+          v-model="newColumn.description"
+          type="textarea"
+          :rows="3"
+          placeholder="请输入专栏简介"
+          maxlength="200"
+          show-word-limit
+        />
+      </el-form-item>
+
+      <el-form-item label="封面链接">
+        <el-input
+          v-model="newColumn.cover"
+          placeholder="请输入封面图片链接（可选）"
+        />
+        <div class="cover-tip">提示：可以留空使用默认封面</div>
+      </el-form-item>
+    </el-form>
+
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="cancelCreate">取消</el-button>
+        <el-button type="primary" @click="confirmCreateColumn">
+          确认
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <style scoped>
@@ -241,6 +382,12 @@ const createColumn = () => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: all 0.3s ease;
   position: relative;
+  cursor: pointer;
+}
+
+.column-item:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
 }
 
 /* .column-item:hover {
@@ -362,6 +509,28 @@ const createColumn = () => {
 
 .menu-item.delete:hover {
   background: var(--el-color-danger-light-9);
+}
+
+.cover-tip {
+  font-size: 12px;
+  color: #8c8c8c;
+  margin-top: 4px;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.pagination-section {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 /* 响应式设计 */
