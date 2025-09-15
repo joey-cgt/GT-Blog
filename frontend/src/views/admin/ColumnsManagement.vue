@@ -385,11 +385,6 @@ const handleSizeChange = (size) => {
   cursor: pointer;
 }
 
-.column-item:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  transform: translateY(-2px);
-}
-
 /* .column-item:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   transform: translateY(-2px);
