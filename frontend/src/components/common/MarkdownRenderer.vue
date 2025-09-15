@@ -43,11 +43,13 @@ const renderedContent = computed(() => {
 </script>
 
 <template>
-  <div class="content markdown-body" v-html="renderedContent"></div>
+  <div class="md-content">
+    <div class="markdown-body" v-html="renderedContent"></div>
+  </div>
 </template>
 
 <style scoped>
-.content.markdown-body {
+.md-content .markdown-body {
     text-align: left;
 }
 </style>
