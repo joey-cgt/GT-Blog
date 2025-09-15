@@ -14,7 +14,7 @@
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>个人设置</el-dropdown-item>
+              <el-dropdown-item @click="handleProfileSetting">个人设置</el-dropdown-item>
               <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -109,6 +109,10 @@ const handleLogout = () => {
   localStorage.removeItem('isLoggedIn')
   localStorage.removeItem('rememberedUsername')
   router.push('/login')
+}
+
+const handleProfileSetting = () => {
+  router.push('/admin/settings/profile')
 }
 </script>
 
