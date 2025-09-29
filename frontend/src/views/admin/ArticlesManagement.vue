@@ -38,9 +38,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { ElMessageBox, ElMessage } from 'element-plus'
 import ArticleList from '../../components/admin/ArticleList.vue'
+import { getArticleList, deleteArticle } from '../../api/article.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -50,73 +52,9 @@ const activeTab = ref('published')
 // 加载状态
 const loading = ref(false)
 
-// 模拟数据 - 已发布文章
-const publishedArticles = ref([
-  {
-    id: 1,
-    title: 'Vue 3 组合式API最佳实践',
-    category: '前端开发',
-    tags: ['Vue', 'JavaScript'],
-    column: 'TypeScript 进阶指南',
-    publishTime: '2024-01-15 10:30',
-    views: 2456,
-    likes: 324,
-    comments: 89,
-    status: 'published'
-  },
-  {
-    id: 2,
-    title: 'TypeScript 高级类型技巧',
-    category: '前端开发',
-    tags: ['TypeScript', 'JavaScript'],
-    column: 'TypeScript 进阶指南',
-    publishTime: '2024-01-12 14:20',
-    views: 1987,
-    likes: 287,
-    comments: 67,
-    status: 'published'
-  },
-  {
-    id: 3,
-    title: 'Element Plus 组件库深度解析',
-    category: 'UI框架',
-    tags: ['Element Plus', 'Vue'],
-    column: 'TypeScript 进阶指南',
-    publishTime: '2024-01-10 09:15',
-    views: 1765,
-    likes: 234,
-    comments: 45,
-    status: 'published'
-  }
-])
-
-// 模拟数据 - 草稿文章
-const draftArticles = ref([
-  {
-    id: 4,
-    title: '前端性能优化完全指南',
-    category: '性能优化',
-    tags: ['性能', '优化'],
-    createTime: '2024-01-08 16:45',
-    status: 'draft'
-  },
-  {
-    id: 5,
-    title: 'CSS Grid 布局实战教程',
-    category: 'CSS',
-    tags: ['CSS', '布局'],
-    createTime: '2024-01-05 11:20',
-    status: 'draft'
-  },
-  {
-    id: 6,
-    title: 'JavaScript 异步编程详解',
-    category: 'JavaScript',
-    tags: ['JavaScript', '异步'],
-    createTime: '2024-01-18 08:30',
-    status: 'draft'
-  }
-])
+// 文章数据
+const publishedArticles = ref([])
+const draftArticles = ref([])
 
 // 分页配置
 const publishedPagination = ref({
@@ -144,10 +82,32 @@ onMounted(() => {
 const loadArticles = async () => {
   loading.value = true
   try {
-    // 这里应该是API调用，暂时用模拟数据
-    await new Promise(resolve => setTimeout(resolve, 500))
+    const params = {
+      page: activeTab.value === 'published' ? publishedPagination.value.currentPage : draftPagination.value.currentPage,
+      pageSize: activeTab.value === 'published' ? publishedPagination.value.pageSize : draftPagination.value.pageSize,
+      sortBy: 'create_time',
+      sortOrder: 'desc'
+    }
+    
+    // 根据标签页设置不同的状态参数
+    if (activeTab.value === 'published') {
+      params.status = 1 // 已发布文章
+    } else if (activeTab.value === 'drafts') {
+      params.status = 0 // 草稿文章
+    }
+    
+    const response = await getArticleList(params)
+    
+    if (activeTab.value === 'published') {
+      publishedArticles.value = response.data?.items || []
+      publishedPagination.value.total = response.data?.total || 0
+    } else {
+      draftArticles.value = response.data?.items || []
+      draftPagination.value.total = response.data?.total || 0
+    }
   } catch (error) {
     console.error('加载文章失败:', error)
+    ElMessage.error('加载文章失败')
   } finally {
     loading.value = false
   }
@@ -164,14 +124,21 @@ const handleDraftPageChange = (page) => {
   loadArticles()
 }
 
+// 监听标签页变化
+watch(activeTab, (newTab) => {
+  if (newTab === 'published' || newTab === 'drafts') {
+    loadArticles()
+  }
+})
+
 // 新建文章
 const handleCreate = () => {
-  router.push('/editor/drafts/new')
+  router.push('/editor/article/new')
 }
 
 // 编辑文章
 const handleEditArticle = (article) => {
-  router.push(`/editor/drafts/${article.id}?status=${article.status}`)
+  router.push(`/editor/article/${article.id}?status=${article.status}`)
 }
 
 // 删除文章
@@ -189,7 +156,7 @@ const handleDeleteArticle = async (article) => {
     )
     
     // 调用删除API
-    console.log('删除文章:', article.id)
+    await deleteArticle(article.id)
     ElMessage.success('删除成功')
     
     // 重新加载数据

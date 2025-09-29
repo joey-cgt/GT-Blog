@@ -15,8 +15,8 @@
       <div class="action-section">
         <el-button @click="handleCancel">取消</el-button>
         <!-- 新建文章或草稿文章：显示保存草稿和发布文章 -->
-        <template v-if="articleStatus === 'new' || articleStatus === 'draft'">
-          <el-button type="primary" @click="handleSaveDraft">
+        <template v-if="articleStatus === 'new' || articleStatus === 0">
+          <el-button type="primary" @click="handleCreateDraft">
             保存草稿
           </el-button>
           <el-button type="success" @click="showPublishDialog">
@@ -24,7 +24,7 @@
           </el-button>
         </template>
         <!-- 已发布文章：只显示更新文章 -->
-        <template v-else-if="articleStatus === 'published'">
+        <template v-else-if="articleStatus === 1">
           <el-button type="success" @click="showPublishDialog">
             更新文章
           </el-button>
@@ -56,7 +56,7 @@
     <!-- 发布设置对话框 -->
     <el-dialog
       v-model="publishDialogVisible"
-      :title="(articleStatus === 'new' || articleStatus === 'draft') ? '发布设置' : '更新文章'"
+      :title="(articleStatus === 'new' || articleStatus === 0) ? '发布设置' : '更新文章'"
       width="600px"
       :before-close="handlePublishDialogClose"
     >
@@ -68,12 +68,12 @@
             clearable
             style="width: 100%"
           >
-            <el-option label="前端开发" value="frontend" />
-            <el-option label="后端开发" value="backend" />
-            <el-option label="UI框架" value="ui" />
-            <el-option label="性能优化" value="performance" />
-            <el-option label="CSS" value="css" />
-            <el-option label="JavaScript" value="javascript" />
+            <el-option
+              v-for="category in categories"
+              :key="category.id"
+              :label="category.name"
+              :value="category.name"
+            />
           </el-select>
         </el-form-item>
 
@@ -84,12 +84,12 @@
             clearable
             style="width: 100%"
           >
-            <el-option label="Vue.js 精讲" value="vuejs" />
-            <el-option label="React 实战" value="react" />
-            <el-option label="TypeScript 进阶" value="typescript" />
-            <el-option label="前端性能优化" value="frontend-performance" />
-            <el-option label="CSS 魔法" value="css-magic" />
-            <el-option label="Node.js 开发" value="nodejs" />
+            <el-option
+              v-for="column in columns"
+              :key="column.id"
+              :label="column.name"
+              :value="column.name"
+            />
           </el-select>
         </el-form-item>
 
@@ -101,14 +101,12 @@
             clearable
             style="width: 100%"
           >
-            <el-option label="Vue" value="vue" />
-            <el-option label="React" value="react" />
-            <el-option label="TypeScript" value="typescript" />
-            <el-option label="JavaScript" value="javascript" />
-            <el-option label="CSS" value="css" />
-            <el-option label="HTML" value="html" />
-            <el-option label="Node.js" value="nodejs" />
-            <el-option label="Webpack" value="webpack" />
+            <el-option
+              v-for="tag in tags"
+              :key="tag.id"
+              :label="tag.name"
+              :value="tag.name"
+            />
           </el-select>
         </el-form-item>
 
@@ -124,15 +122,12 @@
         </el-form-item>
 
         <el-form-item label="封面图片">
-          <el-upload
-            class="cover-uploader"
-            action="#"
-            :show-file-list="false"
-            :before-upload="beforeCoverUpload"
-          >
-            <img v-if="publishForm.coverImage" :src="publishForm.coverImage" class="cover-image" />
-            <el-icon v-else class="cover-uploader-icon"><Plus /></el-icon>
-          </el-upload>
+          <el-input
+            v-model="publishForm.coverImage"
+            placeholder="请输入图片URL"
+            clearable
+            style="width: 100%; margin-bottom: 10px;"
+          />
         </el-form-item>
       </el-form>
 
@@ -140,7 +135,7 @@
         <span class="dialog-footer">
           <el-button @click="publishDialogVisible = false">取消</el-button>
           <el-button type="primary" @click="handlePublish">
-            {{ (articleStatus === 'new' || articleStatus === 'draft') ? '确认发布' : '确认更新' }}
+            {{ (articleStatus === 'new' || articleStatus === 0) ? '确认发布' : '确认更新' }}
           </el-button>
         </span>
       </template>
@@ -149,11 +144,15 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import MarkdownRenderer from '../../components/common/MarkdownRenderer.vue'
+import { createAndPublishArticle, updatePublishedArticle, createDraft, updateDraft, getArticleDetail, publishDraft } from '../../api/article.js'
+import { getCategoryList } from '../../api/category.js'
+import { getTags } from '../../api/tag.js'
+import { getColumns } from '../../api/column.js'
 import 'github-markdown-css/github-markdown.css'
 
 const router = useRouter()
@@ -163,7 +162,7 @@ const route = useRoute()
 const articleId = ref(route.params.id || null)
 const publishDialogVisible = ref(false)
 
-// 文章状态：new（新建）、draft（草稿）、published（已发布）
+// 文章状态：'new'（新建）、0（草稿）、1（已发布）
 // 优先使用查询参数中的状态，其次通过路由路径判断
 const articleStatus = ref(
   route.query.status || 'new'
@@ -175,7 +174,20 @@ const articleForm = reactive({
   content: ''
 })
 
-// 发布表单数据
+// 真实数据列表
+const categories = ref([])
+const tags = ref([])
+const columns = ref([])
+
+// 数据映射关系（从ID到显示名称和从显示名称到ID）
+const categoryMap = reactive({})
+const reverseCategoryMap = reactive({})
+const columnMap = reactive({})
+const reverseColumnMap = reactive({})
+const tagMap = reactive({})
+const reverseTagMap = reactive({})
+
+// 发布表单数据（显示名称）
 const publishForm = reactive({
   category: '',
   column: '',
@@ -190,30 +202,71 @@ const compiledMarkdown = computed(() => {
   return articleForm.content || '请输入Markdown内容...'
 })
 
+// 获取分类数据
+const fetchCategories = async () => {
+  try {
+    const response = await getCategoryList({ page: 1, pageSize: 100 })
+    categories.value = response.data?.items || []
+    // 构建映射关系
+    categories.value.forEach(category => {
+      categoryMap[category.name] = category.id.toString()
+      reverseCategoryMap[category.id.toString()] = category.name
+    })
+  } catch (error) {
+    ElMessage.error('获取分类数据失败')
+    console.error('获取分类数据失败:', error)
+  }
+}
+
+// 获取标签数据
+const fetchTags = async () => {
+  try {
+    const response = await getTags({ page: 1, pageSize: 100 })
+    tags.value = response.data?.items || []
+    // 构建映射关系
+    tags.value.forEach(tag => {
+      tagMap[tag.name] = tag.id.toString()
+      reverseTagMap[tag.id.toString()] = tag.name
+    })
+  } catch (error) {
+    ElMessage.error('获取标签数据失败')
+    console.error('获取标签数据失败:', error)
+  }
+}
+
+// 获取专栏数据
+const fetchColumns = async () => {
+  try {
+    const response = await getColumns({ page: 1, pageSize: 100 })
+    columns.value = response.data?.items || []
+    // 构建映射关系
+    columns.value.forEach(column => {
+      columnMap[column.name] = column.id.toString()
+      reverseColumnMap[column.id.toString()] = column.name
+    })
+  } catch (error) {
+    ElMessage.error('获取专栏数据失败')
+    console.error('获取专栏数据失败:', error)
+  }
+}
+
+// 初始化数据
+const initData = async () => {
+  await Promise.all([
+    fetchCategories(),
+    fetchTags(),
+    fetchColumns()
+  ])
+}
+
 // 加载文章数据（如果是编辑现有文章）
 onMounted(async () => {  
+  // 先初始化分类、标签和专栏数据
+  await initData()
+  
   // 如果有文章ID，加载文章数据
   if (articleId.value) {
-    try {
-      // 这里应该调用API加载文章数据
-      // 模拟API调用，根据查询参数设置正确的文章状态
-      const mockArticleData = {
-        title: '示例文章标题',
-        content: '# 这是示例内容',
-        status: route.query.status || 'published' // 优先使用查询参数中的状态
-      }
-      
-      // 更新表单数据
-      Object.assign(articleForm, mockArticleData)
-      
-      // 只有当没有查询参数时才使用加载的文章数据中的状态
-      if (!route.query.status) {
-        articleStatus.value = mockArticleData.status
-      }
-    } catch (error) {
-      ElMessage.error('加载文章失败')
-      console.error('加载文章失败:', error)
-    }
+    await loadArticleData()
   }
 })
 
@@ -251,20 +304,52 @@ const handlePublishDialogClose = (done) => {
 // 确认发布
 const handlePublish = async () => {
   try {
-    // 合并文章数据和发布数据
+    // 构建发布数据，只包含有值的字段
     const publishData = {
-      ...articleForm,
-      ...publishForm,
-      status: 'published'
+      title: articleForm.title,
+      content: articleForm.content
     }
 
-    console.log('发布文章:', publishData)
+    // 如果是编辑现有文章（非新建），添加文章ID
+    if (articleId.value) {
+      publishData.id = articleId.value
+    }
+
+    // 只添加有值的可选字段，并将显示名称转换为ID
+    if (publishForm.summary.trim()) {
+      publishData.abstract = publishForm.summary
+    }
+    if (publishForm.coverImage.trim()) {
+      publishData.coverUrl = publishForm.coverImage
+    }
+    if (publishForm.category.trim()) {
+      publishData.categoryID = convertDisplayNameToId(publishForm.category, categoryMap)
+    }
+    if (publishForm.column.trim()) {
+      publishData.columnID = convertDisplayNameToId(publishForm.column, columnMap)
+    }
+    if (publishForm.tags.length > 0) {
+      publishData.tagIDs = publishForm.tags.map(tag => convertDisplayNameToId(tag, tagMap))
+    }
+
+    console.log('发布文章数据（转换后）:', publishData)
+    console.log('原始表单数据:', publishForm)
     
+    let response
     if (articleStatus.value === 'new') {
-      console.log('创建并发布新文章')
+      // 创建并发布新文章
+      response = await createAndPublishArticle(publishData)
+      console.log('创建并发布新文章成功:', response)
       ElMessage.success('文章发布成功')
+    } else if (articleStatus.value === 0) {
+      // 发布草稿
+      response = await publishDraft(articleId.value, publishData)
+      console.log('发布草稿成功:', response)
+      ElMessage.success('草稿发布成功')
     } else {
-      console.log('更新并发布文章')
+      // 更新已发布文章
+      response = await updatePublishedArticle(articleId.value, publishData)
+      console.log('更新文章成功:', response)
       ElMessage.success('文章更新成功')
     }
     
@@ -283,7 +368,7 @@ const handlePublish = async () => {
 }
 
 // 保存草稿
-const handleSaveDraft = async () => {
+const handleCreateDraft = async () => {
   try {
     if (!articleForm.title.trim()) {
       ElMessage.warning('请输入文章标题')
@@ -294,18 +379,42 @@ const handleSaveDraft = async () => {
       return
     }
 
+    // 构建草稿数据，只包含有值的字段
     const draftData = {
-      ...articleForm,
-      status: 'draft'
+      title: articleForm.title,
+      content: articleForm.content
     }
 
-    console.log('保存草稿:', draftData)
+    // 只添加有值的可选字段，并将显示名称转换为ID
+    if (publishForm.summary.trim()) {
+      draftData.abstract = publishForm.summary
+    }
+    if (publishForm.coverImage.trim()) {
+      draftData.coverUrl = publishForm.coverImage
+    }
+    if (publishForm.category.trim()) {
+      draftData.categoryID = convertDisplayNameToId(publishForm.category, categoryMap)
+    }
+    if (publishForm.column.trim()) {
+      draftData.columnID = convertDisplayNameToId(publishForm.column, columnMap)
+    }
+    if (publishForm.tags.length > 0) {
+      draftData.tagIDs = publishForm.tags.map(tag => convertDisplayNameToId(tag, tagMap))
+    }
+
+    console.log('保存草稿数据（转换后）:', draftData)
+    console.log('原始表单数据:', publishForm)
     
+    let response
     if (articleStatus.value === 'new') {
-      console.log('创建新草稿')
+      // 创建新草稿
+      response = await createDraft(draftData)
+      console.log('创建新草稿成功:', response)
       ElMessage.success('草稿保存成功')
     } else {
-      console.log('更新草稿')
+      // 更新草稿
+      response = await updateDraft(articleId.value, draftData)
+      console.log('更新草稿成功:', response)
       ElMessage.success('草稿更新成功')
     }
     
@@ -330,51 +439,68 @@ const handleCancel = () => {
   }
 }
 
-// 封面图片上传前处理
-const beforeCoverUpload = (file) => {
-  const isJPGOrPNG = file.type === 'image/jpeg' || file.type === 'image/png'
-  const isLt2M = file.size / 1024 / 1024 < 2
+// 监听封面图片URL变化，可选：添加简单的URL验证
+watch(
+  () => publishForm.coverImage,
+  (newVal) => {
+    if (newVal && !isValidImageUrl(newVal)) {
+      ElMessage.warning('图片URL格式可能不正确，请确保是有效的图片链接')
+    }
+  }
+)
 
-  if (!isJPGOrPNG) {
-    ElMessage.error('封面图片只能是 JPG 或 PNG 格式!')
+// 简单的图片URL验证函数
+const isValidImageUrl = (url) => {
+  // 基本的URL格式验证
+  try {
+    new URL(url)
+    // 检查是否以常见图片扩展名结尾或包含图片MIME类型
+    const imageExtensions = /\.(jpeg|jpg|gif|png|bmp|webp)$/i
+    const dataUrlRegex = /^data:image\/(jpeg|jpg|gif|png|bmp|webp);base64,/i
+    return imageExtensions.test(url) || dataUrlRegex.test(url)
+  } catch (e) {
     return false
   }
-  if (!isLt2M) {
-    ElMessage.error('封面图片大小不能超过 2MB!')
-    return false
-  }
-
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    publishForm.coverImage = e.target.result
-  }
-  reader.readAsDataURL(file)
-  
-  return false
 }
 
-// 组件挂载时加载文章数据（如果是编辑模式）
-onMounted(() => {
-  if (articleId.value) {
-    loadArticleData()
-  }
-})
+// 将显示名称转换为ID的辅助函数（保留以兼容现有代码）
+const convertDisplayNameToId = (displayName, map) => {
+  return map[displayName] || displayName
+}
 
 // 加载文章数据
 const loadArticleData = async () => {
   try {
     console.log('加载文章数据:', articleId.value)
-    // 模拟数据
+    
+    // 调用后端API获取文章详情
+    const response = await getArticleDetail(articleId.value)
+    const articleData = response.data
+    
+    // 更新文章表单数据
     Object.assign(articleForm, {
-      title: '示例文章标题',
-      content: '# 这是文章内容\n\n这里可以使用Markdown格式编写文章内容。'
+      title: articleData.title || '',
+      content: articleData.content || ''
     })
+    
+    // 更新发布表单数据（将ID转换为显示名称）
     Object.assign(publishForm, {
-      category: 'frontend',
-      tags: ['vue', 'javascript'],
-      summary: '这是文章的摘要内容',
-      coverImage: ''
+      category: reverseCategoryMap[articleData.category?.categoryId?.toString()] || '',
+      column: reverseColumnMap[articleData.column?.columnId?.toString()] || '',
+      tags: articleData.tags ? articleData.tags.map(tag => tag.tagName || '') : [],
+      summary: articleData.abstract || '',
+      coverImage: articleData.coverUrl || ''
     })
+    
+    // 过滤掉可能的空标签
+    publishForm.tags = publishForm.tags.filter(tag => tag)
+    
+    // 设置文章状态（从后端获取）
+    if (articleData.status !== undefined) {
+      articleStatus.value = articleData.status
+    }
+    
+    console.log('文章数据加载成功:', articleData)
   } catch (error) {
     ElMessage.error('加载文章失败')
     console.error('加载文章失败:', error)
@@ -477,32 +603,29 @@ const handleTabKey = (event) => {
   background: #fff;
 }
 
-.cover-uploader {
+.cover-preview {
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 10px;
+  width: 150px;
+  background: #fafafa;
+}
+
+.cover-placeholder {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
+  padding: 30px 10px;
   width: 150px;
-  height: 100px;
-}
-
-.cover-uploader:hover {
-  border-color: #409EFF;
-}
-
-.cover-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 150px;
-  height: 100px;
   text-align: center;
-  line-height: 100px;
+  color: #909399;
+  font-size: 12px;
 }
 
 .cover-image {
   width: 100%;
-  height: 100%;
+  height: 100px;
   object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 8px;
 }
 </style>

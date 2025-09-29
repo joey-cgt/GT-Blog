@@ -1,16 +1,17 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Document } from '@element-plus/icons-vue'
+import {
+  getCategoryList,
+  createCategory,
+  updateCategory,
+  deleteCategory
+} from '@/api/category'
 
-// 模拟分类数据
-const categories = ref([
-  { id: 1, name: '前端开发', description: '前端技术相关文章', articleCount: 25 },
-  { id: 2, name: '后端开发', description: '后端技术相关文章', articleCount: 18 },
-  { id: 3, name: '数据库', description: '数据库技术相关文章', articleCount: 12 },
-  { id: 4, name: 'DevOps', description: '运维部署相关文章', articleCount: 8 }
-])
+// 分类数据
+const categories = ref([])
 
 const loading = ref(false)
 const router = useRouter()
@@ -44,17 +45,22 @@ const formRules = {
 const loadCategories = async () => {
   loading.value = true
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 500))
+    // 使用真实API获取分类数据
+    const response = await getCategoryList()
+    // 从响应中提取分类列表数据，格式为: {data: {items: [...], total: ...}}
+    categories.value = response?.data?.items || []
   } catch (error) {
     ElMessage.error('加载分类失败')
+    console.error('加载分类失败:', error)
   } finally {
     loading.value = false
   }
 }
 
-// 初始化加载
-loadCategories()
+// 组件挂载时加载分类数据
+onMounted(() => {
+  loadCategories()
+})
 
 // 打开创建分类对话框
 const openCreateDialog = () => {
@@ -83,34 +89,32 @@ const submitForm = async (isEdit = false) => {
       return
     }
 
+    // 准备请求数据
+    const categoryData = {
+      name: formData.name.trim(),
+      description: formData.description.trim()
+    }
+
     if (isEdit) {
       // 编辑现有分类
-      const index = categories.value.findIndex(c => c.id === formData.id)
-      if (index !== -1) {
-        categories.value[index] = {
-          ...categories.value[index],
-          name: formData.name.trim(),
-          description: formData.description.trim()
-        }
-        ElMessage.success('分类更新成功')
-      }
+      const categoryDataWithId = { ...categoryData, id: formData.id }
+      await updateCategory(formData.id, categoryDataWithId)
+      ElMessage.success('分类更新成功')
     } else {
       // 创建新分类
-      const newCategory = {
-        id: Math.max(...categories.value.map(c => c.id)) + 1,
-        name: formData.name.trim(),
-        description: formData.description.trim(),
-        articleCount: 0
-      }
-      categories.value.push(newCategory)
+      await createCategory(categoryData)
       ElMessage.success('分类添加成功')
     }
 
     // 关闭对话框
     createDialogVisible.value = false
     editDialogVisible.value = false
+    
+    // 重新加载分类列表
+    loadCategories()
   } catch (error) {
     ElMessage.error(isEdit ? '更新分类失败' : '添加分类失败')
+    console.error(isEdit ? '更新分类失败:' : '添加分类失败:', error)
   }
 }
 
@@ -135,7 +139,7 @@ const editCategory = (category, event) => {
 }
 
 // 删除分类
-const deleteCategory = async (category, event) => {
+const handleDeleteCategory = async (category, event) => {
   event.stopPropagation() // 阻止冒泡到卡片点击事件
   try {
     const confirmed = await ElMessageBox.confirm(
@@ -150,11 +154,18 @@ const deleteCategory = async (category, event) => {
     
     if (confirmed) {
       // 调用API删除分类
-      categories.value = categories.value.filter(c => c.id !== category.id)
+      console.log('删除分类ID:', category.id)
+      await deleteCategory(category.id)
       ElMessage.success('分类删除成功')
+      // 重新加载分类列表
+      loadCategories()
     }
   } catch (error) {
-    // 用户取消删除
+    // 用户取消删除或发生错误
+    if (error !== 'cancel') {
+      ElMessage.error('删除分类失败')
+      console.error('删除分类失败:', error)
+    }
   }
 }
 </script>
@@ -198,7 +209,7 @@ const deleteCategory = async (category, event) => {
             size="large" 
             type="danger" 
             link 
-            @click="deleteCategory(category, $event)"
+            @click="handleDeleteCategory(category, $event)"
           >
             删除
           </el-button>

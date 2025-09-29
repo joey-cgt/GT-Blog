@@ -220,7 +220,7 @@ let chartInstance = null
 
 // 发布新文章
 const handlePublishArticle = () => {
-  router.push('/editor/drafts/new')
+  router.push('/editor/article/new')
 }
 
 const handleDraftArticle = () => {

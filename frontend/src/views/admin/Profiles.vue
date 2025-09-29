@@ -76,7 +76,11 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import MarkdownRenderer from '../../components/common/MarkdownRenderer.vue'
-import { getProfile } from '@/api/profile'
+import { 
+  getProfile,
+  updateProfile,
+  uploadAvatar 
+ } from '@/api/profile'
 
 const route = useRoute()
 const loading = ref(false)
@@ -87,11 +91,21 @@ const profileData = ref({
   bio: '',
   email: '',
   wechat: '',
-  about: '',
-  blogAbout: '',
-  avatar: '',
+  bio: '',
+  aboutBlog: '',
+  aboutMe: '',
+  avatarUrl: '',
   socialMedia: []
 })
+
+const socialMedia = ref([
+  { name: '', link: '' },
+  { name: '', link: '' },
+  { name: '', link: '' },
+  { name: '', link: '' }
+])
+
+const tempAvatarFile = ref(null)
 
 // 获取用户资料
 const fetchProfile = async () => {
@@ -139,31 +153,8 @@ const beforeAvatarUpload = (file) => {
   return true
 }
 
-const handleAvatarUpload = async ({ file }) => {
-  // 这里处理头像上传逻辑
-  // 实际项目中应该调用API上传到服务器
-  const reader = new FileReader()
-  reader.onload = (e) => {
-    avatarUrl.value = e.target.result
-  }
-  reader.readAsDataURL(file)
-}
-
-const socialMedia = ref([
-  { name: '', link: '' },
-  { name: '', link: '' },
-  { name: '', link: '' },
-  { name: '', link: '' }
-])
-
-const handleAboutInput = () => {
-  // 输入时触发更新，确保实时渲染
-  // about ref 已经通过 v-model 更新，这里主要是确保响应性
-}
-
-const handleBlogAboutInput = () => {
-  // 输入时触发更新，确保实时渲染
-  // blogAbout ref 已经通过 v-model 更新，这里主要是确保响应性
+const handleAvatarUpload = ({ file }) => {
+  tempAvatarFile.value = file
 }
 
 const handleUpdateInfo = async () => {
@@ -178,25 +169,34 @@ const handleUpdateInfo = async () => {
       }
     )
     
-    // 这里执行实际的更新逻辑
-    const updateData = {
-      nickname: nickname.value,
-      bio: bio.value,
-      email: email.value,
-      wechat: wechat.value,
-      about: about.value,
-      avatar: avatarUrl.value,
-      socialMedia: socialMedia.value
+    // 1. 先上传头像
+    if (tempAvatarFile.value) {
+      const res = await uploadAvatar(tempAvatarFile.value, route.params.id || '1')
+      profileData.value.avatar = res.data
     }
-    
-    console.log('更新数据:', updateData)
-    
+
+    //打印一下profileData.value
+    console.log(profileData.value)
+    // 2. 再提交表单
+    await updateProfile(profileData.value)
     ElMessage.success('个人信息更新成功！')
   } catch (error) {
     if (error !== 'cancel') {
-      ElMessage.info('已取消更新')
+      ElMessage.error('更新失败: ' + error.message)
     }
+  } finally {
+    tempAvatarFile.value = null
   }
+}
+
+const handleAboutInput = () => {
+  // 输入时触发更新，确保实时渲染
+  // about ref 已经通过 v-model 更新，这里主要是确保响应性
+}
+
+const handleBlogAboutInput = () => {
+  // 输入时触发更新，确保实时渲染
+  // blogAbout ref 已经通过 v-model 更新，这里主要是确保响应性
 }
 </script>
 

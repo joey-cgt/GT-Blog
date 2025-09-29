@@ -161,7 +161,7 @@ const routes = [
 
   // 独立文章编辑器路由（不使用AdminLayout）
   {
-    path: '/editor/drafts/new',
+    path: '/editor/article/new',
     name: 'NewArticleEditor',
     component: ArticleEditor,
     meta: {
@@ -169,7 +169,7 @@ const routes = [
     }
   },
   {
-    path: '/editor/drafts/:id',
+    path: '/editor/article/:id',
     name: 'DraftArticleEditor',
     component: ArticleEditor,
     meta: {

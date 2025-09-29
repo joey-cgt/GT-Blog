@@ -21,10 +21,12 @@
         clearable
         @change="handleFilterChange"
       >
-        <el-option label="前端开发" value="frontend" />
-        <el-option label="后端开发" value="backend" />
-        <el-option label="UI框架" value="ui" />
-        <el-option label="性能优化" value="performance" />
+        <el-option
+          v-for="category in categories"
+          :key="category.id"
+          :label="category.name"
+          :value="category.name"
+        />
       </el-select>
       
       <el-select
@@ -34,10 +36,12 @@
         clearable
         @change="handleFilterChange"
       >
-        <el-option label="Vue" value="vue" />
-        <el-option label="React" value="react" />
-        <el-option label="TypeScript" value="typescript" />
-        <el-option label="JavaScript" value="javascript" />
+        <el-option
+          v-for="tag in tags"
+          :key="tag.id"
+          :label="tag.name"
+          :value="tag.name"
+        />
       </el-select>
 
       <el-select
@@ -47,10 +51,12 @@
         clearable
         @change="handleFilterChange"
       >
-        <el-option label="专栏一" value="col1" />
-        <el-option label="专栏二" value="col2" />
-        <el-option label="专栏三" value="col3" />
-        <el-option label="专栏四" value="col4" />
+        <el-option
+          v-for="column in columns"
+          :key="column.id"
+          :label="column.name"
+          :value="column.name"
+        />
       </el-select>
     </div>
 
@@ -79,7 +85,7 @@
       
       <el-table-column label="分类" width="120">
         <template #default="{ row }">
-          <span class="category">{{ row.category }}</span>
+          <span class="category">{{ row.category.categoryName }}</span>
         </template>
       </el-table-column>
       
@@ -92,7 +98,7 @@
               size="small"
               style="margin-right: 4px; margin-bottom: 4px;"
             >
-              {{ tag }}
+              {{ tag.tagName }}
             </el-tag>
             <el-tag v-if="row.tags.length > 2" size="small">+{{ row.tags.length - 2 }}</el-tag>
           </div>
@@ -101,7 +107,7 @@
 
       <el-table-column label="专栏" width="180">
         <template #default="{ row }">
-          <span class="column">{{ row.column }}</span>
+          <span class="column">{{ row.column.columnName }}</span>
         </template>
       </el-table-column>
       
@@ -175,8 +181,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
+import { getCategoryList } from '@/api/category'
+import { getTags } from '@/api/tag'
+import { getColumns } from '@/api/column'
 
 const props = defineProps({
   articles: {
@@ -207,6 +216,52 @@ const filterCategory = ref('')
 const filterTag = ref('')
 // 筛选专栏
 const filterColumn = ref('')
+
+// 分类列表
+const categories = ref([])
+// 标签列表
+const tags = ref([])
+// 专栏列表
+const columns = ref([])
+
+// 获取分类数据
+const fetchCategories = async () => {
+  try {
+    const response = await getCategoryList({})
+    categories.value = response.data?.items || []
+  } catch (error) {
+    console.error('获取分类数据失败:', error)
+  }
+}
+
+// 获取标签数据
+const fetchTags = async () => {
+  try {
+    const response = await getTags({ page: 1, pageSize: 100 })
+    tags.value = response.data?.items || []
+  } catch (error) {
+    console.error('获取标签数据失败:', error)
+  }
+}
+
+// 获取专栏数据
+const fetchColumns = async () => {
+  try {
+    const response = await getColumns({ page: 1, pageSize: 100 })
+    columns.value = response.data?.items || []
+  } catch (error) {
+    console.error('获取专栏数据失败:', error)
+  }
+}
+
+// 在组件挂载时获取数据
+onMounted(async () => {
+  await Promise.all([
+    fetchCategories(),
+    fetchTags(),
+    fetchColumns()
+  ])
+})
 
 // 过滤后的文章列表
 const filteredArticles = computed(() => {

@@ -1,0 +1,47 @@
+server:
+  port: "8080"
+  mode: "debug"  # debug模式下日志更详细
+
+mysql:
+  host: "172.22.54.131"
+  port: 3306
+  user: "gtblog_user"
+  password: "123456"
+  dbname: "gt_blog"
+  charset: "utf8mb4"
+  parseTime: true
+  max_open_conns: 50
+  max_idle_conns: 10
+  conn_max_lifetime: 3600
+
+redis:
+  enable: true
+  addr: "127.0.0.1:6379"
+  password: ""
+  db: 0
+
+log:
+  level: "debug"  # 开发环境用debug，生产环境用info
+  output_path: "logs/blog.log"  # 日志文件路径，stdout表示控制台
+  max_size: 100   # 单个文件100MB
+  max_backups: 5  # 保留5个备份
+  max_age: 7      # 保留7天
+  compress: true  # 压缩备份文件
+
+jwt:
+  secret: "your-secret-key"
+  expire_hours: 24
+
+cors:
+  allowed_origins:
+    - "http://localhost:3000"
+    - "http://localhost:5173"
+  allowed_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "OPTIONS"
+  allowed_headers:
+    - "Content-Type"
+    - "Authorization"

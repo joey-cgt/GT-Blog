@@ -1,4 +1,4 @@
- <template>
+<template>
   <div class="tags-management">
     <div class="page-header">
       <h2 class="page-title">标签管理</h2>
@@ -12,20 +12,31 @@
       </div>
     </div>
     <div class="tags-cloud">
-      <div 
-        v-for="tag in tags" 
-        :key="tag.id"
-        class="tag-item"
-        :style="{
-          fontSize: getTagSize(tag.articleCount) + 'px',
-          opacity: getTagOpacity(tag.articleCount),
-          transform: `scale(${1 + (tag.articleCount / 100) * 0.3})`
-        }"
-        @click="handleTagClick(tag)"
-      >
-        {{ tag.name }}
-        <span class="article-count">({{ tag.articleCount }})</span>
+      <div v-if="loading" class="loading-container">
+        <el-icon size="48" color="#fff">
+          <Loading />
+        </el-icon>
+        <p style="color: #fff; margin-top: 10px;">加载标签中...</p>
       </div>
+      <div v-else-if="tags.length === 0" class="empty-container">
+        <p style="color: #fff;">暂无标签数据</p>
+      </div>
+      <template v-else>
+        <div 
+          v-for="tag in tags" 
+          :key="tag.id"
+          class="tag-item"
+          :style="{
+            fontSize: getTagSize(tag.articleCount) + 'px',
+            opacity: getTagOpacity(tag.articleCount),
+            transform: `scale(${1 + (tag.articleCount / 100) * 0.3})`
+          }"
+          @click="handleTagClick(tag)"
+        >
+          {{ tag.name }}
+          <span class="article-count">({{ tag.articleCount }})</span>
+        </div>
+      </template>
     </div>
 
     <!-- 创建标签对话框 -->
@@ -76,26 +87,32 @@
       title="管理标签"
       width="700px"
     >
-      <el-table :data="paginatedTags" stripe>
-        <el-table-column prop="name" label="标签名称" min-width="120" />
-        <el-table-column prop="articleCount" label="文章数量" width="100" align="center">
-          <template #default="{ row }">
-            <el-tag size="small" :type="row.articleCount > 0 ? 'success' : 'info'">
-              {{ row.articleCount }}
-            </el-tag>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="150" align="center">
-          <template #default="{ row }">
-            <el-button size="small" type="primary" @click="editTag(row)">
-              编辑
-            </el-button>
-            <el-button size="small" type="danger" @click="deleteTag(row)">
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <div v-if="loading" class="dialog-loading">
+        <el-icon size="32" style="margin-right: 8px;">
+          <Loading />
+        </el-icon>
+        加载标签中...
+      </div>
+      <template v-else>
+        <el-table :data="paginatedTags" stripe>
+          <el-table-column prop="name" label="标签名称" min-width="120" />
+          <el-table-column prop="articleCount" label="文章数量" width="100" align="center">
+            <template #default="{ row }">
+              <el-tag size="small" :type="row.articleCount > 0 ? 'success' : 'info'">{{ row.articleCount }}</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="150" align="center">
+            <template #default="{ row }">
+              <el-button size="small" type="primary" @click="editTag(row)">
+                编辑
+              </el-button>
+              <el-button size="small" type="danger" @click="deleteTagHandler(row)">
+                删除
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </template>
       
       <!-- 分页组件 -->
       <div class="pagination-container">
@@ -162,9 +179,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { Loading } from '@element-plus/icons-vue'
+import { getTags, createTag, updateTag, deleteTag } from '@/api/tag.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -186,21 +205,27 @@ const tagForm = ref({
   description: ''
 })
 
-// 模拟标签数据
-const tags = ref([
-  { id: 1, name: 'Vue.js', articleCount: 45 },
-  { id: 2, name: 'React', articleCount: 32 },
-  { id: 3, name: 'JavaScript', articleCount: 78 },
-  { id: 4, name: 'TypeScript', articleCount: 28 },
-  { id: 5, name: 'Node.js', articleCount: 36 },
-  { id: 6, name: 'CSS', articleCount: 52 },
-  { id: 7, name: 'HTML', articleCount: 41 },
-  { id: 8, name: '前端框架', articleCount: 23 },
-  { id: 9, name: '后端开发', articleCount: 19 },
-  { id: 10, name: '数据库', articleCount: 27 },
-  { id: 11, name: '算法', articleCount: 15 },
-  { id: 12, name: '设计模式', articleCount: 12 }
-])
+// 标签数据
+const tags = ref([])
+const loading = ref(false)
+
+// 加载标签列表
+const loadTags = async () => {
+  loading.value = true
+  try {
+    const response = await getTags()
+    tags.value = response?.data?.items || []
+  } catch (error) {
+    ElMessage.error('获取标签列表失败')
+    console.error('获取标签列表失败:', error)
+  } finally {
+    loading.value = false
+  }}
+
+// 组件挂载时加载标签
+onMounted(() => {
+  loadTags()
+})
 
 // 计算标签大小（根据文章数量）
 const getTagSize = (count) => {
@@ -261,7 +286,7 @@ const editTag = (tag) => {
 }
 
 // 删除标签
-const deleteTag = async (tag) => {
+const deleteTagHandler = async (tag) => {
   try {
     await ElMessageBox.confirm(
       `确定要删除标签"${tag.name}"吗？此操作不可恢复。`,
@@ -274,10 +299,17 @@ const deleteTag = async (tag) => {
     )
     
     // 删除标签
-    tags.value = tags.value.filter(t => t.id !== tag.id)
+    await deleteTag(tag.id)
     ElMessage.success('标签删除成功')
+    
+    // 重新加载标签列表
+    await loadTags()
   } catch (error) {
-    // 用户取消删除
+    // 用户取消删除或删除失败
+    if (error !== 'cancel') {
+      console.error('删除标签失败:', error)
+      ElMessage.error('删除标签失败')
+    }
   }
 }
 
@@ -298,38 +330,30 @@ const submitForm = async () => {
 
   formLoading.value = true
   try {
-    // 模拟API调用
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
     if (editingTag.value) {
       // 编辑现有标签
-      const index = tags.value.findIndex(t => t.id === editingTag.value.id)
-      if (index !== -1) {
-        tags.value[index] = {
-          ...tags.value[index],
-          name: tagForm.value.name.trim(),
-          description: tagForm.value.description.trim()
-        }
-      }
+      await updateTag(editingTag.value.id, {
+        id: editingTag.value.id,
+        name: tagForm.value.name.trim(),
+        description: tagForm.value.description.trim()
+      })
       editDialogVisible.value = false
       ElMessage.success('标签更新成功')
     } else {
       // 创建新标签
-      const newTag = {
-        id: Math.max(...tags.value.map(t => t.id)) + 1,
+      await createTag({
         name: tagForm.value.name.trim(),
-        description: tagForm.value.description.trim(),
-        articleCount: 0,
-        createdAt: new Date().toISOString().split('T')[0]
-      }
-      
-      tags.value.push(newTag)
+        description: tagForm.value.description.trim()
+      })
       createDialogVisible.value = false
       ElMessage.success('标签创建成功')
     }
     
+    // 重新加载标签列表
+    await loadTags()
   } catch (error) {
     ElMessage.error(editingTag.value ? '更新标签失败' : '创建标签失败')
+    console.error('提交标签表单失败:', error)
   } finally {
     formLoading.value = false
     editingTag.value = null
@@ -489,5 +513,23 @@ const handleTagClick = (tag) => {
   margin-top: 20px;
   display: flex;
   justify-content: center;
+}
+
+/* 加载状态样式 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 400px;
+  color: #fff;
+}
+
+.dialog-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: #606266;
 }
 </style>

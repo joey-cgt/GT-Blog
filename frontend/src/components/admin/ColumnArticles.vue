@@ -2,53 +2,22 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElButton, ElTable, ElTableColumn, ElPagination } from 'element-plus'
+import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
 
 // 从路由参数获取专栏ID
 const columnId = computed(() => route.query.columnid)
+const columnName = computed(() => route.query.name)
 
-// 模拟专栏数据
-const columnData = ref({
-  id: 1,
-  name: 'Vue.js 实战教程',
-  description: '从入门到精通的Vue.js完整学习路径',
-  cover: 'https://th.bing.com/th/id/OIP.dIrXao1MUcqjeluUf9m8XAHaEl?w=229&h=180&c=7&r=0&o=7&pid=1.7&rm=3',
-  createdAt: '2024-01-15'
-})
 
-// 模拟文章数据
-const articles = ref([
-  {
-    id: 1,
-    title: 'Vue 3 组合式API入门',
-    status: 'published',
-    publishTime: '2024-01-20',
-    views: 1200,
-    likes: 45,
-    comments: 12
-  },
-  {
-    id: 2,
-    title: 'Vue Router 深度解析',
-    status: 'published',
-    publishTime: '2024-02-15',
-    views: 890,
-    likes: 32,
-    comments: 8
-  },
-  {
-    id: 3,
-    title: 'Vuex 状态管理最佳实践',
-    status: 'draft',
-    publishTime: '2024-03-10',
-    views: 0,
-    likes: 0,
-    comments: 0
-  }
-])
+// 专栏数据
+const columnData = ref({})
 
+// 文章数据
+const articles = ref([])
+const total = ref(0)
 const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
@@ -59,46 +28,65 @@ const goBack = () => {
 }
 
 // 加载专栏数据
-const loadColumnData = () => {
-  // 这里应该根据columnId从API获取专栏数据
-  // 模拟数据加载
+const loadColumnData = async () => {
+  if (!columnId.value) {
+    ElMessage.error('专栏ID为空')
+    return
+  }
+  
   loading.value = true
-  setTimeout(() => {
-    // 根据columnId设置不同的专栏数据
-    if (columnId.value === '1') {
-      columnData.value = {
-        id: 1,
-        name: 'Vue.js 实战教程',
-        description: '从入门到精通的Vue.js完整学习路径',
-        cover: 'https://th.bing.com/th/id/OIP.dIrXao1MUcqjeluUf9m8XAHaEl?w=229&h=180&c=7&r=0&o=7&pid=1.7&rm=3',
-        createdAt: '2024-01-15'
-      }
-    } else if (columnId.value === '2') {
-      columnData.value = {
-        id: 2,
-        name: 'React 深度解析',
-        description: '深入理解React核心原理和最佳实践',
-        cover: 'https://th.bing.com/th/id/OIP.f3y_losOnBPDSCe0EhuqAAHaEK?w=282&h=180&c=7&r=0&o=7&pid=1.7&rm=3',
-        createdAt: '2024-02-20'
-      }
+  try {
+    const response = await axios.get(`/api/v1/columns/${columnId.value}`)
+    
+    if (response.data && response.data.data) {
+      columnData.value = response.data.data
+    } else {
+      columnData.value = {}
     }
+  } catch (error) {
+    ElMessage.error('获取专栏详情失败：' + (error.response?.data?.error || error.message))
+    console.error('获取专栏详情失败：', error)
+  } finally {
     loading.value = false
-  }, 500)
+  }
 }
 
 // 加载文章列表
-const loadArticles = () => {
-  // 这里应该根据columnId从API获取文章列表
-  // 模拟数据加载
+const loadArticles = async () => {
+  if (!columnId.value) {
+    ElMessage.error('专栏ID为空')
+    return
+  }
+  
   loading.value = true
-  setTimeout(() => {
+  try {
+    const response = await axios.get('/api/v1/aggregated', {
+      params: {
+        type: 'column',
+        id: columnId.value,
+        page: currentPage.value,
+        pageSize: pageSize.value
+      }
+    })
+    
+    if (response.data && response.data.data) {
+      articles.value = response.data.data.list || []
+      total.value = response.data.data.total || 0
+    } else {
+      articles.value = []
+      total.value = 0
+    }
+  } catch (error) {
+    ElMessage.error('获取文章列表失败：' + (error.response?.data?.error || error.message))
+    console.error('获取文章列表失败：', error)
+  } finally {
     loading.value = false
-  }, 500)
+  }
 }
 
 // 编辑文章
 const editArticle = (article) => {
-  router.push(`/editor/drafts/${article.id}?status=${article.status}`)
+  router.push(`/editor/article/${article.id}?status=${article.status}`)
 }
 
 // 删除文章
@@ -135,7 +123,7 @@ onMounted(() => {
         <el-button icon="ArrowLeft" @click="goBack" class="back-button">
           返回
         </el-button>
-        <h2 class="column-title">{{ columnData.name }}</h2>
+        <h2 class="column-title">{{ columnName }}</h2>
       </div>
     </div>
 
@@ -170,10 +158,10 @@ onMounted(() => {
 
       <!-- 分页 -->
       <el-pagination
-        v-if="articles.length > 0"
+        v-if="total > 0"
         v-model:current-page="currentPage"
         v-model:page-size="pageSize"
-        :total="articles.length"
+        :total="total"
         layout="total, prev, pager, next, jumper"
         @current-change="handlePageChange"
         class="pagination"

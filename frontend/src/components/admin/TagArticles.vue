@@ -106,7 +106,7 @@ const loadArticles = () => {
 
 // 编辑文章
 const editArticle = (article) => {
-  router.push(`/editor/drafts/${article.id}?status=${article.status}`)
+  router.push(`/editor/article/${article.id}?status=${article.status}`)
 }
 
 // 删除文章

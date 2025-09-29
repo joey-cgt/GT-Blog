@@ -5,12 +5,12 @@ import (
 	"log"
 	"net/http"
 
-	"gt-blog/backend/api"
 	"gt-blog/backend/config"
 	"gt-blog/backend/internal/handler"
 	"gt-blog/backend/internal/middleware"
 	"gt-blog/backend/internal/model"
 	"gt-blog/backend/internal/repository"
+	"gt-blog/backend/internal/route"
 )
 
 func main() {
@@ -49,9 +49,8 @@ func main() {
 	router.Use(middleware.Logger)
 
 	// 5. 注册API路由
-	router.GET("/api/profiles/:id", api.GetProfile)
-	router.POST("/api/profiles/update", handler.UpdateProfile)
-	// 其他路由...
+	route.RegisterProfileRoutes(router)
+	// 其他模块路由...
 
 	// 6. 启动服务器
 	serverAddr := fmt.Sprintf(":%s", cfg.Server.Port)
