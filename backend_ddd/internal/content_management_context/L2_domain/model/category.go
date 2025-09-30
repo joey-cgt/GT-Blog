@@ -28,13 +28,3 @@ func (c *Category) Update(name, description string) error {
 	c.Description = description
 	return nil
 }
-
-func (c *Category) IncrementArticleCount() error {
-	c.ArticleCount++
-	return nil
-}
-
-func (c *Category) DecrementArticleCount() error {
-	c.ArticleCount--
-	return nil
-}

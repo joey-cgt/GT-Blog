@@ -84,6 +84,7 @@ func main() {
 		tagRepo,
 		columnRepo,
 		categoryRepo,
+		articleTagRepo,
 	)
 
 	articleHandler := handler.NewArticleHandler(articleAppService)

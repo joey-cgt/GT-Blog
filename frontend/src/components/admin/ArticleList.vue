@@ -85,7 +85,7 @@
       
       <el-table-column label="分类" width="120">
         <template #default="{ row }">
-          <span class="category">{{ row.category.categoryName }}</span>
+          <span class="category">{{ row.category?.categoryName || '未分类' }}</span>
         </template>
       </el-table-column>
       
@@ -93,25 +93,26 @@
         <template #default="{ row }">
           <div class="tags">
             <el-tag
-              v-for="tag in row.tags.slice(0, 2)"
+              v-for="tag in (row.tags || []).slice(0, 2)"
               :key="tag"
               size="small"
               style="margin-right: 4px; margin-bottom: 4px;"
             >
               {{ tag.tagName }}
             </el-tag>
-            <el-tag v-if="row.tags.length > 2" size="small">+{{ row.tags.length - 2 }}</el-tag>
+            <el-tag v-if="(row.tags || []).length > 2" size="small">+{{ (row.tags || []).length - 2 }}</el-tag>
+            <span v-else-if="!(row.tags && row.tags.length)" class="no-tag">无标签</span>
           </div>
         </template>
       </el-table-column>
 
       <el-table-column label="专栏" width="180">
         <template #default="{ row }">
-          <span class="column">{{ row.column.columnName }}</span>
+          <span class="column">{{ row.column?.columnName || '未指定专栏' }}</span>
         </template>
       </el-table-column>
       
-      <el-table-column label="发布时间" width="150" v-if="props.articles[0]?.publishTime">
+      <el-table-column label="发布时间" width="150" v-if="props.activeTab === 'published'">
         <template #default="{ row }">
           <span class="time">{{ row.publishTime || row.createTime }}</span>
         </template>
@@ -203,6 +204,13 @@ const props = defineProps({
       pageSize: 10,
       total: 0
     })
+  },
+  activeTab: {
+    type: String,
+    default: 'published',
+    validator: (value) => {
+      return ['published', 'drafts'].includes(value)
+    }
   }
 })
 
@@ -272,15 +280,15 @@ const filteredArticles = computed(() => {
     
     // 分类筛选
     const matchesCategory = !filterCategory.value || 
-      article.category === filterCategory.value
+      (article.category && article.category.categoryName === filterCategory.value)
     
     // 标签筛选
     const matchesTag = !filterTag.value || 
-      article.tags.includes(filterTag.value)
+      (article.tags && article.tags.some(tag => tag.tagName === filterTag.value))
     
     // 专栏筛选
     const matchesColumn = !filterColumn.value || 
-      article.column.includes(filterColumn.value)
+      (article.column && article.column.columnName === filterColumn.value)
     
     return matchesSearch && matchesCategory && matchesTag && matchesColumn
   })
@@ -353,10 +361,15 @@ const handleChangeStatus = (article, newStatus) => {
   color: #606266;
 }
 .column {
-  color: #606266;
-}
+    color: #606266;
+  }
+  
+  .no-tag {
+    color: #909399;
+    font-size: 12px;
+  }
 
-.tags {
+  .tags {
   display: flex;
   flex-wrap: wrap;
 }

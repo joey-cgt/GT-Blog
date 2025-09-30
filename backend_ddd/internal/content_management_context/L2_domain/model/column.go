@@ -37,17 +37,3 @@ func (c *Column) Update(name, description, coverUrl string) error {
 	c.UpdateTime = time.Now()
 	return nil
 }
-
-func (c *Column) IncrementArticleCount() error {
-	c.ArticleCount++
-	c.Version++
-	c.UpdateTime = time.Now()
-	return nil
-}
-
-func (c *Column) DecrementArticleCount() error {
-	c.ArticleCount--
-	c.Version++
-	c.UpdateTime = time.Now()
-	return nil
-}

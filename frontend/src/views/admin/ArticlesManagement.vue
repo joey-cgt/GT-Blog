@@ -15,6 +15,7 @@
           :articles="publishedArticles" 
           :loading="loading"
           :pagination="publishedPagination"
+          :activeTab="activeTab"
           @page-change="handlePublishedPageChange"
           @edit="handleEditArticle"
           @delete="handleDeleteArticle"
@@ -27,6 +28,7 @@
           :articles="draftArticles" 
           :loading="loading"
           :pagination="draftPagination"
+          :activeTab="activeTab"
           @page-change="handleDraftPageChange"
           @edit="handleEditArticle"
           @delete="handleDeleteArticle"
@@ -102,6 +104,7 @@ const loadArticles = async () => {
       publishedArticles.value = response.data?.items || []
       publishedPagination.value.total = response.data?.total || 0
     } else {
+      console.log('草稿文章:', response.data?.items || [])
       draftArticles.value = response.data?.items || []
       draftPagination.value.total = response.data?.total || 0
     }

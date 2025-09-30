@@ -18,6 +18,7 @@ type ArticleAppService struct {
 	tagRepo              repository.TagRepository
 	columnRepo           repository.ColumnRepository
 	categoryRepo         repository.CategoryRepository
+	articleTagRepo       repository.ArticleTagRepository
 }
 
 func NewArticleAppService(
@@ -26,6 +27,7 @@ func NewArticleAppService(
 	tagRepo repository.TagRepository,
 	columnRepo repository.ColumnRepository,
 	categoryRepo repository.CategoryRepository,
+	articleTagRepo repository.ArticleTagRepository,
 ) *ArticleAppService {
 	return &ArticleAppService{
 		articleDomainService: articleDomainService,
@@ -33,6 +35,7 @@ func NewArticleAppService(
 		tagRepo:              tagRepo,
 		columnRepo:           columnRepo,
 		categoryRepo:         categoryRepo,
+		articleTagRepo:       articleTagRepo,
 	}
 }
 
@@ -63,13 +66,12 @@ func (s *ArticleAppService) CreateAndPublishArticle(ctx context.Context, cmd com
 		return 0, err
 	}
 
-	// 再更新相关计数
-	article, err := s.articleRepo.FindByID(ctx, id)
-	if err != nil {
-		return 0, err
-	}
-	if err := s.articleDomainService.UpdateAggregationCounts(ctx, article, true); err != nil {
-		return 0, err
+	// 更新 article_tags 表
+	if len(newArticle.TagIDs) > 0 {
+		err = s.articleTagRepo.SaveArticleTags(ctx, id, newArticle.TagIDs)
+		if err != nil {
+			return 0, err
+		}
 	}
 
 	return id, nil
@@ -81,15 +83,14 @@ func (s *ArticleAppService) UpdatePublishedArticle(ctx context.Context, cmd comm
 	if err != nil {
 		return err
 	}
+
+	oldTagIDs := article.TagIDs
+
 	if article.Status != 1 {
 		return fmt.Errorf("文章不存在或未发布")
 	}
-	// 先更新文章相关计数
-	if err := s.articleDomainService.UpdateAggregationCounts(ctx, article, false); err != nil {
-		return err
-	}
 
-	// 再更新文章并持久化
+	// 更新文章并持久化
 	if err := article.Update(
 		cmd.Title,
 		cmd.Abstract,
@@ -101,13 +102,22 @@ func (s *ArticleAppService) UpdatePublishedArticle(ctx context.Context, cmd comm
 	); err != nil {
 		return err
 	}
+
 	// 检查文章发布状态，防止更新时内容不合法
 	if err := article.Publish(); err != nil {
 		return err
 	}
-	// 最后再持久化
-	return s.articleRepo.Update(ctx, article)
+	// 持久化
+	if err := s.articleRepo.Update(ctx, article); err != nil {
+		return err
+	}
 
+	newTagIDs := article.TagIDs
+
+	if err := s.articleTagRepo.UpdateArticleTags(ctx, article.ID, oldTagIDs, newTagIDs); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *ArticleAppService) CreateDraft(ctx context.Context, cmd command.CreateDraftCommand) (int, error) {
@@ -174,8 +184,16 @@ func (s *ArticleAppService) PublishDraft(ctx context.Context, cmd command.Publis
 		return 0, err
 	}
 
-	if err := s.articleDomainService.UpdateAggregationCounts(ctx, draft, true); err != nil {
-		return 0, err
+	if len(draft.TagIDs) > 0 {
+		err := s.articleTagRepo.SaveArticleTags(ctx, draft.ID, draft.TagIDs)
+		if err != nil {
+			return draft.ID, err
+		}
+	}
+
+	// 最后再持久化
+	if err := s.articleRepo.Update(ctx, draft); err != nil {
+		return draft.ID, err
 	}
 
 	return draft.ID, nil
@@ -186,6 +204,11 @@ func (s *ArticleAppService) DeleteArticle(ctx context.Context, cmd command.Delet
 	if err != nil {
 		return err
 	}
+
+	if err := s.articleTagRepo.DeleteArticleTagsByArticleID(ctx, cmd.ID); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -261,6 +284,7 @@ func (s *ArticleAppService) GetAllArticleList(ctx context.Context, qry query.Get
 			Column:      columnResult,
 			Tags:        tagResults,
 			ViewCount:   article.ViewCount,
+			CreateTime:  article.CreateTime.Format("2006-01-02 15:04:05"),
 			PublishTime: article.PublishTime.Format("2006-01-02 15:04:05"),
 			IsTop:       article.IsTop,
 		})

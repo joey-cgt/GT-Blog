@@ -43,6 +43,7 @@ type ArticleListItemResult struct {
 	ViewCount    int             // 浏览量
 	LikeCount    int             // 点赞量
 	CommentCount int             // 评论量
+	CreateTime   string          // 创建时间（格式化后）
 	PublishTime  string          // 发布时间（格式化后）
 	IsTop        bool            // 是否置顶
 }
