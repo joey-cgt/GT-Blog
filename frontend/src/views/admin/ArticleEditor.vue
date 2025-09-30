@@ -597,6 +597,9 @@ const handleTabKey = (event) => {
 
 .markdown-preview {
     padding: 24px;
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .markdown-editor:focus {
