@@ -58,8 +58,10 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import { login } from '@/api/admin'
+import { savePassword, getPassword, removePassword } from '@/utils/crypto'
 
 const router = useRouter()
 const isLoading = ref(false)
@@ -73,6 +75,21 @@ const loginForm = reactive({
 
 const showPassword = ref(false)
 
+// 页面加载时检查是否有记住的用户名和密码
+onMounted(() => {
+  const rememberedUsername = localStorage.getItem('rememberedUsername')
+  if (rememberedUsername) {
+    loginForm.username = rememberedUsername
+    loginForm.remember = true
+    
+    // 获取记住的密码并解密
+    const rememberedPassword = getPassword()
+    if (rememberedPassword) {
+      loginForm.password = rememberedPassword
+    }
+  }
+})
+
 const handleLogin = async () => {
   // 表单验证
   if (!loginForm.username || !loginForm.password) {
@@ -84,29 +101,27 @@ const handleLogin = async () => {
     isLoading.value = true
     errorMessage.value = ''
     
-    // 模拟登录过程
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // 调用登录接口
+    const res = await login(loginForm)
     
-    // 验证用户名和密码
-    if (loginForm.username === 'admin' && loginForm.password === '123456') {
-      // 存储登录状态
-      localStorage.setItem('isLoggedIn', 'true')
-      
-      // 如果选择了"记住我"，可以存储用户名
-      if (loginForm.remember) {
-        localStorage.setItem('rememberedUsername', loginForm.username)
-      } else {
-        localStorage.removeItem('rememberedUsername')
-      }
-      
-      // 登录成功后跳转到管理后台首页
-      router.push('/admin')
+    // 登录成功，存储token和登录状态
+    localStorage.setItem('token', res.data.token)
+    localStorage.setItem('isLoggedIn', 'true')
+    
+    // 如果勾选了记住我，存储用户名和密码
+    if (loginForm.remember) {
+      localStorage.setItem('rememberedUsername', loginForm.username)
+      savePassword(loginForm.password)
     } else {
-      errorMessage.value = '用户名或密码错误'
+      localStorage.removeItem('rememberedUsername')
+      removePassword()
     }
+    
+    // 登录成功后跳转到管理后台首页
+    router.push('/admin')
   } catch (error) {
     console.error('登录失败:', error)
-    errorMessage.value = '登录失败，请检查用户名和密码'
+    errorMessage.value = error.message || '登录失败，请检查用户名和密码'
   } finally {
     isLoading.value = false
   }

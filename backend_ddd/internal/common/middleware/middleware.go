@@ -1,6 +1,11 @@
 package middleware
 
-import "github.com/gin-gonic/gin"
+import (
+	"gt-blog/backend_ddd/pkg/util"
+	"strings"
+
+	"github.com/gin-gonic/gin"
+)
 
 // CORS 跨域中间件
 func CORS() gin.HandlerFunc {
@@ -47,9 +52,52 @@ func CORS() gin.HandlerFunc {
 	}
 }
 
-func AuthMiddleware(c *gin.Context) {
-	// 身份验证中间件实现
-	c.Next()
+// AuthMiddleware 身份验证中间件实现
+func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// 从请求头中获取Authorization
+		authHeader := c.Request.Header.Get("Authorization")
+		if authHeader == "" {
+			c.JSON(401, gin.H{
+				"code":    401,
+				"message": "未提供认证信息",
+				"data":    nil,
+			})
+			c.Abort()
+			return
+		}
+
+		// 提取token
+		tokenParts := strings.Split(authHeader, " ")
+		if len(tokenParts) != 2 || tokenParts[0] != "Bearer" {
+			c.JSON(401, gin.H{
+				"code":    401,
+				"message": "无效的认证格式",
+				"data":    nil,
+			})
+			c.Abort()
+			return
+		}
+
+		tokenString := tokenParts[1]
+
+		// 解析和验证token
+		userID, err := util.ParseJWT(tokenString)
+		if err != nil {
+			c.JSON(401, gin.H{
+				"code":    401,
+				"message": "无效的token: " + err.Error(),
+				"data":    nil,
+			})
+			c.Abort()
+			return
+		}
+
+		// 将userID存储到context中
+		c.Set("userID", userID)
+
+		c.Next()
+	}
 }
 
 func Logger(c *gin.Context) {

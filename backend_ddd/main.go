@@ -2,7 +2,13 @@ package main
 
 import (
 	"context"
+	errors "errors"
 	"flag"
+	"gt-blog/backend_ddd/internal/admin_context/controller"
+	"gt-blog/backend_ddd/internal/admin_context/model"
+	"gt-blog/backend_ddd/internal/admin_context/repository"
+	"gt-blog/backend_ddd/internal/admin_context/route"
+	"gt-blog/backend_ddd/internal/admin_context/service"
 	"gt-blog/backend_ddd/internal/content_management_context/L0_interface/handler"
 	"gt-blog/backend_ddd/internal/content_management_context/L0_interface/router"
 	appservice "gt-blog/backend_ddd/internal/content_management_context/L1_application/service"
@@ -20,6 +26,8 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 var configPath = flag.String("config", "pkg/config/config.yaml", "配置文件路径")
@@ -55,11 +63,17 @@ func main() {
 		&dao.CategoryDAO{},
 		&dao.ColumnDAO{},
 		&dao.TagDAO{},
+		// 添加admin相关模型
+		&model.Admin{},
+		&model.SocialAccount{},
 	}
 	if err := db.AutoMigrate(daoModels...); err != nil {
 		logger.Fatal("数据库表迁移失败", log.String("error", err.Error()))
 	}
 	logger.Info("数据库表结构初始化完成")
+
+	// 初始化admin表，添加默认管理员账号
+	initAdminTable(db, logger)
 
 	// 初始化仓储层（注入数据库/缓存依赖）
 	articleRepo := mysqlrepository.NewMySQLArticleRepository(db)
@@ -67,6 +81,7 @@ func main() {
 	categoryRepo := mysqlrepository.NewMySQLCategoryRepository(db)
 	articleTagRepo := mysqlrepository.NewMySQLArticleTagRepository(db)
 	columnRepo := mysqlrepository.NewMySQLColumnRepository(db)
+	adminRepo := repository.NewMySqlAdminRepository(db)
 
 	// 初始化领域层（注入仓储依赖）
 	articleDomainService := domainservice.NewArticleDomainService(
@@ -101,6 +116,10 @@ func main() {
 	tagAppService := appservice.NewTagAppService(tagRepo, tagDomainService)
 	tagHandler := handler.NewTagHandler(tagAppService)
 
+	// 初始化admin相关服务和控制器
+	adminService := service.NewAdminService(adminRepo)
+	adminController := controller.NewAdminController(adminService)
+
 	// 注册路由
 	r := gin.Default()
 
@@ -125,6 +144,8 @@ func main() {
 	router.RegisterTagRoutes(api, tagHandler)
 	router.RegisterCategoryRoutes(api, categoryHander)
 	router.RegisterColumnRoutes(api, columnHandler)
+	// 注册admin路由
+	route.RegisterAdminRoutes(api, adminController)
 
 	// 启动HTTP服务（带优雅关闭）
 	srv := &http.Server{
@@ -155,4 +176,44 @@ func main() {
 	}
 
 	logger.Info("服务器已正常关闭")
+}
+
+// initAdminTable 初始化admin表，添加默认管理员账号
+func initAdminTable(db *gorm.DB, logger *zap.Logger) {
+	// 创建adminRepository实例
+	adminRepo := repository.NewMySqlAdminRepository(db)
+
+	// 检查是否已经存在admin账号
+	ctx := context.Background()
+	_, err := adminRepo.GetAdminByUsername(ctx, "admin")
+
+	if err == nil {
+		// 账号已存在，无需初始化
+		logger.Info("管理员账号已存在，跳过初始化")
+		return
+	}
+
+	// 如果是因为记录不存在而报错，则创建默认管理员账号
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		// 创建默认管理员
+		admin := &model.Admin{
+			Username: "admin",
+			Password: "666666", // 默认密码
+			Nickname: "管理员",
+			Email:    "admin@example.com",
+			Bio:      "博客管理员",
+		}
+
+		// 插入管理员记录
+		createErr := db.WithContext(ctx).Create(admin).Error
+		if createErr != nil {
+			logger.Error("创建默认管理员账号失败", log.String("error", err.Error()))
+			return
+		}
+
+		logger.Info("默认管理员账号创建成功")
+	} else {
+		// 其他错误情况
+		logger.Error("查询管理员账号时发生错误", log.String("error", err.Error()))
+	}
 }

@@ -8,15 +8,9 @@
       <div class="profile-settings">
         <div class="setting-item">
           <span class="label">头像</span>
-          <div class="avatar-upload">
-            <el-upload
-              action="#"
-              :show-file-list="false"
-              :before-upload="beforeAvatarUpload"
-              :http-request="handleAvatarUpload"
-            >
-              <el-avatar :size="80" :src="profileData.avatar" class="avatar-preview clickable-avatar" />
-            </el-upload>
+          <div class="avatar-section">
+            <el-avatar :size="80" :src="profileData.avatarUrl" class="avatar-preview" />
+            <el-input v-model="profileData.avatarUrl" placeholder="请输入头像URL" style="width: 300px; margin-left: 16px;" />
           </div>
         </div>
         <div class="setting-item">
@@ -38,15 +32,15 @@
         <div class="setting-item">
           <span class="label">链接账号</span>
           <div class="social-media-table">
-            <el-table :data="socialMedia" style="width: 400px;">
-              <el-table-column prop="name" label="名称" width="120">
+            <el-table :data="profileData.socialAccounts" style="width: 400px;">
+              <el-table-column prop="platform" label="平台" width="120">
                 <template #default="{ row, $index }">
-                  <el-input v-model="row.name" :placeholder="'名称' + ($index + 1)" />
+                  <el-input v-model="row.platform" :placeholder="'平台' + ($index + 1)" />
                 </template>
               </el-table-column>
-              <el-table-column prop="link" label="链接">
+              <el-table-column prop="url" label="链接">
                 <template #default="{ row, $index }">
-                  <el-input v-model="row.link" :placeholder="'链接' + ($index + 1)" />
+                  <el-input v-model="row.url" :placeholder="'链接' + ($index + 1)" /> 
                 </template>
               </el-table-column>
             </el-table>
@@ -76,11 +70,10 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import MarkdownRenderer from '../../components/common/MarkdownRenderer.vue'
-import { 
+import {
   getProfile,
-  updateProfile,
-  uploadAvatar 
- } from '@/api/profile'
+  updateProfile
+ } from '@/api/admin'
 
 const route = useRoute()
 const loading = ref(false)
@@ -88,30 +81,26 @@ const loading = ref(false)
 // 初始化数据
 const profileData = ref({
   nickname: '',
+  avatarUrl: '',
   bio: '',
   email: '',
   wechat: '',
-  bio: '',
   aboutBlog: '',
   aboutMe: '',
-  avatarUrl: '',
-  socialMedia: []
+  socialAccounts: [
+    { platform: '', url: '' },
+    { platform: '', url: '' },
+    { platform: '', url: '' },
+    { platform: '', url: '' }
+  ]
 })
-
-const socialMedia = ref([
-  { name: '', link: '' },
-  { name: '', link: '' },
-  { name: '', link: '' },
-  { name: '', link: '' }
-])
-
-const tempAvatarFile = ref(null)
 
 // 获取用户资料
 const fetchProfile = async () => {
   loading.value = true
   try {
-    const res = await getProfile(route.params.id || '1')
+    // 直接调用getProfile，不传递用户名参数，完全依赖JWT token
+    const res = await getProfile()
     
     if (res.data) {
       profileData.value = {
@@ -121,8 +110,8 @@ const fetchProfile = async () => {
         wechat: res.data.wechat || '',
         about: res.data.about || '',
         blogAbout: res.data.blogAbout || '',
-        avatar: res.data.avatar || '',
-        socialMedia: res.data.socialMedia ? JSON.parse(res.data.socialMedia) : []
+        avatarUrl: res.data.avatarUrl || '',
+        socialAccounts: ensureFourSocialAccounts(res.data.socialAccounts)
       }
     }
   } catch (error) {
@@ -133,29 +122,20 @@ const fetchProfile = async () => {
   }
 }
 
+function ensureFourSocialAccounts(socialAccounts) {
+  // 如果不存在，初始化为空数组
+  const accounts = Array.isArray(socialAccounts) ? [...socialAccounts] : []
+  
+  // 确保至少有4个元素，不足的用空对象补充
+  while (accounts.length < 4) {
+    accounts.push({ platform: '', url: '' })
+  }
+  
+  return accounts
+}
+
 // 组件挂载时加载数据
 onMounted(fetchProfile)
-
-
-// 直接使用profileData管理数据
-const beforeAvatarUpload = (file) => {
-  const isJPGOrPNG = file.type === 'image/jpeg' || file.type === 'image/png'
-  const isLt2M = file.size / 1024 / 1024 < 2
-
-  if (!isJPGOrPNG) {
-    ElMessage.error('头像只能是 JPG 或 PNG 格式!')
-    return false
-  }
-  if (!isLt2M) {
-    ElMessage.error('头像大小不能超过 2MB!')
-    return false
-  }
-  return true
-}
-
-const handleAvatarUpload = ({ file }) => {
-  tempAvatarFile.value = file
-}
 
 const handleUpdateInfo = async () => {
   try {
@@ -169,23 +149,16 @@ const handleUpdateInfo = async () => {
       }
     )
     
-    // 1. 先上传头像
-    if (tempAvatarFile.value) {
-      const res = await uploadAvatar(tempAvatarFile.value, route.params.id || '1')
-      profileData.value.avatar = res.data
+    // 提交表单
+    const submitData = {
+      ...profileData.value
     }
-
-    //打印一下profileData.value
-    console.log(profileData.value)
-    // 2. 再提交表单
-    await updateProfile(profileData.value)
+    await updateProfile(submitData)
     ElMessage.success('个人信息更新成功！')
   } catch (error) {
     if (error !== 'cancel') {
       ElMessage.error('更新失败: ' + error.message)
     }
-  } finally {
-    tempAvatarFile.value = null
   }
 }
 
@@ -270,10 +243,9 @@ const handleBlogAboutInput = () => {
   overflow: hidden;
 }
 
-.avatar-upload {
+.avatar-section {
   display: flex;
   align-items: center;
-  gap: 16px;
 }
 
 .avatar-preview {

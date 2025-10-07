@@ -17,7 +17,7 @@
 2. **authentication_context**: 认证上下文(尚未实现)
 3. **analytics_context**: 分析上下文
 4. **content_presentation_context**: 内容展示上下文
-5. **profile_context**: 用户资料上下文
+5. **user_context**: 用户资料上下文
 
 ### 分层架构(以 content_management_context 为例)
 
