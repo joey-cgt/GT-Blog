@@ -48,18 +48,18 @@
         </div>
         <div class="setting-item">
           <span class="label">关于我</span>
-          <el-input v-model="profileData.about" placeholder="请输入关于我的Markdown内容" type="textarea" :rows="5" style="width: 500px; resize: none;" @input="handleAboutInput" />
+          <el-input v-model="profileData.aboutMe" placeholder="请输入关于我的Markdown内容" type="textarea" :rows="5" style="width: 500px; resize: none;" @input="handleAboutInput" />
         </div>
         <div class="setting-item">
           <span class="label">关于博客</span>
-          <el-input v-model="profileData.blogAbout" placeholder="请输入博客简介" type="textarea" :rows="3" style="width: 500px; resize: none;" @input="handleBlogAboutInput" />
+          <el-input v-model="profileData.aboutBlog" placeholder="请输入博客简介" type="textarea" :rows="3" style="width: 500px; resize: none;" @input="handleBlogAboutInput" />
         </div>
         
         
       </div>
       <div class="preview-about">
         <h3>"关于我"预览</h3>
-        <MarkdownRenderer :content="profileData.about" />
+        <MarkdownRenderer :content="profileData.aboutMe" />
       </div>
     </div>
   </div>
@@ -108,8 +108,8 @@ const fetchProfile = async () => {
         bio: res.data.bio || '',
         email: res.data.email || '',
         wechat: res.data.wechat || '',
-        about: res.data.about || '',
-        blogAbout: res.data.blogAbout || '',
+        aboutMe: res.data.aboutMe || '',
+        aboutBlog: res.data.aboutBlog || '',
         avatarUrl: res.data.avatarUrl || '',
         socialAccounts: ensureFourSocialAccounts(res.data.socialAccounts)
       }
@@ -155,6 +155,8 @@ const handleUpdateInfo = async () => {
     }
     await updateProfile(submitData)
     ElMessage.success('个人信息更新成功！')
+    // 刷新个人资料数据
+    await fetchProfile()
   } catch (error) {
     if (error !== 'cancel') {
       ElMessage.error('更新失败: ' + error.message)

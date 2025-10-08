@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
+import router from '../router'
 
 // 创建axios实例
 const service = axios.create({
@@ -35,7 +36,18 @@ service.interceptors.response.use(
     return res
   },
   error => {
-    ElMessage.error(error.message)
+    // 处理401 JWT认证失败错误
+    if (error.response && error.response.status === 401) {
+      // 清除登录状态
+      localStorage.removeItem('token')
+      localStorage.removeItem('isLoggedIn')
+      // 显示错误消息
+      ElMessage.error('登录已过期，请重新登录')
+      // 跳转到登录页面
+      router.push('/login')
+    } else {
+      ElMessage.error(error.message)
+    }
     return Promise.reject(error)
   }
 )
