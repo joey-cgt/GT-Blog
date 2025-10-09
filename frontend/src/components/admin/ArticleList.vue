@@ -185,8 +185,8 @@
 import { ref, computed, onMounted } from 'vue'
 import { Search } from '@element-plus/icons-vue'
 import { getCategoryList } from '@/api/category'
-import { getTags } from '@/api/tag'
-import { getColumns } from '@/api/column'
+import { getTagList } from '@/api/tag'
+import { getColumnList } from '@/api/column'
 
 const props = defineProps({
   articles: {
@@ -245,7 +245,7 @@ const fetchCategories = async () => {
 // 获取标签数据
 const fetchTags = async () => {
   try {
-    const response = await getTags({ page: 1, pageSize: 100 })
+    const response = await getTagList({ page: 1, pageSize: 100 })
     tags.value = response.data?.items || []
   } catch (error) {
     console.error('获取标签数据失败:', error)
@@ -255,7 +255,7 @@ const fetchTags = async () => {
 // 获取专栏数据
 const fetchColumns = async () => {
   try {
-    const response = await getColumns({ page: 1, pageSize: 100 })
+    const response = await getColumnList({ page: 1, pageSize: 100 })
     columns.value = response.data?.items || []
   } catch (error) {
     console.error('获取专栏数据失败:', error)

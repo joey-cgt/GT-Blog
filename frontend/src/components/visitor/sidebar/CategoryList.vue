@@ -1,6 +1,20 @@
 <script setup>
 import { categories } from '../../../store/blog.js'
 import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { getCategoryList } from '@/api/category.js'
+
+const categoryList = ref([])
+
+onMounted(async () => {
+  try {
+    const response = await getCategoryList()
+    categoryList.value = response.data.items
+  } catch (error) {
+    console.error('获取分类数据失败:', error)
+  }
+})
+
 
 const router = useRouter()
 
@@ -13,10 +27,11 @@ const handleCategoryClick = (categoryId) => {
 </script>
 
 <template>
+
   <section class="sidebar-section categories-section">
     <h3 class="sidebar-title">文章分类</h3>
     <ul class="categories-list">
-      <li v-for="category in categories" :key="category.name">
+      <li v-for="category in categoryList" :key="category.name">
         <a href="javascript:void(0)" @click="handleCategoryClick(category.id)">
           {{ category.name }}
           <span class="count">{{ category.count }}</span>

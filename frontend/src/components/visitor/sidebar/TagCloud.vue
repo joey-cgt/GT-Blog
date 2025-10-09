@@ -1,8 +1,21 @@
 <script setup>
 import { tags } from '../../../store/blog.js'
 import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { getTagList } from '@/api/tag.js'
 
 const router = useRouter()
+
+const tagList = ref([])
+
+onMounted(async () => {
+  try {
+    const response = await getTagList()
+    tagList.value = response.data.items
+  } catch (error) {
+    console.error('获取标签数据失败:', error)
+  }
+})
 
 const handleTagClick = (tagName) => {
   router.push({
@@ -17,7 +30,7 @@ const handleTagClick = (tagName) => {
     <h3 class="sidebar-title">热门标签</h3>
     <div class="tags-cloud">
       <a 
-        v-for="tag in tags" 
+        v-for="tag in tagList" 
         :key="tag.name" 
         href="javascript:void(0)" 
         class="tag-cloud-item"

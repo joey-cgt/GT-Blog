@@ -1,6 +1,6 @@
 <script setup>
 import AuthorCard from '../../components/visitor/AuthorCard.vue'
-import SimpleArticleList from '../../components/visitor/SimpleArticleList.vue'
+import HomePageArticleList from '../../components/visitor/HomePageArticleList.vue'
 </script>
 
 <template>
@@ -9,15 +9,15 @@ import SimpleArticleList from '../../components/visitor/SimpleArticleList.vue'
     
     <div class="articles-grid">
       <div class="featured-section">
-        <SimpleArticleList type="pinned" title="置顶文章" />
+        <HomePageArticleList type="pinned" title="置顶文章" />
       </div>
       
       <div class="main-section">
-        <SimpleArticleList type="latest" title="最新文章" :limit="5" />
+        <HomePageArticleList type="latest" title="最新文章" :limit="5" />
       </div>
       
       <div class="sidebar-section">
-        <SimpleArticleList type="popular" title="热门文章" :limit="5" />
+        <HomePageArticleList type="popular" title="热门文章" :limit="5" />
       </div>
     </div>
   </div>

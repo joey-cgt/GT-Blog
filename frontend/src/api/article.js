@@ -69,3 +69,24 @@ export function deleteArticle(id) {
     method: 'delete'
   })
 }
+
+export function getPopularArticles() {
+  return request({
+    url: '/api/v1/articles/popular',
+    method: 'get',
+  })
+}
+
+export function getLatestArticles() {
+  return request({
+    url: '/api/v1/articles/latest',
+    method: 'get',
+  })
+}
+
+export function getPinnedArticles() {
+  return request({
+    url: '/api/v1/articles/top',
+    method: 'get',
+  })
+}

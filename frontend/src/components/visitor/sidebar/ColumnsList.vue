@@ -1,8 +1,21 @@
 <script setup>
 import { useRouter } from 'vue-router'
-import { columns } from '../../../store/blog.js'
+import { getColumnList } from '@/api/column.js'
+import { ref, onMounted } from 'vue'
 
 const router = useRouter()
+
+
+const columnList = ref([])
+
+onMounted(async () => {
+  try {
+    const response = await getColumnList()
+    columnList.value = response.data.items
+  } catch (error) {
+    console.error('获取专栏数据失败:', error)
+  }
+})
 
 const handleColumnClick = (id) => {
   router.push(`/columns/${id}`)
@@ -15,7 +28,7 @@ const handleColumnClick = (id) => {
   <section class="sidebar-section columns-section">
     <h3 class="sidebar-title">专栏</h3>
     <ul class="columns-list">
-      <li v-for="column in columns" :key="column.id">
+      <li v-for="column in columnList" :key="column.id">
         <a @click="handleColumnClick(column.id)">
           {{ column.title }}
           <span class="count">{{ column.articleCount }}</span>

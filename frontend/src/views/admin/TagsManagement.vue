@@ -183,7 +183,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Loading } from '@element-plus/icons-vue'
-import { getTags, createTag, updateTag, deleteTag } from '@/api/tag.js'
+import { getTagList, createTag, updateTag, deleteTag } from '@/api/tag.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -213,7 +213,7 @@ const loading = ref(false)
 const loadTags = async () => {
   loading.value = true
   try {
-    const response = await getTags()
+    const response = await getTagList()
     tags.value = response?.data?.items || []
   } catch (error) {
     ElMessage.error('获取标签列表失败')

@@ -5,7 +5,7 @@ import request from '@/utils/request'
  * @param {Object} params - 查询参数
  * @returns {Promise}
  */
-export function getTags(params = {}) {
+export function getTagList(params = {}) {
   return request({
     url: '/api/v1/tags',
     method: 'get',

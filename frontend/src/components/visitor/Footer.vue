@@ -1,5 +1,55 @@
 <script setup>
-import { blogInfo } from '../../store/blog.js'
+import { getAuthor } from '../../api/visitor.js'
+import { ref, onMounted } from 'vue'
+
+// 初始化数据
+const blogInfo = ref({
+  nickname: '',
+  avatarUrl: '',
+  bio: '',
+  email: '',
+  wechat: '',
+  aboutBlog: '',
+  aboutMe: '',
+  socialAccounts: [
+    { platform: '', url: '' },
+    { platform: '', url: '' },
+    { platform: '', url: '' },
+    { platform: '', url: '' }
+  ]
+})
+
+const fetchBlogInfo = async () => {
+  try {
+    const res = await getAuthor(1)
+    if (res.data) {
+      blogInfo.value = {
+      nickname: res.data.nickname || '',
+      avatarUrl: res.data.avatarUrl || '',
+      bio: res.data.bio || '',
+      email: res.data.email || '',
+      wechat: res.data.wechat || '',
+      aboutBlog: res.data.aboutBlog || '',
+      aboutMe: res.data.aboutMe || '',
+      socialAccounts: res.data.socialAccounts && Array.isArray(res.data.socialAccounts) 
+            ? res.data.socialAccounts.map(account => ({ 
+              platform: account.platform || account.Platform || '',
+              url: account.url || account.Url || ''
+            }))
+          : []
+      }
+      console.log("Footer socialAccounts data:", blogInfo.value.socialAccounts);
+    }
+  } catch (error) {
+    console.error('请求错误:', error)
+    // 确保 ElMessage 组件已正确导入
+    // ElMessage.error('获取资料失败')
+  } finally {    
+  }
+}
+
+onMounted(fetchBlogInfo)
+
 </script>
 
 <template>
@@ -8,7 +58,7 @@ import { blogInfo } from '../../store/blog.js'
       <div class="footer-content">
         <div class="footer-section about">
           <h3>关于博客</h3>
-          <p>专注于技术分享的个人博客，涵盖前端、后端、DevOps等多个技术领域。</p>
+          <p>{{ blogInfo.aboutBlog }}</p>
         </div>
         
         <div class="footer-section links">
@@ -23,18 +73,13 @@ import { blogInfo } from '../../store/blog.js'
         
         <div class="footer-section contact">
           <h3>联系方式</h3>
-          <p>邮箱：joycgt@126.com</p>
-          <p>微信：joycgt</p>
-          <div class="social-links">
-            <a v-for="link in blogInfo.socialLinks" :key="link.name" :href="link.url" target="_blank" class="social-link">
-              <span class="icon" :class="link.icon"></span>
-            </a>
-          </div>
+          <p>邮箱：{{ blogInfo.email }}</p>
+          <p>微信：{{ blogInfo.wechat }}</p>
         </div>
       </div>
       
       <div class="footer-bottom">
-        <p>&copy; 2025 {{ blogInfo.title }} | 由 Vue3 强力驱动</p>
+        <p>&copy; 2025 {{ blogInfo.nickname }} | 由 Vue3 强力驱动</p>
       </div>
     </div>
   </footer>

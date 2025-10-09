@@ -151,8 +151,8 @@ import { Plus } from '@element-plus/icons-vue'
 import MarkdownRenderer from '../../components/common/MarkdownRenderer.vue'
 import { createAndPublishArticle, updatePublishedArticle, createDraft, updateDraft, getArticleDetail, publishDraft } from '../../api/article.js'
 import { getCategoryList } from '../../api/category.js'
-import { getTags } from '../../api/tag.js'
-import { getColumns } from '../../api/column.js'
+import { getTagList } from '../../api/tag.js'
+import { getColumnList } from '../../api/column.js'
 import 'github-markdown-css/github-markdown.css'
 
 const router = useRouter()
@@ -221,7 +221,7 @@ const fetchCategories = async () => {
 // 获取标签数据
 const fetchTags = async () => {
   try {
-    const response = await getTags({ page: 1, pageSize: 100 })
+    const response = await getTagList({ page: 1, pageSize: 100 })
     tags.value = response.data?.items || []
     // 构建映射关系
     tags.value.forEach(tag => {
@@ -237,7 +237,7 @@ const fetchTags = async () => {
 // 获取专栏数据
 const fetchColumns = async () => {
   try {
-    const response = await getColumns({ page: 1, pageSize: 100 })
+    const response = await getColumnList({ page: 1, pageSize: 100 })
     columns.value = response.data?.items || []
     // 构建映射关系
     columns.value.forEach(column => {

@@ -1,5 +1,53 @@
 <script setup>
-import { blogInfo } from '../../store/blog.js'
+import { getAuthor } from '../../api/visitor.js'
+import { ref, onMounted } from 'vue'
+
+
+// 初始化数据
+const blogInfo = ref({
+  nickname: '',
+  avatarUrl: '',
+  bio: '',
+  email: '',
+  wechat: '',
+  aboutBlog: '',
+  aboutMe: '',
+  socialAccounts: [
+    { platform: '', url: '' },
+    { platform: '', url: '' },
+    { platform: '', url: '' },
+    { platform: '', url: '' }
+  ]
+})
+
+const fetchBlogInfo = async () => {
+  try {
+    const res = await getAuthor(1)
+    if (res.data) {
+      blogInfo.value = {
+      nickname: res.data.nickname,
+      avatarUrl: res.data.avatarUrl,
+      bio: res.data.bio,
+      email: res.data.email,
+      wechat: res.data.wechat,
+      aboutBlog: res.data.aboutBlog,
+      aboutMe: res.data.aboutMe,
+      socialAccounts: res.data.socialAccounts || []
+      }
+      console.log("socialAccounts:", blogInfo.value.socialAccounts)
+
+    }
+  } catch (error) {
+    console.error('请求错误:', error)
+    ElMessage.error('获取资料失败')
+  } finally {
+
+  }
+}
+
+onMounted(fetchBlogInfo)
+
+
 </script>
 
 <template>
@@ -7,19 +55,19 @@ import { blogInfo } from '../../store/blog.js'
   <section class="author-card">
     <div class="author-info">
       <div class="author-avatar-container">
-        <img :src="blogInfo.avatar" alt="博主头像" class="author-avatar" />
+        <img :src="blogInfo.avatarUrl" alt="博主头像" class="author-avatar" />
       </div>
       <div class="author-details">
         <div class="author-name-row">
-          <h2 class="author-name">{{ blogInfo.author }}</h2>
+          <h2 class="author-name">{{ blogInfo.nickname }}</h2>
           <div class="social-links">
-            <a v-for="link in blogInfo.socialLinks" :key="link.name" :href="link.url" target="_blank" class="social-link">
-              <span class="icon" :class="link.icon"></span>
-              {{ link.name }}
+            <a v-for="link in blogInfo.socialAccounts" :key="link.platform" :href="link.url" target="_blank" class="social-link">
+              <span class="icon" :class="`icon-${link.platform.toLowerCase()}`"></span>
+              {{ link.platform }}
             </a>
           </div>
         </div>
-        <p class="author-description">{{ blogInfo.description }}</p>
+        <p class="author-description">{{ blogInfo.bio }}</p>
       </div>
     </div>
   </section>

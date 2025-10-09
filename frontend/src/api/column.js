@@ -1,10 +1,17 @@
 import request from '@/utils/request'
 
-export function getColumns(params) {
+export function getColumnList(params) {
   return request({
     url: '/api/v1/columns',
     method: 'get',
     params
+  })
+}
+
+export function getColumnDetail(id) {
+  return request({
+    url: `/api/v1/columns/${id}`,
+    method: 'get'
   })
 }
 

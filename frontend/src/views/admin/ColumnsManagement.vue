@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
   createColumn,
-  getColumns,
+  getColumnList,
   updateColumn,
   deleteColumn
 } from '@/api/column'
@@ -20,7 +20,7 @@ onMounted(() => {
 const loadColumns = async () => {
   try {
     loading.value = true
-    const { data } = await getColumns({
+    const { data } = await getColumnList({
       page: currentPage.value,
       pageSize: pageSize.value
     })
