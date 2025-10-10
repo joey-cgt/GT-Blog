@@ -1,12 +1,19 @@
 <script setup>
 import {ref, onMounted} from 'vue'
 import { getAuthor } from '../../../api/visitor';
+import { getBlogStatistics } from '../../../api/blogstats';
 
 const authorInfo = ref({
   name: '',
   avatarUrl: '',
   email: '',
   wechat: ''
+})
+
+const blogStats = ref({
+  totalArticles: 0,
+  totalViews: 0,
+  totalLikes: 0
 })
 
 onMounted(async () => {
@@ -20,6 +27,17 @@ onMounted(async () => {
     }
   } catch (error) {
     console.error('获取作者信息失败:', error)
+  }
+
+  try {
+    const response = await getBlogStatistics()
+    if (response.data) {
+      blogStats.value.totalArticles = response.data.totalArticles || 0
+      blogStats.value.totalViews = response.data.totalViews || 0
+      blogStats.value.totalLikes = response.data.totalLikes || 0
+    }
+  } catch (error) {
+    console.error('获取博客统计数据失败:', error)
   }
 })
 
@@ -48,19 +66,19 @@ onMounted(async () => {
     <div class="stat-item">
         <i class="fas fa-file-alt"></i>
         <span class="stat-label">总文章数</span>
-        <span class="stat-value">{{  }}</span>
+        <span class="stat-value">{{ blogStats.totalArticles }}</span>
     </div>
     
     <div class="stat-item">
         <i class="fas fa-eye"></i>
         <span class="stat-label">总浏览量</span>
-        <span class="stat-value">{{  }}</span>
+        <span class="stat-value">{{ blogStats.totalViews }}</span>
     </div>
     
     <div class="stat-item">
         <i class="fas fa-heart"></i>
         <span class="stat-label">总点赞数</span>
-        <span class="stat-value">{{ }}</span>
+        <span class="stat-value">{{ blogStats.totalLikes }}</span>
     </div>
     </div>
     </div>
@@ -170,9 +188,6 @@ onMounted(async () => {
   padding: 2px 0;
 }
 
-.stat-item:not(:last-child) {
-  /* border-bottom: 1px solid #f0f0f0; */
-}
 
 .stat-label {
   display: flex;
