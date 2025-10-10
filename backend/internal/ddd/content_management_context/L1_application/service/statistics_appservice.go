@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"gt-blog/backend/internal/ddd/content_management_context/L2_domain/model"
 	"gt-blog/backend/internal/ddd/content_management_context/L2_domain/repository"
+	"log"
 	"time"
+
+	"github.com/robfig/cron/v3"
 )
 
 type BlogStatAppService struct {
@@ -124,18 +127,38 @@ func (s *BlogStatAppService) RecordArticleView(ctx context.Context, articleID in
 	return nil
 }
 
-// CreateDailyStatsTask 创建每日统计任务
-func (s *BlogStatAppService) CreateDailyStatsTask() {
-	// 在实际应用中，这里应该设置定时任务，每天凌晨执行AggregateDailyData方法
-	// 例如使用github.com/robfig/cron库
+// CreateDailyStatsTask 创建并启动每日统计任务
+func (s *BlogStatAppService) CreateDailyStatsTask() *cron.Cron {
+	// 创建一个新的cron调度器
+	c := cron.New()
 
-	// 示例代码：每天凌晨2点执行聚合任务
-	// c := cron.New()
-	// c.AddFunc("0 2 * * *", func() {
-	//   ctx := context.Background()
-	//   if err := s.AggregateDailyData(ctx); err != nil {
-	//     // 记录错误日志
-	//   }
-	// })
-	// c.Start()
+	// 添加定时任务：每天凌晨2点执行聚合任务
+	_, err := c.AddFunc("0 2 * * *", func() {
+		ctx := context.Background()
+		log.Println("开始执行每日统计数据聚合任务")
+		if err := s.AggregateDailyData(ctx); err != nil {
+			log.Printf("每日统计数据聚合任务执行失败: %v\n", err)
+		} else {
+			log.Println("每日统计数据聚合任务执行成功")
+		}
+	})
+
+	if err != nil {
+		log.Printf("添加定时任务失败: %v\n", err)
+		return nil
+	}
+
+	// 启动调度器
+	c.Start()
+	log.Println("每日统计数据聚合任务已启动，每天凌晨2点执行")
+
+	return c
+}
+
+// StopDailyStatsTask 停止每日统计任务
+func (s *BlogStatAppService) StopDailyStatsTask(c *cron.Cron) {
+	if c != nil {
+		c.Stop()
+		log.Println("每日统计数据聚合任务已停止")
+	}
 }

@@ -7,6 +7,7 @@ require (
 	github.com/gin-gonic/gin v1.10.1
 	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/natefinch/lumberjack v2.0.0+incompatible
+	github.com/robfig/cron/v3 v3.0.1
 	go.uber.org/zap v1.27.0
 	gorm.io/driver/mysql v1.6.0
 )

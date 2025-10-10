@@ -586,6 +586,7 @@ func converArticleListItemResultToResponse(itemsResult []*result.ArticleListItem
 			Column:      columnResp,
 			Tags:        tagResps,
 			ViewCount:   itemResult.ViewCount,
+			LikeCount:   itemResult.LikeCount,
 			CreateTime:  itemResult.CreateTime,
 			PublishTime: itemResult.PublishTime,
 			IsTop:       itemResult.IsTop,

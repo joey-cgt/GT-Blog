@@ -164,7 +164,7 @@ func main() {
 	route.RegisterVisitorRoutes(api, visitorController)
 
 	// 启动每日统计任务
-	statAppService.CreateDailyStatsTask()
+	dailyStatsTask := statAppService.CreateDailyStatsTask()
 	// 启动HTTP服务（带优雅关闭）
 	srv := &http.Server{
 		Addr:    ":" + cfg.Server.Port,
@@ -194,6 +194,9 @@ func main() {
 	}
 
 	logger.Info("服务器已正常关闭")
+
+	// 停止每日统计任务
+	statAppService.StopDailyStatsTask(dailyStatsTask)
 }
 
 // initAdminTable 初始化admin表，添加默认管理员账号
