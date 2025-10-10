@@ -91,6 +91,22 @@ export function getPinnedArticles() {
   })
 }
 
+// 获取浏览量最高的前五篇文章
+export function getMostViewedArticles() {
+  return request({
+    url: '/api/v1/articles/most-viewed',
+    method: 'get',
+  })
+}
+
+// 获取点赞量最高的前五篇文章
+export function getMostLikedArticles() {
+  return request({
+    url: '/api/v1/articles/most-liked',
+    method: 'get',
+  })
+}
+
 export function getColumnArticles(columnId) {
   return request({
     url: `/api/v1/articles/aggregated?type=column&id=${columnId}`,

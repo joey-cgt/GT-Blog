@@ -160,12 +160,12 @@
             </el-table-column>
             <el-table-column prop="views" label="浏览量" width="80" align="center">
               <template #default="{ row }">
-                <span class="views-count">{{ row.views }}</span>
+                <span class="views-count">{{ row.viewCount }}</span>
               </template>
             </el-table-column>
             <el-table-column prop="date" label="日期" width="100" align="center">
               <template #default="{ row }">
-                <span class="article-date">{{ row.date }}</span>
+                <span class="article-date">{{ row.publishTime }}</span>
               </template>
             </el-table-column>
           </el-table>
@@ -192,12 +192,12 @@
             </el-table-column>
             <el-table-column prop="likes" label="点赞数" width="80" align="center">
               <template #default="{ row }">
-                <span class="likes-count">{{ row.likes }}</span>
+                <span class="likes-count">{{ row.likeCount }}</span>
               </template>
             </el-table-column>
             <el-table-column prop="date" label="日期" width="100" align="center">
               <template #default="{ row }">
-                <span class="article-date">{{ row.date }}</span>
+                <span class="article-date">{{ row.publishTime }}</span>
               </template>
             </el-table-column>
           </el-table>
@@ -212,6 +212,7 @@ import { ref, onMounted, watch, nextTick, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Document, Star, View, Top, Collection, Folder, PriceTag, Right, Notebook, Files } from '@element-plus/icons-vue'
 import { getBlogStatistics, getViewTrend } from '../../api/blogstats.js'
+import { getMostViewedArticles, getMostLikedArticles } from '../../api/article.js'
 import * as echarts from 'echarts'
 
 const router = useRouter()
@@ -251,22 +252,29 @@ const handleViewArticle = () => {
   router.push('/admin/articles?tab=published')
 }
 
-// 模拟热门文章数据
-const mostViewedArticles = ref([
-  { id: 1, title: 'Vue 3 组合式API最佳实践', views: 2456, date: '2024-01-15' },
-  { id: 2, title: 'TypeScript 高级类型技巧', views: 1987, date: '2024-01-12' },
-  { id: 3, title: 'Element Plus 组件库深度解析', views: 1765, date: '2024-01-10' },
-  { id: 4, title: '前端性能优化完全指南', views: 1543, date: '2024-01-08' },
-  { id: 5, title: 'CSS Grid 布局实战教程', views: 1321, date: '2024-01-05' }
-])
+// 定义热门文章数据，初始为空数组
+const mostViewedArticles = ref([])
+const mostLikedArticles = ref([])
 
-const mostLikedArticles = ref([
-  { id: 1, title: 'Vue 3 组合式API最佳实践', likes: 324, date: '2024-01-15' },
-  { id: 2, title: 'TypeScript 高级类型技巧', likes: 287, date: '2024-01-12' },
-  { id: 6, title: 'JavaScript 异步编程详解', likes: 256, date: '2024-01-18' },
-  { id: 3, title: 'Element Plus 组件库深度解析', likes: 234, date: '2024-01-10' },
-  { id: 7, title: 'Webpack 5 配置优化指南', likes: 198, date: '2024-01-20' }
-])
+// 从后端获取浏览量最高的文章
+const fetchMostViewedArticles = async () => {
+  try {
+    const response = await getMostViewedArticles()
+    mostViewedArticles.value = response.data.items || []
+  } catch (error) {
+    console.error('获取浏览量最高文章失败:', error)
+  }
+}
+
+// 从后端获取点赞量最高的文章
+const fetchMostLikedArticles = async () => {
+  try {
+    const response = await getMostLikedArticles()
+    mostLikedArticles.value = response.data.items || []
+  } catch (error) {
+    console.error('获取点赞量最高文章失败:', error)
+  }
+}
 
 // 从后端获取浏览量趋势数据
 const fetchViewTrendData = async (days) => {
@@ -380,6 +388,11 @@ onMounted(() => {
   nextTick(async () => {
     // 在组件挂载时获取统计数据
     await fetchBlogStatistics()
+    // 获取热门文章数据
+    await Promise.all([
+      fetchMostViewedArticles(),
+      fetchMostLikedArticles()
+    ])
     // 初始化图表，图表会自动获取数据
     initChart()
     // 添加窗口resize事件监听

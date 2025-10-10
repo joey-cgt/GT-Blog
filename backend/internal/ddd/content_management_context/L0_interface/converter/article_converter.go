@@ -501,6 +501,26 @@ func ConvertHomePageArticleListResultToResponse(res *result.HomePageArticleListR
 	}
 }
 
+func ConvertSortedArticleListResultToResponse(res *result.SortedArticleListResult) *response.GetSortedArticleListResponse {
+	if res == nil {
+		return &response.GetSortedArticleListResponse{
+			Items:     []*response.ArticleListItemResp{}, // 空列表返回空数组
+			Limit:     0,
+			SortOrder: "",
+			SortBy:    "",
+		}
+	}
+
+	items := converArticleListItemResultToResponse(res.Items)
+
+	return &response.GetSortedArticleListResponse{
+		Items:     items,
+		Limit:     res.Limit,
+		SortOrder: res.SortOrder,
+		SortBy:    res.SortBy,
+	}
+}
+
 func ConvertAggregatedArticleListResultToResponse(res *result.AggregatedArticleListResult) *response.GetAggregatedArticleListResponse {
 	if res == nil {
 		return &response.GetAggregatedArticleListResponse{

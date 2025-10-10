@@ -277,6 +277,38 @@ func (h *ArticleHandler) GetLatestArticleList(c *gin.Context) {
 	c.JSON(200, gin.H{"data": resp})
 }
 
+func (h *ArticleHandler) GetMostViewedArticleList(c *gin.Context) {
+	qry := query.GetSortedArticleListQuery{
+		Limit:     5,
+		SortBy:    "view_count",
+		SortOrder: "desc",
+	}
+	articleListResult, err := h.articleAppService.GetSortedArticleList(c, qry)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "获取最多查看文章列表失败: " + err.Error()})
+		return
+	}
+	resp := converter.ConvertSortedArticleListResultToResponse(articleListResult)
+
+	c.JSON(200, gin.H{"data": resp})
+}
+
+func (h *ArticleHandler) GetMostLikedArticleList(c *gin.Context) {
+	qry := query.GetSortedArticleListQuery{
+		Limit:     5,
+		SortBy:    "like_count",
+		SortOrder: "desc",
+	}
+	articleListResult, err := h.articleAppService.GetSortedArticleList(c, qry)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "获取最多点赞文章列表失败: " + err.Error()})
+		return
+	}
+	resp := converter.ConvertSortedArticleListResultToResponse(articleListResult)
+
+	c.JSON(200, gin.H{"data": resp})
+}
+
 func (h *ArticleHandler) GetAggregatedArticleList(c *gin.Context) {
 	var req request.GetAggregatedArticleListRequest
 	if err := c.ShouldBindQuery(&req); err != nil {

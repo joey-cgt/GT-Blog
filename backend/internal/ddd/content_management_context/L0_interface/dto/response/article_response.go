@@ -78,3 +78,10 @@ type GetAggregatedArticleListResponse struct {
 	PageSize   int                    `json:"pageSize"`
 	TotalPages int                    `json:"totalPages"`
 }
+
+type GetSortedArticleListResponse struct {
+	Items     []*ArticleListItemResp `json:"items"`
+	Limit     int                    `json:"limit"`
+	SortOrder string                 `json:"sortOrder"`
+	SortBy    string                 `json:"sortBy"`
+}

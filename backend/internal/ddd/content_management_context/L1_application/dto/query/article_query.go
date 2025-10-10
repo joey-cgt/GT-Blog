@@ -22,6 +22,12 @@ type GetHomePageArticleListQuery struct {
 	SortOrder string // 排序方向
 }
 
+type GetSortedArticleListQuery struct {
+	Limit     int    // 每页数量
+	SortBy    string // 排序字段
+	SortOrder string // 排序方向
+}
+
 type GetAggregatedArticleListQuery struct {
 	Type     string // 聚合类型：column(专栏)、tag(标签)、category(分类)
 	ID       int    // ID

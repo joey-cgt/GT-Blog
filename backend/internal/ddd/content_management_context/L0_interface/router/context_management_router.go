@@ -44,6 +44,12 @@ func RegisterArticleRoutes(router *gin.RouterGroup, articleHandler *handler.Arti
 		// 获取最新文章列表
 		articleGroup.GET("/latest", articleHandler.GetLatestArticleList)
 
+		// 获取浏览量最高的前五篇文章
+		articleGroup.GET("/most-viewed", articleHandler.GetMostViewedArticleList)
+
+		// 获取点赞量最高的前五篇文章
+		articleGroup.GET("/most-liked", articleHandler.GetMostLikedArticleList)
+
 		// 获取某专栏/分类/标签下的文章列表
 		articleGroup.GET("/aggregated", articleHandler.GetAggregatedArticleList)
 

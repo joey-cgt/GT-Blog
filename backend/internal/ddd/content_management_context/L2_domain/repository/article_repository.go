@@ -14,6 +14,7 @@ type ArticleRepository interface {
 	FindTopArticles(ctx context.Context, limit int) ([]*model.Article, error)
 	FindLatestArticles(ctx context.Context, limit int) ([]*model.Article, error)
 	FindPopularArticles(ctx context.Context, limit int) ([]*model.Article, error)
+	FindSortedArticles(ctx context.Context, sortBy, sortOrder string, limit int) ([]*model.Article, error)
 	FindByCategoryID(ctx context.Context, categoryID int, offset, limit int) ([]*model.Article, int, error)
 	FindByColumnID(ctx context.Context, categoryID int, offset, limit int) ([]*model.Article, int, error)
 	FindByTagID(ctx context.Context, categoryID int, offset, limit int) ([]*model.Article, int, error)

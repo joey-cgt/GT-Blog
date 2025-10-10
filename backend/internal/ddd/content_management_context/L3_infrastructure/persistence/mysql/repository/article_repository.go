@@ -349,6 +349,50 @@ func (r *MySQLArticleRepository) FindPopularArticles(ctx context.Context, limit 
 	return articles, nil
 }
 
+func (r *MySQLArticleRepository) FindSortedArticles(ctx context.Context, sortBy, sortOrder string, limit int) ([]*model.Article, error) {
+	// 1. 参数校验
+	if limit <= 0 {
+		return nil, fmt.Errorf("limit 必须为正数")
+	}
+	if sortBy == "" {
+		sortBy = "create_time" // 默认按创建时间排序
+	}
+	if sortOrder == "" {
+		sortOrder = "desc" // 默认按降序排序
+	}
+	// 2. 构建查询
+	db := r.db.WithContext(ctx).Model(&dao.ArticleDAO{})
+	if sortOrder == "desc" {
+		db = db.Order(fmt.Sprintf("%s DESC", sortBy))
+	} else {
+		db = db.Order(fmt.Sprintf("%s ASC", sortBy))
+	}
+	// 3. 执行查询
+	var articleDAOs []*dao.ArticleDAO
+	err := db.
+		Where("is_top = ?", false). // 筛选非置顶文章
+		Limit(limit).
+		Find(&articleDAOs).Error
+	if err != nil {
+		return nil, fmt.Errorf("查询排序文章失败: %w", err)
+	}
+	// 4. 将 DAO 转换为领域模型
+	articles := make([]*model.Article, 0, len(articleDAOs))
+	for _, dao := range articleDAOs {
+		article := r.toDomain(ctx, dao)
+		if article == nil {
+			return nil, fmt.Errorf("转换领域模型失败")
+		}
+		// 查询并设置标签ID列表
+		tagIDs, err := r.findTagIDsByArticleID(ctx, dao.ID)
+		if err == nil {
+			article.TagIDs = tagIDs
+		}
+		articles = append(articles, article)
+	}
+	return articles, nil
+}
+
 func (r *MySQLArticleRepository) FindByCategoryID(ctx context.Context, categoryID int, offset, limit int) ([]*model.Article, int, error) {
 	// 1. 构建基础查询
 	db := r.db.WithContext(ctx).Model(&dao.ArticleDAO{}).Where("category_id = ?", categoryID)

@@ -270,25 +270,11 @@ func (s *ArticleAppService) GetAllArticleList(ctx context.Context, qry query.Get
 		return nil, err
 	}
 
-	items := make([]*result.ArticleListItemResult, 0, len(articles))
-	for _, article := range articles {
-
-		categoryResult := s.buildCategoryResult(ctx, article.CategoryID)
-		columnResult := s.buildColumnResult(ctx, article.ColumnID)
-		tagResults := s.buildTagResults(ctx, article.TagIDs)
-		items = append(items, &result.ArticleListItemResult{
-			ID:          article.ID,
-			Title:       article.Title,
-			Abstract:    article.Abstract,
-			CoverUrl:    article.CoverUrl,
-			Category:    categoryResult,
-			Column:      columnResult,
-			Tags:        tagResults,
-			ViewCount:   article.ViewCount,
-			CreateTime:  article.CreateTime.Format("2006-01-02 15:04:05"),
-			PublishTime: article.PublishTime.Format("2006-01-02 15:04:05"),
-			IsTop:       article.IsTop,
-		})
+	// 构建响应结果
+	items := s.buildArticleListItemResults(ctx, articles)
+	// 单独设置创建时间（部分列表需要）
+	for i, item := range items {
+		item.CreateTime = articles[i].CreateTime.Format("2006-01-02 15:04:05")
 	}
 	// 计算总页数
 	totalPages := int(math.Ceil(float64(total) / float64(qry.PageSize)))
@@ -332,30 +318,31 @@ func (s *ArticleAppService) GetHomePageArticleList(ctx context.Context, qry quer
 	}
 
 	// 构建响应结果
-	items := make([]*result.ArticleListItemResult, 0, len(articleList))
-	for _, article := range articleList {
-		categoryResult := s.buildCategoryResult(ctx, article.CategoryID)
-		columnResult := s.buildColumnResult(ctx, article.ColumnID)
-		tagResults := s.buildTagResults(ctx, article.TagIDs)
-
-		items = append(items, &result.ArticleListItemResult{
-			ID:          article.ID,
-			Title:       article.Title,
-			Abstract:    article.Abstract,
-			CoverUrl:    article.CoverUrl,
-			Category:    categoryResult,
-			Column:      columnResult,
-			Tags:        tagResults,
-			ViewCount:   article.ViewCount,
-			LikeCount:   article.LikeCount,
-			PublishTime: article.PublishTime.Format("2006-01-02 15:04:05"),
-			IsTop:       article.IsTop,
-		})
-	}
+	items := s.buildArticleListItemResults(ctx, articleList)
 
 	return &result.HomePageArticleListResult{
 		Items:     items,
 		Type:      qry.Type,
+		SortBy:    qry.SortBy,
+		SortOrder: qry.SortOrder,
+	}, nil
+}
+
+func (s *ArticleAppService) GetSortedArticleList(ctx context.Context, qry query.GetSortedArticleListQuery) (*result.SortedArticleListResult, error) {
+	if qry.Limit <= 0 {
+		qry.Limit = 5
+	}
+	articles, err := s.articleRepo.FindSortedArticles(ctx, qry.SortBy, qry.SortOrder, qry.Limit)
+	if err != nil {
+		return nil, err
+	}
+
+	// 构建响应结果
+	items := s.buildArticleListItemResults(ctx, articles)
+
+	return &result.SortedArticleListResult{
+		Items:     items,
+		Limit:     qry.Limit,
 		SortBy:    qry.SortBy,
 		SortOrder: qry.SortOrder,
 	}, nil
@@ -399,26 +386,7 @@ func (s *ArticleAppService) GetAggregatedArticleList(ctx context.Context, qry qu
 	}
 
 	// 构建响应结果
-	items := make([]*result.ArticleListItemResult, 0, len(articleList))
-	for _, article := range articleList {
-		categoryResult := s.buildCategoryResult(ctx, article.CategoryID)
-		columnResult := s.buildColumnResult(ctx, article.ColumnID)
-		tagResults := s.buildTagResults(ctx, article.TagIDs)
-
-		items = append(items, &result.ArticleListItemResult{
-			ID:          article.ID,
-			Title:       article.Title,
-			Abstract:    article.Abstract,
-			CoverUrl:    article.CoverUrl,
-			Category:    categoryResult,
-			Column:      columnResult,
-			Tags:        tagResults,
-			ViewCount:   article.ViewCount,
-			LikeCount:   article.LikeCount,
-			PublishTime: article.PublishTime.Format("2006-01-02 15:04:05"),
-			IsTop:       article.IsTop,
-		})
-	}
+	items := s.buildArticleListItemResults(ctx, articleList)
 
 	// 计算总页数
 	totalPages := int(math.Ceil(float64(total) / float64(qry.PageSize)))
@@ -489,4 +457,29 @@ func (s *ArticleAppService) buildTagResults(ctx context.Context, tagIDs []int) [
 		})
 	}
 	return tagResults
+}
+
+// 辅助方法：构建文章列表项结果
+func (s *ArticleAppService) buildArticleListItemResults(ctx context.Context, articles []*model.Article) []*result.ArticleListItemResult {
+	items := make([]*result.ArticleListItemResult, 0, len(articles))
+	for _, article := range articles {
+		categoryResult := s.buildCategoryResult(ctx, article.CategoryID)
+		columnResult := s.buildColumnResult(ctx, article.ColumnID)
+		tagResults := s.buildTagResults(ctx, article.TagIDs)
+
+		items = append(items, &result.ArticleListItemResult{
+			ID:          article.ID,
+			Title:       article.Title,
+			Abstract:    article.Abstract,
+			CoverUrl:    article.CoverUrl,
+			Category:    categoryResult,
+			Column:      columnResult,
+			Tags:        tagResults,
+			ViewCount:   article.ViewCount,
+			LikeCount:   article.LikeCount,
+			PublishTime: article.PublishTime.Format("2006-01-02 15:04:05"),
+			IsTop:       article.IsTop,
+		})
+	}
+	return items
 }

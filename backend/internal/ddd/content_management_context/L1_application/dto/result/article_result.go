@@ -64,6 +64,13 @@ type HomePageArticleListResult struct {
 	SortOrder string
 }
 
+type SortedArticleListResult struct {
+	Items     []*ArticleListItemResult
+	Limit     int
+	SortBy    string
+	SortOrder string
+}
+
 type AggregatedArticleListResult struct {
 	Items      []*ArticleListItemResult
 	Type       string
