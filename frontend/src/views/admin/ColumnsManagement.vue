@@ -28,7 +28,7 @@ const loadColumns = async () => {
       id: item.id,
       name: item.name,
       description: item.description,
-      cover: item.coverUrl || 'https://th.bing.com/th/id/OIP.dIrXao1MUcqjeluUf9m8XAHaEl?w=229&h=180&c=7&r=0&o=7&pid=1.7&rm=3',
+      cover: item.coverUrl || '',
       createdAt: item.createTime,
       articleCount: item.articleCount,
       totalViews: item.viewCount,

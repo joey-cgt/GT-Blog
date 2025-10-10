@@ -303,3 +303,29 @@ func (h *ArticleHandler) GetAggregatedArticleList(c *gin.Context) {
 func (h *ArticleHandler) GetArticleListByKeyword(c *gin.Context) {
 
 }
+
+func (h *ArticleHandler) IncrementLike(c *gin.Context) {
+	var req request.IncrementLikeRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		c.JSON(400, gin.H{"error": "请求参数格式错误" + err.Error()})
+		return
+	}
+	if err := h.articleAppService.IncrementLike(c, req.ID); err != nil {
+		c.JSON(500, gin.H{"error": "增加点赞数失败: " + err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message": "增加点赞数成功"})
+}
+
+func (h *ArticleHandler) DecrementLike(c *gin.Context) {
+	var req request.DecrementLikeRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		c.JSON(400, gin.H{"error": "请求参数格式错误" + err.Error()})
+		return
+	}
+	if err := h.articleAppService.DecrementLike(c, req.ID); err != nil {
+		c.JSON(500, gin.H{"error": "减少点赞数失败: " + err.Error()})
+		return
+	}
+	c.JSON(200, gin.H{"message": "减少点赞数成功"})
+}

@@ -5,7 +5,6 @@ import { ref, onMounted } from 'vue'
 
 const router = useRouter()
 
-
 const columnList = ref([])
 
 onMounted(async () => {
@@ -30,7 +29,7 @@ const handleColumnClick = (id) => {
     <ul class="columns-list">
       <li v-for="column in columnList" :key="column.id">
         <a @click="handleColumnClick(column.id)">
-          {{ column.title }}
+          {{ column.name }}
           <span class="count">{{ column.articleCount }}</span>
         </a>
       </li>

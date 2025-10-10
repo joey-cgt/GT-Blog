@@ -1,6 +1,19 @@
 <script setup>
-import { columns } from '../../store/blog.js'
 import ColumnCard from '../../components/visitor/ColumnCard.vue'
+import { getColumnList } from '@/api/column.js'
+import { ref, onMounted } from 'vue'
+
+const columns = ref([])
+
+onMounted(async () => {
+  try {
+    const response = await getColumnList()
+    columns.value = response.data.items
+  } catch (error) {
+    console.error('获取专栏数据失败:', error)
+  }
+})
+
 </script>
 
 <template>

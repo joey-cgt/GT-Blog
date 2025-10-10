@@ -1,10 +1,10 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { articles, tags } from '../../store/blog.js'
 import ArticleList from '../../components/visitor/ArticleList.vue'
 import Pagination from '../../components/visitor/Pagination.vue'
 import ArticleFilter from '../../components/visitor/ArticleFilter.vue'
 import { useRoute, useRouter } from 'vue-router'
+import { getCategoryArticles, getTagArticles, getArticleList } from '../../api/article'
 
 const route = useRoute()
 const router = useRouter()
@@ -12,6 +12,32 @@ const currentPage = ref(1)
 const itemsPerPage = 10
 const filterType = ref('all') // all, category, tag
 const filterValue = ref('')
+const filteredArticles = ref([])
+
+const fetchArticles = async () => {
+  try {
+    if (filterType.value === 'tag') {
+      const response = await getTagArticles(filterValue.value)
+      filteredArticles.value = response.data.items || []
+    } else if (filterType.value === 'category') {
+      const response = await getCategoryArticles(filterValue.value)
+      filteredArticles.value = response.data.items || []
+    } else {
+      const params = {
+        status: 1,
+        page: 1, // 总是从第一页开始
+        pageSize: itemsPerPage,
+        sortBy: 'create_time',
+        sortOrder: 'desc'
+      }
+      const response = await getArticleList(params)
+      filteredArticles.value = response.data.items || []
+    }
+  } catch (error) {
+    console.error('获取文章失败:', error)
+    filteredArticles.value = []
+  }
+}
 
 // 监听路由参数变化
 watch(() => route.query, (newQuery) => {
@@ -26,39 +52,12 @@ watch(() => route.query, (newQuery) => {
     filterValue.value = ''
   }
   currentPage.value = 1
-})
-
-// 初始化时检查URL参数
-onMounted(() => {
-  if (route.query.tagId) {
-    filterType.value = 'tag'
-    filterValue.value = route.query.tagId
-  } else if (route.query.categoryId) {
-    filterType.value = 'category'
-    filterValue.value = route.query.categoryId
-  }
-})
-
-// 筛选文章
-const displayedArticles = computed(() => {
-  let filtered = [...articles]
-  
-  if (filterType.value === 'category' && filterValue.value) {
-    filtered = filtered.filter(article => article.categoryId === Number(filterValue.value))
-  } else if (filterType.value === 'tag' && filterValue.value) {
-    // 根据tagId找到对应的标签名称
-    const tag = tags.find(t => t.id === Number(filterValue.value))
-    if (tag) {
-      filtered = filtered.filter(article => article.tags.includes(tag.name))
-    }
-  }
-  
-  // 按时间从近到远排序
-  return filtered.sort((a, b) => new Date(b.date) - new Date(a.date))
-})
+  // 调用获取文章数据的函数
+  fetchArticles()
+}, { immediate: true })
 
 const totalPages = computed(() => {
-  return Math.ceil(displayedArticles.value.length / itemsPerPage)
+  return Math.ceil(filteredArticles.value.length / itemsPerPage)
 })
 
 function handlePageChange(page) {
@@ -118,7 +117,7 @@ watch(() => route.query, (query) => {
     />
 
     <ArticleList 
-      :customArticles="displayedArticles.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)"
+      :customArticles="filteredArticles.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)"
     />
     
     <Pagination

@@ -43,26 +43,27 @@ const displayedArticles = computed(() => {
     >
       <div class="article-content">
         <img 
-          :src="article.cover" 
+          :src="article.coverUrl" 
           :alt="article.title"
           class="article-image"
         >
         <div class="article-details">
           <h3 class="article-title" @click="navigateToArticle(article.id)">{{ article.title }}</h3>
-          <p class="article-summary">{{ article.summary }}</p>
+          <p class="article-summary">{{ article.abstract }}</p>
         </div>
       </div>
       <div class="article-meta">
-        <span class="meta-item">{{ article.date }}</span>
-        <span class="meta-item">{{ article.category }}</span>
-        <span class="meta-item">{{ article.views }} 阅读</span>
+        <span class="meta-item">{{ article.publishTime }}</span>
+        <span class="meta-item">{{ article.category.categoryName }}</span>
+        <span class="meta-item">{{ article.viewCount }} 阅读</span>
+        <span class="meta-item">{{ article.likeCount }} 点赞</span>
         <div class="tags-container">
           <span 
             v-for="tag in article.tags" 
             :key="tag" 
             class="tag"
           >
-            {{ tag }}
+            {{ tag.tagName }}
           </span>
         </div>
       </div>

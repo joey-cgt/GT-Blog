@@ -7,6 +7,7 @@ import (
 	"gt-blog/backend/internal/ddd/content_management_context/L2_domain/model"
 	"gt-blog/backend/internal/ddd/content_management_context/L2_domain/repository"
 	"gt-blog/backend/internal/ddd/content_management_context/L3_infrastructure/persistence/mysql/dao"
+	"log"
 	"time"
 
 	"gorm.io/gorm"
@@ -46,7 +47,7 @@ func (r *MySQLArticleRepository) Add(ctx context.Context, article *model.Article
 			articleTag := &dao.ArticleTagDAO{
 				ArticleID:  articleDAO.ID,
 				TagID:      tagID,
-				CreateTime: int(time.Now().Unix()),
+				CreateTime: time.Now(),
 			}
 			if err := tx.Create(articleTag).Error; err != nil {
 				tx.Rollback()
@@ -71,7 +72,7 @@ func (r *MySQLArticleRepository) Add(ctx context.Context, article *model.Article
 			articleTag := &dao.ArticleTagDAO{
 				ArticleID:  articleDAO.ID,
 				TagID:      tagID,
-				CreateTime: int(time.Now().Unix()),
+				CreateTime: time.Now(),
 			}
 			if err := tx.Create(articleTag).Error; err != nil {
 				tx.Rollback()
@@ -173,7 +174,11 @@ func (r *MySQLArticleRepository) FindByID(ctx context.Context, id int) (*model.A
 	}
 
 	// 查询文章关联的标签ID列表
-	article := r.toDomain(&articleDAO)
+	article := r.toDomain(ctx, &articleDAO)
+	if article == nil {
+		return nil, fmt.Errorf("转换领域模型失败")
+	}
+	// 查询文章关联的标签ID列表
 	tagIDs, err := r.findTagIDsByArticleID(ctx, id)
 	if err != nil {
 		return article, nil // 返回基本信息，忽略标签错误
@@ -216,7 +221,10 @@ func (r *MySQLArticleRepository) FindByPage(ctx context.Context, status int, off
 	// 5. 将 DAO 转换为领域模型（核心：隔离数据层与领域层）
 	articles := make([]*model.Article, 0, len(articleDAOs))
 	for _, dao := range articleDAOs {
-		article := r.toDomain(dao)
+		article := r.toDomain(ctx, dao)
+		if article == nil {
+			return nil, 0, fmt.Errorf("转换领域模型失败")
+		}
 		// 查询并设置标签ID列表
 		tagIDs, err := r.findTagIDsByArticleID(ctx, dao.ID)
 		if err == nil {
@@ -253,7 +261,16 @@ func (r *MySQLArticleRepository) FindTopArticles(ctx context.Context, limit int)
 	// 4. 将 DAO 转换为领域模型
 	articles := make([]*model.Article, 0, len(articleDAOs))
 	for _, dao := range articleDAOs {
-		articles = append(articles, r.toDomain(dao))
+		article := r.toDomain(ctx, dao)
+		if article == nil {
+			return nil, fmt.Errorf("转换领域模型失败")
+		}
+		// 查询并设置标签ID列表
+		tagIDs, err := r.findTagIDsByArticleID(ctx, dao.ID)
+		if err == nil {
+			article.TagIDs = tagIDs
+		}
+		articles = append(articles, article)
 	}
 
 	return articles, nil
@@ -280,7 +297,16 @@ func (r *MySQLArticleRepository) FindLatestArticles(ctx context.Context, limit i
 	// 4. 将 DAO 转换为领域模型
 	articles := make([]*model.Article, 0, len(articleDAOs))
 	for _, dao := range articleDAOs {
-		articles = append(articles, r.toDomain(dao))
+		article := r.toDomain(ctx, dao)
+		if article == nil {
+			return nil, fmt.Errorf("转换领域模型失败")
+		}
+		// 查询并设置标签ID列表
+		tagIDs, err := r.findTagIDsByArticleID(ctx, dao.ID)
+		if err == nil {
+			article.TagIDs = tagIDs
+		}
+		articles = append(articles, article)
 	}
 
 	return articles, nil
@@ -308,7 +334,16 @@ func (r *MySQLArticleRepository) FindPopularArticles(ctx context.Context, limit 
 	// 4. 将 DAO 转换为领域模型
 	articles := make([]*model.Article, 0, len(articleDAOs))
 	for _, dao := range articleDAOs {
-		articles = append(articles, r.toDomain(dao))
+		article := r.toDomain(ctx, dao)
+		if article == nil {
+			return nil, fmt.Errorf("转换领域模型失败")
+		}
+		// 查询并设置标签ID列表
+		tagIDs, err := r.findTagIDsByArticleID(ctx, dao.ID)
+		if err == nil {
+			article.TagIDs = tagIDs
+		}
+		articles = append(articles, article)
 	}
 
 	return articles, nil
@@ -338,7 +373,16 @@ func (r *MySQLArticleRepository) FindByCategoryID(ctx context.Context, categoryI
 	// 4. DAO 转领域模型
 	articles := make([]*model.Article, 0, len(articleDAOs))
 	for _, dao := range articleDAOs {
-		articles = append(articles, r.toDomain(dao))
+		article := r.toDomain(ctx, dao)
+		if article == nil {
+			return nil, 0, fmt.Errorf("转换领域模型失败")
+		}
+		// 查询并设置标签ID列表
+		tagIDs, err := r.findTagIDsByArticleID(ctx, dao.ID)
+		if err == nil {
+			article.TagIDs = tagIDs
+		}
+		articles = append(articles, article)
 	}
 
 	return articles, int(total), nil
@@ -368,7 +412,16 @@ func (r *MySQLArticleRepository) FindByColumnID(ctx context.Context, columnID in
 	// 4. DAO 转领域模型
 	articles := make([]*model.Article, 0, len(articleDAOs))
 	for _, dao := range articleDAOs {
-		articles = append(articles, r.toDomain(dao))
+		article := r.toDomain(ctx, dao)
+		if article == nil {
+			return nil, 0, fmt.Errorf("转换领域模型失败")
+		}
+		// 查询并设置标签ID列表
+		tagIDs, err := r.findTagIDsByArticleID(ctx, dao.ID)
+		if err == nil {
+			article.TagIDs = tagIDs
+		}
+		articles = append(articles, article)
 	}
 
 	return articles, int(total), nil
@@ -402,7 +455,7 @@ func (r *MySQLArticleRepository) FindByTagID(ctx context.Context, tagID int, off
 	// 4. DAO 转领域模型
 	articles := make([]*model.Article, 0, len(articleDAOs))
 	for _, dao := range articleDAOs {
-		articles = append(articles, r.toDomain(dao))
+		articles = append(articles, r.toDomain(ctx, dao))
 	}
 
 	return articles, int(total), nil
@@ -422,6 +475,20 @@ func (r *MySQLArticleRepository) exists(ctx context.Context, articleID int) (boo
 		return false, fmt.Errorf("查询文章计数失败:%w", err)
 	}
 	return count > 0, nil
+}
+
+func (r *MySQLArticleRepository) IncrementLikeById(ctx context.Context, id int) error {
+	return r.db.WithContext(ctx).
+		Model(&dao.ArticleDAO{}).
+		Where("id = ?", id).
+		Update("like_count", gorm.Expr("like_count + ?", 1)).Error
+}
+
+func (r *MySQLArticleRepository) DecrementLikeById(ctx context.Context, id int) error {
+	return r.db.WithContext(ctx).
+		Model(&dao.ArticleDAO{}).
+		Where("id = ?", id).
+		Update("like_count", gorm.Expr("like_count - ?", 1)).Error
 }
 
 // ------------------------------ 转换函数(核心) ------------------------------
@@ -448,7 +515,14 @@ func (r *MySQLArticleRepository) toDAO(article *model.Article) *dao.ArticleDAO {
 }
 
 // 数据模型 → 领域模型
-func (r *MySQLArticleRepository) toDomain(dao *dao.ArticleDAO) *model.Article {
+func (r *MySQLArticleRepository) toDomain(ctx context.Context, dao *dao.ArticleDAO) *model.Article {
+	// 根据文章id查询article_tags表，填入TagsIDs字段
+	tagIDs, err := r.findTagIDsByArticleID(ctx, dao.ID)
+	if err != nil {
+		log.Printf("查询文章标签ID失败: %v", err) // 记录日志，避免影响业务流程
+		tagIDs = []int{}                  // 若查询失败，设为空列表
+	}
+
 	return &model.Article{
 		ID:          dao.ID,
 		Title:       dao.Title,
@@ -456,7 +530,7 @@ func (r *MySQLArticleRepository) toDomain(dao *dao.ArticleDAO) *model.Article {
 		Content:     dao.Content,
 		ColumnID:    dao.ColumnID,
 		CategoryID:  dao.CategoryID,
-		TagIDs:      []int{}, // 标签ID需要单独查询
+		TagIDs:      tagIDs, // 标签ID需要单独查询
 		CoverUrl:    dao.CoverUrl,
 		Status:      dao.Status,
 		IsTop:       dao.IsTop,
@@ -481,4 +555,39 @@ func (r *MySQLArticleRepository) findTagIDsByArticleID(ctx context.Context, arti
 		return nil, err
 	}
 	return tagIDs, nil
+}
+
+func (r *MySQLArticleRepository) CountTotal(ctx context.Context) (int, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&dao.ArticleDAO{}).
+		Count(&count).
+		Error; err != nil {
+		return 0, err
+	}
+	return int(count), nil
+}
+
+func (r *MySQLArticleRepository) CountTotalLikes(ctx context.Context) (int, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&dao.ArticleDAO{}).
+		Select("SUM(like_count)").
+		Scan(&count).
+		Error; err != nil {
+		return 0, err
+	}
+	return int(count), nil
+}
+
+func (r *MySQLArticleRepository) CountTotalViews(ctx context.Context) (int, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&dao.ArticleDAO{}).
+		Select("SUM(view_count)").
+		Scan(&count).
+		Error; err != nil {
+		return 0, err
+	}
+	return int(count), nil
 }

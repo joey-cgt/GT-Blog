@@ -1,6 +1,30 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { articles, tags } from '../../store/blog.js'
+import { ref, computed, onMounted } from 'vue'
+import { getCategoryList } from '../../api/category.js'
+import { getTagList } from '../../api/tag.js'
+
+const allCategories = ref([])
+const allTags = ref([])
+
+onMounted(async () => {
+  try {
+    const categoryRes = await getCategoryList()
+    if (categoryRes.data) {
+      allCategories.value = categoryRes.data.items.map(item => ({ id: item.id, name: item.name }))
+    }
+  } catch (error) {
+    console.error('获取分类列表失败:', error)
+  }
+
+  try {
+    const tagRes = await getTagList()
+    if (tagRes.data) {
+      allTags.value = tagRes.data.items.map(item => ({ id: item.id, name: item.name }))
+    }
+  } catch (error) {
+    console.error('获取标签列表失败:', error)
+  }
+})
 
 const props = defineProps({
   filterType: {
@@ -19,18 +43,6 @@ const emit = defineEmits(['filter-change'])
 const categoryExpanded = ref(false)
 const tagExpanded = ref(false)
 
-// 获取所有分类和标签
-const allCategories = computed(() => {
-  const categoriesMap = new Map()
-  articles.forEach(article => {
-    categoriesMap.set(article.categoryId, article.category)
-  })
-  return Array.from(categoriesMap, ([id, name]) => ({ id, name }))
-})
-
-const allTags = computed(() => {
-  return tags.map(tag => ({ id: tag.id, name: tag.name }))
-})
 
 // 显示的分类和标签（控制展开收起）
 const displayedCategories = computed(() => {

@@ -45,10 +45,13 @@ func RegisterArticleRoutes(router *gin.RouterGroup, articleHandler *handler.Arti
 		articleGroup.GET("/latest", articleHandler.GetLatestArticleList)
 
 		// 获取某专栏/分类/标签下的文章列表
-		articleGroup.GET("/aggregeted", articleHandler.GetAggregatedArticleList)
+		articleGroup.GET("/aggregated", articleHandler.GetAggregatedArticleList)
 
 		// 关键字搜索文章
 		articleGroup.GET("/search", articleHandler.GetArticleListByKeyword)
+
+		articleGroup.POST("/:id/like", articleHandler.IncrementLike)
+		articleGroup.DELETE("/:id/like", articleHandler.DecrementLike)
 	}
 }
 
@@ -83,4 +86,19 @@ func RegisterTagRoutes(router *gin.RouterGroup, tagHandler *handler.TagHandler) 
 		tagGroup.PUT("/:id", tagHandler.UpdateTag)
 		tagGroup.DELETE("/:id", tagHandler.DeleteTag)
 	}
+}
+
+func RegisterStatisticsRoutes(router *gin.RouterGroup, statisticsHandler *handler.StatisticsHandler) {
+	// 统计数据路由组
+	statisticsGroup := router.Group("/statistics")
+	{
+		// 获取博客总览统计数据
+		statisticsGroup.GET("/overview", statisticsHandler.GetBlogOverview)
+
+		// 获取浏览量趋势数据（支持7天、30天、90天）
+		statisticsGroup.GET("/view-trend", statisticsHandler.GetViewCountTrend)
+	}
+
+	// 记录浏览量的路由
+	router.POST("/articles/:id/view", statisticsHandler.RecordView)
 }

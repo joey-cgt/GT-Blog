@@ -159,3 +159,14 @@ func (m *MySQLTagRepository) toDomain(ctx context.Context, tagDAO *dao.TagDAO) *
 		Version:      tagDAO.Version,
 	}
 }
+
+func (m *MySQLTagRepository) CountTotal(ctx context.Context) (int, error) {
+	var count int64
+	if err := m.db.WithContext(ctx).
+		Model(&dao.TagDAO{}).
+		Count(&count).
+		Error; err != nil {
+		return 0, err
+	}
+	return int(count), nil
+}

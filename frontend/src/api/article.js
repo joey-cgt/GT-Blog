@@ -90,3 +90,46 @@ export function getPinnedArticles() {
     method: 'get',
   })
 }
+
+export function getColumnArticles(columnId) {
+  return request({
+    url: `/api/v1/articles/aggregated?type=column&id=${columnId}`,
+    method: 'get',
+  })
+}
+
+export function getCategoryArticles(categoryId) {
+  return request({
+    url: `/api/v1/articles/aggregated?type=category&id=${categoryId}`,
+    method: 'get',
+  })
+}
+
+export function getTagArticles(tagId) {
+  return request({
+    url: `/api/v1/articles/aggregated?type=tag&id=${tagId}`,
+    method: 'get',
+  })
+}
+
+export function incrementArticleLike(articleId) {
+  return request({
+    url: `/api/v1/articles/${articleId}/like`,
+    method: 'post',
+  })
+}
+
+export function decrementArticleLike(articleId) {
+  return request({
+    url: `/api/v1/articles/${articleId}/like`,
+    method: 'delete',
+  })
+}
+
+// 记录文章浏览量
+export function recordArticleView(articleId) {
+  return request({
+    url: `/api/v1/articles/${articleId}/view`,
+    method: 'post',
+  })
+}

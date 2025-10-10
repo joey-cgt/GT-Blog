@@ -108,6 +108,7 @@ func (m *MySQLColumnRepository) toDAO(column *model.Column) *dao.ColumnDAO {
 		ID:          column.ID,
 		Name:        column.Name,
 		Description: column.Description,
+		CoverUrl:    column.CoverUrl,
 		CreateTime:  column.CreateTime,
 		UpdateTime:  column.UpdateTime,
 		Version:     column.Version,
@@ -126,9 +127,21 @@ func (m *MySQLColumnRepository) toDomain(ctx context.Context, columnDAO *dao.Col
 		ID:           columnDAO.ID,
 		Name:         columnDAO.Name,
 		Description:  columnDAO.Description,
+		CoverUrl:     columnDAO.CoverUrl,
 		ArticleCount: articleCount,
 		CreateTime:   columnDAO.CreateTime,
 		UpdateTime:   columnDAO.UpdateTime,
 		Version:      columnDAO.Version,
 	}
+}
+
+func (m *MySQLColumnRepository) CountTotal(ctx context.Context) (int, error) {
+	var count int64
+	if err := m.db.WithContext(ctx).
+		Model(&dao.ColumnDAO{}).
+		Count(&count).
+		Error; err != nil {
+		return 0, err
+	}
+	return int(count), nil
 }

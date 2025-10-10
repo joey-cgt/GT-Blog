@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gt-blog/backend/internal/ddd/content_management_context/L2_domain/repository"
 	"gt-blog/backend/internal/ddd/content_management_context/L3_infrastructure/persistence/mysql/dao"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -66,8 +67,9 @@ func (m *MySQLArticleTagRepository) SaveArticleTags(ctx context.Context, article
 			return errors.New("标签ID必须大于0")
 		}
 		articleTags = append(articleTags, &dao.ArticleTagDAO{
-			ArticleID: articleID,
-			TagID:     tagID,
+			ArticleID:  articleID,
+			TagID:      tagID,
+			CreateTime: time.Now(),
 		})
 	}
 

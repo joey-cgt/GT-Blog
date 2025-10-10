@@ -11,4 +11,5 @@ type ColumnRepository interface {
 	FindByID(ctx context.Context, id int) (*model.Column, error)
 	DeleteByID(ctx context.Context, id int) error
 	FindByPage(ctx context.Context, page, pageSize int) ([]*model.Column, int, error)
+	CountTotal(ctx context.Context) (int, error)
 }

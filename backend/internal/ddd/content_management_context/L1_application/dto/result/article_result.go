@@ -37,6 +37,7 @@ type ArticleListItemResult struct {
 	ID           int             // 文章ID
 	Title        string          // 标题
 	Abstract     string          // 摘要（列表页无需完整内容）
+	CoverUrl     string          // 封面URL
 	Category     *CategoryResult // 分类信息（ID+Name）
 	Column       *ColumnResult   // 专栏信息（ID+Name）
 	Tags         []*TagResult    // 标签列表（ID+Name）

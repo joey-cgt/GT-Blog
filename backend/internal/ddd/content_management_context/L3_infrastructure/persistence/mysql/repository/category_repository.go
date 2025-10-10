@@ -81,7 +81,7 @@ func (r *MySQLCategoryRepository) FindByPage(ctx context.Context) ([]*model.Cate
 
 	var categoryDAOs []*dao.CategoryDAO
 	err := r.db.WithContext(ctx).
-		Order("create_time DESC").
+		Order("create_time ASC").
 		Find(&categoryDAOs).Error
 
 	if err != nil {
@@ -124,4 +124,15 @@ func (r *MySQLCategoryRepository) toDomain(ctx context.Context, categoryDAO *dao
 		UpdateTime:   categoryDAO.UpdateTime,
 		Version:      categoryDAO.Version,
 	}
+}
+
+func (r *MySQLCategoryRepository) CountTotal(ctx context.Context) (int, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&dao.CategoryDAO{}).
+		Count(&count).
+		Error; err != nil {
+		return 0, err
+	}
+	return int(count), nil
 }

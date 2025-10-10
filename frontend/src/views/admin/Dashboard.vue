@@ -1,4 +1,4 @@
- <template>
+<template>
   <div class="admin-dashboard">
     <!-- 操作和统计卡片区域 -->
     <div class="dashboard-main">
@@ -44,7 +44,7 @@
             </div>
             <div class="stat-info">
                 <div class="stat-label">文章数量</div>
-                <div class="stat-value">1,248</div>
+                <div class="stat-value">{{ blogStatistics.totalArticles || '0' }}</div>
             </div>
             </div>
         </el-card>
@@ -57,7 +57,7 @@
             </div>
             <div class="stat-info">
                 <div class="stat-label">总浏览量</div>
-                <div class="stat-value">24,891</div>
+                <div class="stat-value">{{ blogStatistics.totalViews || '0' }}</div>
             </div>
             </div>
         </el-card>
@@ -70,7 +70,7 @@
             </div>
             <div class="stat-info">
                 <div class="stat-label">总点赞数</div>
-                <div class="stat-value">5,672</div>
+                <div class="stat-value">{{ blogStatistics.totalLikes || '0' }}</div>
             </div>
             </div>
         </el-card>
@@ -83,7 +83,7 @@
             </div>
             <div class="stat-info">
                 <div class="stat-label">专栏数量</div>
-                <div class="stat-value">24</div>
+                <div class="stat-value">{{ blogStatistics.totalColumns || '0' }}</div>
             </div>
             </div>
         </el-card>
@@ -96,7 +96,7 @@
             </div>
             <div class="stat-info">
                 <div class="stat-label">分类数量</div>
-                <div class="stat-value">12</div>
+                <div class="stat-value">{{ blogStatistics.totalCategories || '0' }}</div>
             </div>
             </div>
         </el-card>
@@ -109,7 +109,7 @@
             </div>
             <div class="stat-info">
                 <div class="stat-label">标签数量</div>
-                <div class="stat-value">156</div>
+                <div class="stat-value">{{ blogStatistics.totalTags || '0' }}</div>
             </div>
             </div>
         </el-card>
@@ -211,12 +211,32 @@
 import { ref, onMounted, watch, nextTick, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { Document, Star, View, Top, Collection, Folder, PriceTag, Right, Notebook, Files } from '@element-plus/icons-vue'
+import { getBlogStatistics, getViewTrend } from '../../api/blogstats.js'
 import * as echarts from 'echarts'
 
 const router = useRouter()
 const timeRange = ref('7d')
 const chartRef = ref(null)
 let chartInstance = null
+
+const blogStatistics = ref({})
+
+// 封装获取博客统计数据的方法
+const fetchBlogStatistics = async () => {
+  try {
+    const response = await getBlogStatistics()
+    blogStatistics.value.totalArticles = response.data.totalArticles
+    blogStatistics.value.totalLikes = response.data.totalLikes
+    blogStatistics.value.totalViews = response.data.totalViews
+    blogStatistics.value.totalCategories = response.data.totalCategories
+    blogStatistics.value.totalTags = response.data.totalTags
+    blogStatistics.value.totalColumns = response.data.totalColumns
+    return blogStatistics.value
+  } catch (error) {
+    console.error('获取博客统计失败:', error)
+    throw error
+  }
+}
 
 // 发布新文章
 const handlePublishArticle = () => {
@@ -248,22 +268,23 @@ const mostLikedArticles = ref([
   { id: 7, title: 'Webpack 5 配置优化指南', likes: 198, date: '2024-01-20' }
 ])
 
-// 模拟数据
-const generateChartData = (days) => {
-  const data = []
-  const now = new Date()
-  
-  for (let i = days - 1; i >= 0; i--) {
-    const date = new Date(now)
-    date.setDate(date.getDate() - i)
-    const dateStr = date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })
+// 从后端获取浏览量趋势数据
+const fetchViewTrendData = async (days) => {
+  try {
+    // 将天数转换为对应的时间范围字符串
+    let timeRangeStr = '7d'
+    if (days === 30) timeRangeStr = '30d'
+    if (days === 90) timeRangeStr = '90d'
     
-    // 生成随机浏览量数据
-    const views = Math.floor(Math.random() * 100) + 5
-    data.push({ date: dateStr, views })
+    const response = await getViewTrend(timeRangeStr)
+    // 后端返回的数据格式为 { data: { trend: [{ date: 'MM-dd', views: number }, ...], days: number } }
+    // 需要提取trend数组用于图表渲染
+    return response.data?.trend || []
+  } catch (error) {
+    console.error('获取浏览量趋势数据失败:', error)
+    // 出错时返回空数据
+    return []
   }
-  
-  return data
 }
 
 const initChart = () => {
@@ -271,9 +292,9 @@ const initChart = () => {
   
   chartInstance = echarts.init(chartRef.value)
   
-  const updateChart = () => {
+  const updateChart = async () => {
     const days = timeRange.value === '7d' ? 7 : timeRange.value === '30d' ? 30 : 90
-    const chartData = generateChartData(days)
+    const chartData = await fetchViewTrendData(days)
     
     const option = {
       tooltip: {
@@ -356,7 +377,10 @@ const initChart = () => {
 }
 
 onMounted(() => {
-  nextTick(() => {
+  nextTick(async () => {
+    // 在组件挂载时获取统计数据
+    await fetchBlogStatistics()
+    // 初始化图表，图表会自动获取数据
     initChart()
     // 添加窗口resize事件监听
     window.addEventListener('resize', handleResize)

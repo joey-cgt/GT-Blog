@@ -4,7 +4,6 @@ type GetCategoryDetailResponse struct {
 	ID           int    `json:"id"`
 	Name         string `json:"name"`
 	Description  string `json:"description"`
-	ArticleCount int    `json:"articleCount"`
 	CreateTime   string `json:"createTime"`
 	UpdateTime   string `json:"updateTime"`
 	ArticleCount int    `json:"articleCount"`

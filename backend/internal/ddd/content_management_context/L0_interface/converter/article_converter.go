@@ -561,6 +561,7 @@ func converArticleListItemResultToResponse(itemsResult []*result.ArticleListItem
 			ID:          itemResult.ID,
 			Title:       itemResult.Title,
 			Abstract:    itemResult.Abstract,
+			CoverUrl:    itemResult.CoverUrl,
 			Category:    categoryResp,
 			Column:      columnResp,
 			Tags:        tagResps,

@@ -63,6 +63,11 @@ func main() {
 		&dao.CategoryDAO{},
 		&dao.ColumnDAO{},
 		&dao.TagDAO{},
+		// 统计相关模型
+		&dao.DailyBlogStatsDAO{},
+		&dao.DailyArticleStatsDAO{},
+		&dao.ArticleViewIncrementDAO{},
+
 		// 添加admin相关模型
 		&model.Admin{},
 		&model.SocialAccount{},
@@ -124,6 +129,10 @@ func main() {
 	visitorService := service.NewVisitorService(visitorRepo)
 	visitorController := controller.NewVisitorController(visitorService)
 
+	statisticsRepo := mysqlrepository.NewMySQLStatisticsRepository(db)
+	statAppService := appservice.NewBlogStatAppsService(articleRepo, categoryRepo, tagRepo, columnRepo, statisticsRepo)
+	statisticsHandler := handler.NewStatisticsHandler(statAppService)
+
 	// 注册路由
 	r := gin.Default()
 
@@ -148,11 +157,14 @@ func main() {
 	router.RegisterTagRoutes(api, tagHandler)
 	router.RegisterCategoryRoutes(api, categoryHander)
 	router.RegisterColumnRoutes(api, columnHandler)
+	router.RegisterStatisticsRoutes(api, statisticsHandler)
 	// 注册admin路由
 	route.RegisterAdminRoutes(api, adminController)
 	// 注册visitor路由
 	route.RegisterVisitorRoutes(api, visitorController)
 
+	// 启动每日统计任务
+	statAppService.CreateDailyStatsTask()
 	// 启动HTTP服务（带优雅关闭）
 	srv := &http.Server{
 		Addr:    ":" + cfg.Server.Port,

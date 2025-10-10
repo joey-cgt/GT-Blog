@@ -44,6 +44,24 @@ func ConvertGetColumnDetailRequestToQuery(req request.GetColumnDetailRequest) (q
 	return cmd, nil
 }
 
+func ConvertColumnDetailToResponse(res *result.ColumnDetailResult) (response.GetColumnDetailResponse, error) {
+	if res == nil {
+		return response.GetColumnDetailResponse{}, errors.New("nil result")
+	}
+	resp := response.GetColumnDetailResponse{
+		ID:           res.ID,
+		Name:         res.Name,
+		Description:  res.Description,
+		CoverUrl:     res.CoverUrl,
+		CreateTime:   res.CreateTime,
+		UpdateTime:   res.UpdateTime,
+		ArticleCount: res.ArticleCount,
+		ViewCount:    res.ViewCount,
+		LikeCount:    res.LikeCount,
+	}
+	return resp, nil
+}
+
 func ConvertGetColumnListRequestToQuery(req request.GetColumnListRequest) (query.GetColumnListQuery, error) {
 	qry := query.GetColumnListQuery{
 		Page:     req.Page,

@@ -130,3 +130,11 @@ type GetArticleListByKeywordRequest struct {
 	SortBy    string `form:"sortBy" validate:"omitempty,oneof=created_at published_at relevance"` // 排序字段
 	SortOrder string `form:"sortOrder" validate:"omitempty,oneof=asc desc"`                       // 排序方向
 }
+
+type IncrementLikeRequest struct {
+	ID int `uri:"id" json:"id" validate:"required"` // 文章ID（必填）
+}
+
+type DecrementLikeRequest struct {
+	ID int `uri:"id" json:"id" validate:"required"` // 文章ID（必填）
+}

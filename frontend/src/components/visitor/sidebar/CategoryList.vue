@@ -34,7 +34,7 @@ const handleCategoryClick = (categoryId) => {
       <li v-for="category in categoryList" :key="category.name">
         <a href="javascript:void(0)" @click="handleCategoryClick(category.id)">
           {{ category.name }}
-          <span class="count">{{ category.count }}</span>
+          <span class="count">{{ category.articleCount }}</span>
         </a>
       </li>
     </ul>

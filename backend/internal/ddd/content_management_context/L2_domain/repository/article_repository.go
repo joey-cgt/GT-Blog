@@ -17,4 +17,9 @@ type ArticleRepository interface {
 	FindByCategoryID(ctx context.Context, categoryID int, offset, limit int) ([]*model.Article, int, error)
 	FindByColumnID(ctx context.Context, categoryID int, offset, limit int) ([]*model.Article, int, error)
 	FindByTagID(ctx context.Context, categoryID int, offset, limit int) ([]*model.Article, int, error)
+	IncrementLikeById(ctx context.Context, id int) error
+	DecrementLikeById(ctx context.Context, id int) error
+	CountTotal(ctx context.Context) (int, error)
+	CountTotalLikes(ctx context.Context) (int, error)
+	CountTotalViews(ctx context.Context) (int, error)
 }

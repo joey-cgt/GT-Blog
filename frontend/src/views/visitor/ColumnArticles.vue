@@ -1,31 +1,19 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { columns, articles } from '../../store/blog.js'
+import { useRoute } from 'vue-router'
+import { getColumnDetail } from '@/api/column'
+import { getColumnArticles } from '@/api/article'
 import ColumnCard from '../../components/visitor/ColumnCard.vue'
 import ArticleList from '../../components/visitor/ArticleList.vue'
 import Pagination from '../../components/visitor/Pagination.vue'
 
-const router = useRouter()
 const route = useRoute()
 const columnId = computed(() => parseInt(route.params.id))
 const loading = ref(true)
 const currentPage = ref(1)
 const articlesPerPage = 10 // 每页显示的文章数量
-
-// 获取当前专栏信息
-const currentColumn = computed(() => {
-  return columns.find(col => col.id === columnId.value) || null
-})
-
-// 获取专栏下的所有文章列表
-const allColumnArticles = computed(() => {
-  // 这里假设每个专栏的文章是按照id范围划分的
-  // 专栏1: 文章1-5, 专栏2: 文章6-10, 专栏3: 文章11-15
-  const startId = (columnId.value - 1) * 5 + 1
-  const endId = columnId.value * 5
-  return articles.filter(article => article.id >= startId && article.id <= endId)
-})
+const allColumnArticles = ref([])
+const currentColumn = ref(null)
 
 // 当前页面显示的文章
 const columnArticles = computed(() => {
@@ -49,11 +37,21 @@ const handlePageChange = (page) => {
   })
 }
 
-onMounted(() => {
-  // 模拟加载数据
-  setTimeout(() => {
+onMounted(async () => {
+  try {
+    const response = await getColumnDetail(columnId.value)
+    currentColumn.value = response.data
     loading.value = false
-  }, 300)
+  } catch (error) {
+    console.error('获取专栏详情失败:', error)
+  }
+
+  try {
+    const response = await getColumnArticles(columnId.value)
+    allColumnArticles.value = response.data.items || []
+  } catch (error) {
+    console.error('获取专栏文章失败:', error)
+  }
 })
 </script>
 

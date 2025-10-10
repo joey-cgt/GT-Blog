@@ -13,4 +13,5 @@ type TagRepository interface {
 	IncrementArticleCount(ctx context.Context, id int) error
 	DeleteByID(ctx context.Context, id int) error
 	FindByPage(ctx context.Context, page, pageSize int) ([]*model.Tag, int, error)
+	CountTotal(ctx context.Context) (int, error)
 }

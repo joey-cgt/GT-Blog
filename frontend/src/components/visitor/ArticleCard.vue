@@ -20,23 +20,24 @@ function navigateToArticle(articleId) {
     <div class="article-content">
       <div class="article-header">
         <div class="article-cover">
-          <img :src="article.cover" :alt="article.title" />
+          <img :src="article.coverUrl" :alt="article.title" />
         </div>
         <div class="article-info">
           <a @click.prevent="navigateToArticle(article.id)" href="#" class="article-title-link">
             <h3 class="article-title">{{ article.title }}</h3>
           </a>
-          <p class="article-summary">{{ article.summary }}</p>
+          <p class="article-summary">{{ article.abstract }}</p>
         </div>
       </div>
       <div class="article-footer">
         <div class="article-meta">
-          <span class="date">{{ article.date }}</span>
-          <span class="category">{{ article.category }}</span>
-          <span class="views">{{ article.views }} 阅读</span>
+          <span class="date">{{ article.publishTime }}</span>
+          <span class="category">{{ article.category.categoryName }}</span>
+          <span class="views">{{ article.viewCount }} 阅读</span>
+          <span class="likes">{{ article.likeCount }} 点赞</span>
         </div>
         <div class="article-tags">
-          <span v-for="tag in article.tags" :key="tag" class="tag">{{ tag }}</span>
+          <span v-for="tag in article.tags" :key="tag" class="tag">{{ tag.tagName }}</span>
         </div>
       </div>
     </div>

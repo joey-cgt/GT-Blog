@@ -1,35 +1,44 @@
 <script setup>
-// 这里需要从API获取博客统计信息
-// 暂时使用模拟数据
-import { blogInfo } from '../../../store/blog.js'
+import {ref, onMounted} from 'vue'
+import { getAuthor } from '../../../api/visitor';
 
-const blogStats = {
-  totalArticles: 156,
-  totalViews: 28450,
-  totalLikes: 8920,
-  author: {
-    name: '技术博主',
-    avatar: '/src/assets/images/avatar.jpg',
-    email: 'joycgt@126.com',
-    wechat: 'wechat_id_123'
+const authorInfo = ref({
+  name: '',
+  avatarUrl: '',
+  email: '',
+  wechat: ''
+})
+
+onMounted(async () => {
+  try {
+    const res = await getAuthor(1)
+    if (res.data) {
+      authorInfo.value.name = res.data.nickname
+      authorInfo.value.avatarUrl = res.data.avatarUrl
+      authorInfo.value.email = res.data.email
+      authorInfo.value.wechat = res.data.wechat
+    }
+  } catch (error) {
+    console.error('获取作者信息失败:', error)
   }
-}
+})
+
 </script>
 
 <template>
   <div class="blog-info-card">
     <!-- 博主信息 -->
     <div class="author-section">
-      <img :src="blogInfo.avatar" alt="博主头像" class="author-avatar">
+      <img :src="authorInfo.avatarUrl" alt="博主头像" class="author-avatar">
       <div class="author-info">
-        <h3 class="author-name">{{ blogInfo.author }}</h3>
+        <h3 class="author-name">{{ authorInfo.name }}</h3>
         <div class="email-tooltip">
           <i class="fas fa-envelope email-icon"></i>
-          <span class="tooltip-text">{{ blogInfo.email }}</span>
+          <span class="tooltip-text">{{ authorInfo.email }}</span>
         </div>
         <div class="wechat-tooltip">
           <i class="fab fa-weixin wechat-icon"></i>
-          <span class="tooltip-text">{{ blogInfo.wechat }}</span>
+          <span class="tooltip-text">{{ authorInfo.wechat }}</span>
         </div>
       </div>
     </div>
@@ -39,19 +48,19 @@ const blogStats = {
     <div class="stat-item">
         <i class="fas fa-file-alt"></i>
         <span class="stat-label">总文章数</span>
-        <span class="stat-value">{{ blogStats.totalArticles }}</span>
+        <span class="stat-value">{{  }}</span>
     </div>
     
     <div class="stat-item">
         <i class="fas fa-eye"></i>
         <span class="stat-label">总浏览量</span>
-        <span class="stat-value">{{ blogStats.totalViews.toLocaleString() }}</span>
+        <span class="stat-value">{{  }}</span>
     </div>
     
     <div class="stat-item">
         <i class="fas fa-heart"></i>
         <span class="stat-label">总点赞数</span>
-        <span class="stat-value">{{ blogStats.totalLikes.toLocaleString() }}</span>
+        <span class="stat-value">{{ }}</span>
     </div>
     </div>
     </div>

@@ -13,20 +13,21 @@ const router = useRouter()
 const navigateToColumn = () => {
   router.push(`/columns/${props.column.id}`)
 }
+
 </script>
 
 <template>
   <div class="column-card" @click="navigateToColumn">
     <div class="column-cover">
-      <img :src="column.cover" :alt="column.title">
+      <img :src="column.coverUrl" :alt="column.name">
     </div>
     <div class="column-content">
-      <h3 class="column-title">{{ column.title }}</h3>
+      <h3 class="column-title">{{ column.name }}</h3>
       <p class="column-desc">{{ column.description }}</p>
       <div class="column-meta">
         <span class="meta-item">📅 {{ column.createTime }}</span>
         <span class="meta-item">📝 {{ column.articleCount }}篇</span>
-        <span class="meta-item">👀 {{ column.totalViews }}次</span>
+        <span class="meta-item">👀 {{ column.viewCount }}次</span>
       </div>
     </div>
   </div>

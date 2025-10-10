@@ -280,6 +280,7 @@ func (s *ArticleAppService) GetAllArticleList(ctx context.Context, qry query.Get
 			ID:          article.ID,
 			Title:       article.Title,
 			Abstract:    article.Abstract,
+			CoverUrl:    article.CoverUrl,
 			Category:    categoryResult,
 			Column:      columnResult,
 			Tags:        tagResults,
@@ -341,6 +342,7 @@ func (s *ArticleAppService) GetHomePageArticleList(ctx context.Context, qry quer
 			ID:          article.ID,
 			Title:       article.Title,
 			Abstract:    article.Abstract,
+			CoverUrl:    article.CoverUrl,
 			Category:    categoryResult,
 			Column:      columnResult,
 			Tags:        tagResults,
@@ -372,7 +374,7 @@ func (s *ArticleAppService) GetAggregatedArticleList(ctx context.Context, qry qu
 	var err error
 	var total int
 	switch qry.Type {
-	case "categpry":
+	case "category":
 		articleList, total, err = s.articleRepo.FindByCategoryID(ctx, qry.ID, offset, qry.PageSize)
 	case "column":
 		articleList, total, err = s.articleRepo.FindByColumnID(ctx, qry.ID, offset, qry.PageSize)
@@ -407,6 +409,7 @@ func (s *ArticleAppService) GetAggregatedArticleList(ctx context.Context, qry qu
 			ID:          article.ID,
 			Title:       article.Title,
 			Abstract:    article.Abstract,
+			CoverUrl:    article.CoverUrl,
 			Category:    categoryResult,
 			Column:      columnResult,
 			Tags:        tagResults,
@@ -428,6 +431,14 @@ func (s *ArticleAppService) GetAggregatedArticleList(ctx context.Context, qry qu
 		PageSize:   qry.PageSize,
 		TotalPages: totalPages,
 	}, nil
+}
+
+func (s *ArticleAppService) IncrementLike(ctx context.Context, id int) error {
+	return s.articleRepo.IncrementLikeById(ctx, id)
+}
+
+func (s *ArticleAppService) DecrementLike(ctx context.Context, id int) error {
+	return s.articleRepo.DecrementLikeById(ctx, id)
 }
 
 // ==========================================================================================================

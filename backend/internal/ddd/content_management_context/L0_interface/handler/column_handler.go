@@ -136,7 +136,13 @@ func (h *ColumnHandler) GetColumnDetail(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{"data": result})
+	resp, err := converter.ConvertColumnDetailToResponse(result)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "转换专栏详情失败: " + err.Error()})
+		return
+	}
+
+	c.JSON(200, gin.H{"data": resp})
 }
 
 // 删除了置顶相关功能
