@@ -4,7 +4,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue'
 const props = defineProps({
   contentSelector: {
     type: String,
-    default: '.article-body'
+    default: '.markdown-body'
   }
 })
 

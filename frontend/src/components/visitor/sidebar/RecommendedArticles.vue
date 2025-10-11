@@ -1,10 +1,12 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { getRecommendedArticles } from '../../../api/visitor.js'
+import { getMostLikedArticles } from '../../../api/article.js'
 import { ElMessage } from 'element-plus'
 
 const router = useRouter()
+const route = useRoute()
 
 // 定义props，接收当前文章id
 const props = defineProps({
@@ -22,15 +24,24 @@ const loading = ref(false)
 const fetchRecommendedArticles = async () => {
   try {
     loading.value = true
-    // 调用API获取推荐文章，传递当前文章id
-    const response = await getRecommendedArticles({
-      limit: 5, // 获取5篇推荐文章
-      id: props.articleId // 传递当前文章id
-    })
+    
+    let response
+    // 只有在ArticleContent路由下才调用getRecommendedArticles API
+    if (route.name === 'ArticleContent' && props.articleId) {
+      // 调用推荐文章API，传递当前文章id
+      response = await getRecommendedArticles({
+        limit: 5, // 获取5篇推荐文章
+        id: props.articleId // 传递当前文章id
+      })
+    } else {
+      // 在所有其他页面都调用getMostLikedArticles API获取点赞量前十的文章
+      response = await getMostLikedArticles()
+    }
     
     // 根据后端返回的数据结构更新
-    if (response.code === 200 && response.data && response.data.items) {
+    if (response.data && response.data.items) {
       recommendedArticles.value = response.data.items
+      console.log('推荐文章数据:', recommendedArticles.value)
     } else {
       // 如果后端返回格式不同，使用response.data作为文章列表
       recommendedArticles.value = response.data || []
@@ -53,6 +64,20 @@ const handleArticleClick = (articleId) => {
 onMounted(() => {
   fetchRecommendedArticles()
 })
+
+// 监听路由变化和articleId变化，重新获取数据
+watch(
+  [() => route.name, () => props.articleId],
+  ([newRouteName, newArticleId], [oldRouteName, oldArticleId]) => {
+    // 当路由名称改变，或者articleId改变时，重新获取数据
+    if (newRouteName !== oldRouteName || newArticleId !== oldArticleId) {
+      fetchRecommendedArticles()
+    }
+  },
+  {
+    immediate: false // 不需要立即执行，因为onMounted已经执行了
+  }
+)
 </script>
 
 <template>
