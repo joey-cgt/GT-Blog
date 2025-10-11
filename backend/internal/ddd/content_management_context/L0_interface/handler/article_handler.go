@@ -5,6 +5,7 @@ import (
 	"gt-blog/backend/internal/ddd/content_management_context/L0_interface/dto/request"
 	"gt-blog/backend/internal/ddd/content_management_context/L1_application/dto/query"
 	"gt-blog/backend/internal/ddd/content_management_context/L1_application/service"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -360,4 +361,48 @@ func (h *ArticleHandler) DecrementLike(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{"message": "减少点赞数成功"})
+}
+
+// GetRecommendedArticles 获取推荐文章列表
+// @Summary 获取推荐文章列表
+// @Description 根据当前文章ID获取推荐文章列表
+// @Tags 文章
+// @Accept  json
+// @Produce  json
+// @Param id query int true "当前文章ID"
+// @Param limit query int false "返回文章数量，默认5"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/v1/articles/recommended [get]
+func (h *ArticleHandler) GetRecommendedArticles(c *gin.Context) {
+	// 获取查询参数
+	idStr := c.Query("id")
+	limitStr := c.Query("limit")
+
+	// 转换文章ID
+	articleID, err := strconv.Atoi(idStr)
+	if err != nil || articleID <= 0 {
+		c.JSON(400, gin.H{"error": "文章ID格式错误或无效"})
+		return
+	}
+
+	// 转换limit参数，默认5
+	limit := 5
+	if limitStr != "" {
+		var parsedLimit int
+		parsedLimit, err = strconv.Atoi(limitStr)
+		if err == nil && parsedLimit > 0 {
+			limit = parsedLimit
+		}
+	}
+
+	// 调用服务层获取推荐文章
+	result, err := h.articleAppService.GetRecommendedArticles(c, articleID, limit)
+	if err != nil {
+		c.JSON(500, gin.H{"error": "获取推荐文章失败: " + err.Error()})
+		return
+	}
+
+	resp := converter.ConvertRecommendedArticleListResultToResponse(result)
+
+	c.JSON(200, gin.H{"data": resp})
 }

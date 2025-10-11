@@ -409,6 +409,87 @@ func (s *ArticleAppService) DecrementLike(ctx context.Context, id int) error {
 	return s.articleRepo.DecrementLikeById(ctx, id)
 }
 
+// GetRecommendedArticles 获取推荐文章列表
+// 推荐规则：
+// 1. 优先查询同一专栏的文章
+// 2. 如果文章有标签，查询相同标签的文章
+// 3. 如果以上两个方式查找的文章还不够limit篇，再查找同一个分类下的文章
+// 4. 最终的文章数量不超过limit篇
+func (s *ArticleAppService) GetRecommendedArticles(ctx context.Context, articleID int, limit int) (*result.RecommendedArticleListResult, error) {
+	// 参数校验
+	if articleID <= 0 {
+		return nil, fmt.Errorf("文章ID必须大于0")
+	}
+	if limit <= 0 {
+		limit = 5 // 默认返回5篇
+	}
+
+	// 获取当前文章详情
+	sourceArticle, err := s.articleRepo.FindByID(ctx, articleID)
+	if err != nil || sourceArticle == nil {
+		return nil, fmt.Errorf("获取文章详情失败: %w", err)
+	}
+
+	// 存储推荐文章的ID集合，用于去重
+	recommendedIDs := make(map[int]bool)
+	recommendedIDs[articleID] = true // 排除当前文章
+
+	// 存储推荐文章列表
+	var recommendedArticles []*model.Article
+
+	// 1. 优先查询同一专栏的文章
+	if sourceArticle.ColumnID > 0 {
+		columnArticles, _, err := s.articleRepo.FindByColumnID(ctx, sourceArticle.ColumnID, 0, limit)
+		if err == nil {
+			for _, article := range columnArticles {
+				if !recommendedIDs[article.ID] && len(recommendedArticles) < limit {
+					recommendedIDs[article.ID] = true
+					recommendedArticles = append(recommendedArticles, article)
+				}
+			}
+		}
+	}
+
+	// 2. 如果还需要更多文章且当前文章有标签，查询相同标签的文章
+	if len(recommendedArticles) < limit && len(sourceArticle.TagIDs) > 0 {
+		// 遍历所有标签，获取相关文章
+		for _, tagID := range sourceArticle.TagIDs {
+			if len(recommendedArticles) >= limit {
+				break
+			}
+			tagArticles, _, err := s.articleRepo.FindByTagID(ctx, tagID, 0, limit-len(recommendedArticles))
+			if err == nil {
+				for _, article := range tagArticles {
+					if !recommendedIDs[article.ID] && len(recommendedArticles) < limit {
+						recommendedIDs[article.ID] = true
+						recommendedArticles = append(recommendedArticles, article)
+					}
+				}
+			}
+		}
+	}
+
+	// 3. 如果还需要更多文章，查询同一分类下的文章
+	if len(recommendedArticles) < limit && sourceArticle.CategoryID > 0 {
+		categoryArticles, _, err := s.articleRepo.FindByCategoryID(ctx, sourceArticle.CategoryID, 0, limit-len(recommendedArticles))
+		if err == nil {
+			for _, article := range categoryArticles {
+				if !recommendedIDs[article.ID] && len(recommendedArticles) < limit {
+					recommendedIDs[article.ID] = true
+					recommendedArticles = append(recommendedArticles, article)
+				}
+			}
+		}
+	}
+
+	// 构建响应结果
+	items := s.buildArticleListItemResults(ctx, recommendedArticles)
+
+	return &result.RecommendedArticleListResult{
+		Items: items,
+	}, nil
+}
+
 // ==========================================================================================================
 // 辅助方法：构建分类结果
 func (s *ArticleAppService) buildCategoryResult(ctx context.Context, categoryID int) *result.CategoryResult {

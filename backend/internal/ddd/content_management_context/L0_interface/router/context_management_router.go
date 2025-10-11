@@ -58,6 +58,7 @@ func RegisterArticleRoutes(router *gin.RouterGroup, articleHandler *handler.Arti
 
 		articleGroup.POST("/:id/like", articleHandler.IncrementLike)
 		articleGroup.DELETE("/:id/like", articleHandler.DecrementLike)
+		articleGroup.GET("/recommended", articleHandler.GetRecommendedArticles)
 	}
 }
 

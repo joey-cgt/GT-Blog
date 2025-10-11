@@ -546,6 +546,20 @@ func ConvertAggregatedArticleListResultToResponse(res *result.AggregatedArticleL
 	}
 }
 
+func ConvertRecommendedArticleListResultToResponse(res *result.RecommendedArticleListResult) *response.GetRecommendedArticleListResponse {
+	if res == nil {
+		return &response.GetRecommendedArticleListResponse{
+			Items: []*response.ArticleListItemResp{}, // 空列表返回空数组
+		}
+	}
+
+	items := converArticleListItemResultToResponse(res.Items)
+
+	return &response.GetRecommendedArticleListResponse{
+		Items: items,
+	}
+}
+
 func converArticleListItemResultToResponse(itemsResult []*result.ArticleListItemResult) []*response.ArticleListItemResp {
 	items := make([]*response.ArticleListItemResp, 0, len(itemsResult))
 	for _, itemResult := range itemsResult {

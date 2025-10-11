@@ -85,3 +85,7 @@ type GetSortedArticleListResponse struct {
 	SortOrder string                 `json:"sortOrder"`
 	SortBy    string                 `json:"sortBy"`
 }
+
+type GetRecommendedArticleListResponse struct {
+	Items []*ArticleListItemResp `json:"items"`
+}

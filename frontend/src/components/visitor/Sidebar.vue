@@ -31,7 +31,7 @@ const isContentPage = computed(() => ['Articles', 'Columns', 'ColumnArticles', '
       <BlogInfoCard />
       <div class="sticky-sidebar-content">
         <TableOfContents v-if="route.name === 'ArticleContent'" />
-        <RecommendedArticles />
+        <RecommendedArticles :article-id="route.params.id" />
         <EmailSubscription />
       </div>
     </template>

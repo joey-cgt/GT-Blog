@@ -79,3 +79,7 @@ type AggregatedArticleListResult struct {
 	PageSize   int
 	TotalPages int
 }
+
+type RecommendedArticleListResult struct {
+	Items []*ArticleListItemResult
+}
