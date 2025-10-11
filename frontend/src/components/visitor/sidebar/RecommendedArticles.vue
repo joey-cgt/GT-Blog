@@ -41,7 +41,6 @@ const fetchRecommendedArticles = async () => {
     // 根据后端返回的数据结构更新
     if (response.data && response.data.items) {
       recommendedArticles.value = response.data.items
-      console.log('推荐文章数据:', recommendedArticles.value)
     } else {
       // 如果后端返回格式不同，使用response.data作为文章列表
       recommendedArticles.value = response.data || []
