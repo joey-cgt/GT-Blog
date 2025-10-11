@@ -64,6 +64,7 @@ func main() {
 		&dao.CategoryDAO{},
 		&dao.ColumnDAO{},
 		&dao.TagDAO{},
+		&dao.CommentDAO{},
 		// 统计相关模型
 		&dao.DailyBlogStatsDAO{},
 		&dao.DailyArticleStatsDAO{},
@@ -134,6 +135,9 @@ func main() {
 	statAppService := appservice.NewBlogStatAppsService(articleRepo, categoryRepo, tagRepo, columnRepo, statisticsRepo)
 	statisticsHandler := handler.NewStatisticsHandler(statAppService)
 
+	commentRepo := mysqlrepository.NewMySQLCommentRepository(db) // 初始化评论仓库
+	commentAppService := appservice.NewCommentAppService(commentRepo)
+	commentHandler := handler.NewCommentHandler(commentAppService)
 	// 注册路由
 	r := gin.Default()
 
@@ -158,6 +162,7 @@ func main() {
 	router.RegisterTagRoutes(api, tagHandler)
 	router.RegisterCategoryRoutes(api, categoryHander)
 	router.RegisterColumnRoutes(api, columnHandler)
+	router.RegisterCommentRoutes(api, commentHandler)
 	router.RegisterStatisticsRoutes(api, statisticsHandler)
 	// 注册admin路由
 	route.RegisterAdminRoutes(api, adminController)

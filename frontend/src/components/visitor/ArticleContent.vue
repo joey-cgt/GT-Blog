@@ -118,7 +118,7 @@ onMounted(() => {
 </div>
     
     <!-- 评论区组件 -->
-    <Comments />
+    <Comments :articleId="articleId" />
   </div>
     
   

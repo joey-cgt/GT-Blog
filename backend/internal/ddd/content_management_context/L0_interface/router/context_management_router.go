@@ -109,3 +109,12 @@ func RegisterStatisticsRoutes(router *gin.RouterGroup, statisticsHandler *handle
 	// 记录浏览量的路由
 	router.POST("/articles/:id/view", statisticsHandler.RecordView)
 }
+
+func RegisterCommentRoutes(router *gin.RouterGroup, commentHandler *handler.CommentHandler) {
+	commentGroup := router.Group("/comments")
+	{
+		commentGroup.POST("", commentHandler.SubmitComment)
+		commentGroup.GET("/article/:articleId", commentHandler.GetArticleComments)
+		commentGroup.DELETE("/:commentId", commentHandler.DeleteComment)
+	}
+}
