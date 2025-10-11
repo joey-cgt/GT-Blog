@@ -150,6 +150,13 @@ const routes = [
         }
       },
       {
+        path: 'settings/password',
+        component: () => import('../views/admin/PasswordSettings.vue'),
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
         path: 'settings/system',
         component: () => import('../views/admin/SystemSettings.vue'),
         meta: {

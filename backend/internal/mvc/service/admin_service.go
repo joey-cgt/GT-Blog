@@ -59,7 +59,6 @@ func (as *AdminService) UpdateAdminInfo(c *gin.Context, req *dto.UpdateAdminInfo
 	}
 
 	// 只更新请求中提供的字段
-	admin.Username = req.Username
 	admin.Nickname = req.Nickname
 	admin.AvatarUrl = req.AvatarUrl
 	admin.Email = req.Email
@@ -105,8 +104,27 @@ func (as *AdminService) ChangePassword(c *gin.Context, req *dto.ChangePasswordRe
 		return err
 	}
 
-	// 只更新密码字段
-	admin.Password = req.Password
+	// 验证当前密码
+	match, err := util.ComparePassword(admin.Password, req.CurrentPassword)
+	if err != nil {
+		return err
+	}
+	if !match {
+		return errors.New("当前密码不正确")
+	}
+
+	// 检查新密码是否与当前密码相同
+	if req.CurrentPassword == req.NewPassword {
+		return errors.New("新密码不能与当前密码相同")
+	}
+
+	// 哈希新密码
+	hashedPassword, err := util.HashPassword(req.NewPassword)
+	if err != nil {
+		return err
+	}
+	// 更新密码字段为哈希值
+	admin.Password = hashedPassword
 
 	return as.adminRepo.UpdateAdmin(c, admin)
 }
@@ -119,7 +137,11 @@ func (as *AdminService) Login(c *gin.Context, req *dto.LoginReq) (*dto.LoginResp
 	}
 
 	// 验证密码
-	if admin.Password != req.Password {
+	match, err := util.ComparePassword(admin.Password, req.Password)
+	if err != nil {
+		return nil, err
+	}
+	if !match {
 		return nil, errors.New("password is incorrect")
 	}
 

@@ -15,6 +15,7 @@
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item @click="handleProfileSetting">个人设置</el-dropdown-item>
+              <el-dropdown-item @click="handleChangePassword">修改密码</el-dropdown-item>
               <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -51,10 +52,6 @@
             <el-icon><chat-dot-round /></el-icon>
             <span>评论管理</span>
           </el-menu-item>
-          <el-menu-item index="/admin/users">
-            <el-icon><user /></el-icon>
-            <span>用户管理</span>
-          </el-menu-item>
           <el-sub-menu index="/admin/settings">
             <template #title>
               <el-icon><setting /></el-icon>
@@ -85,6 +82,9 @@ import {
   Setting,
   ArrowDown
 } from '@element-plus/icons-vue'
+import { getProfile } from '@/api/admin'
+import { onMounted } from 'vue'
+
 
 const router = useRouter()
 const route = useRoute()
@@ -114,6 +114,27 @@ const handleLogout = () => {
 const handleProfileSetting = () => {
   router.push('/admin/settings/profile')
 }
+
+const handleChangePassword = () => {
+  router.push('/admin/settings/password')
+}
+
+// 获取用户信息
+const fetchUserProfile = async () => {
+  try {
+    const response = await getProfile()
+    if (response.data && response.data.avatarUrl) {
+      userAvatar.value = response.data.avatarUrl
+    }
+  } catch (error) {
+    console.error('获取用户信息失败:', error)
+  }
+}
+
+// 组件挂载时获取用户信息
+onMounted(() => {
+  fetchUserProfile()
+})
 </script>
 
 <style scoped>

@@ -16,7 +16,6 @@ type SocialAccount struct {
 
 type UpdateAdminInfoReq struct {
 	ID             uint            `json:"id"`
-	Username       string          `json:"username"`
 	Nickname       string          `json:"nickname"`
 	AvatarUrl      string          `json:"avatarUrl"`
 	Email          string          `json:"email"`
@@ -33,7 +32,8 @@ type UpdateAdminInfoReq struct {
 
 type ChangePasswordReq struct {
 	// ID uint `json:"id"`  // 不再需要，从JWT中获取
-	Password string `json:"password"`
+	CurrentPassword string `json:"currentPassword"`
+	NewPassword     string `json:"newPassword"`
 }
 
 type LoginReq struct {

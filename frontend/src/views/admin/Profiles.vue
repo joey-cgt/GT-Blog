@@ -67,7 +67,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import MarkdownRenderer from '../../components/common/MarkdownRenderer.vue'
 import {
@@ -75,7 +74,6 @@ import {
   updateProfile
  } from '@/api/admin'
 
-const route = useRoute()
 const loading = ref(false)
 
 // 初始化数据

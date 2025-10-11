@@ -18,6 +18,7 @@ import (
 	"gt-blog/backend/pkg/config"
 	"gt-blog/backend/pkg/log"
 	mysql "gt-blog/backend/pkg/msql"
+	"gt-blog/backend/pkg/util"
 	"net/http"
 	"os"
 	"os/signal"
@@ -216,10 +217,17 @@ func initAdminTable(db *gorm.DB, logger *zap.Logger) {
 
 	// 如果是因为记录不存在而报错，则创建默认管理员账号
 	if errors.Is(err, gorm.ErrRecordNotFound) {
+		// 对默认密码进行哈希处理
+		hashedPassword, hashErr := util.HashPassword("666666")
+		if hashErr != nil {
+			logger.Error("密码哈希失败", log.String("error", hashErr.Error()))
+			return
+		}
+
 		// 创建默认管理员
 		admin := &model.Admin{
 			Username: "admin",
-			Password: "666666", // 默认密码
+			Password: hashedPassword, // 哈希后的密码
 			Nickname: "管理员",
 			Email:    "admin@example.com",
 			Bio:      "博客管理员",
@@ -228,7 +236,7 @@ func initAdminTable(db *gorm.DB, logger *zap.Logger) {
 		// 插入管理员记录
 		createErr := db.WithContext(ctx).Create(admin).Error
 		if createErr != nil {
-			logger.Error("创建默认管理员账号失败", log.String("error", err.Error()))
+			logger.Error("创建默认管理员账号失败", log.String("error", createErr.Error()))
 			return
 		}
 

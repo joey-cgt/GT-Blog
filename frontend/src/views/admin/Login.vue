@@ -121,7 +121,7 @@ const handleLogin = async () => {
     router.push('/admin')
   } catch (error) {
     console.error('登录失败:', error)
-    errorMessage.value = error.message || '登录失败，请检查用户名和密码'
+    errorMessage.value = error.response?.data?.message || '登录失败，请检查用户名和密码'
   } finally {
     isLoading.value = false
   }
