@@ -9,7 +9,7 @@ type CommentResponse struct {
 
 type CommentItem struct {
 	ID        uint          `json:"id"`
-	Username  string        `json:"nickname"`
+	Nickname  string        `json:"nickname"`
 	Email     string        `json:"email,omitempty"` // 不返回给前端，仅用于后端处理
 	Content   string        `json:"content"`
 	ArticleID uint          `json:"articleId,omitempty"`

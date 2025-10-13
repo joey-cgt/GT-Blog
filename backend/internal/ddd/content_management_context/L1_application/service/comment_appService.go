@@ -8,15 +8,18 @@ import (
 	"gt-blog/backend/internal/ddd/content_management_context/L1_application/dto/result"
 	"gt-blog/backend/internal/ddd/content_management_context/L2_domain/model"
 	"gt-blog/backend/internal/ddd/content_management_context/L2_domain/repository"
+	"gt-blog/backend/internal/ddd/content_management_context/L2_domain/service"
 )
 
 type CommentAppService struct {
-	commentRepo repository.CommentRepository
+	commentRepo          repository.CommentRepository
+	commentDomainService *service.CommentDomainService
 }
 
-func NewCommentAppService(commentRepo repository.CommentRepository) *CommentAppService {
+func NewCommentAppService(commentRepo repository.CommentRepository, commentDomainService *service.CommentDomainService) *CommentAppService {
 	return &CommentAppService{
-		commentRepo: commentRepo,
+		commentRepo:          commentRepo,
+		commentDomainService: commentDomainService,
 	}
 }
 
@@ -24,11 +27,11 @@ func NewCommentAppService(commentRepo repository.CommentRepository) *CommentAppS
 func (s *CommentAppService) SubmitComment(ctx context.Context, req request.CommentSubmitReq) error {
 	// 创建评论模型
 	comment := &model.Comment{
-		Username:  req.Nickname,
+		Nickname:  req.Nickname,
 		Email:     req.Email,
 		Content:   req.Content,
 		ArticleID: uint(req.ArticleID),
-		ParentID:  nil, // 默认是顶级评论
+		ParentID:  req.ParentID, // 使用请求中的ParentID，如果没有则为nil
 		CreatedAt: time.Now(),
 	}
 
@@ -38,17 +41,18 @@ func (s *CommentAppService) SubmitComment(ctx context.Context, req request.Comme
 
 // GetArticleComments 获取文章的评论列表
 func (s *CommentAppService) GetArticleComments(ctx context.Context, articleID uint) (result.CommentsResult, error) {
-	comments, err := s.commentRepo.GetCommentsByArticleID(ctx, articleID)
+	comments, err := s.commentDomainService.GetCommentsByArticleID(ctx, articleID)
 	if err != nil {
 		return result.CommentsResult{}, err
 	}
-	// 将comments转成CommentsResult
-	var commentResult result.CommentsResult
-	// 只调用一次buildCommentTree，避免重复计算
-	commentTree := buildCommentTree(comments)
-	commentResult.TotalCount = countCommentItems(commentTree)
-	commentResult.Comments = commentTree
-	return commentResult, nil
+	var res []result.CommentItemResult
+	for _, comment := range comments {
+		res = append(res, convertCommentToResult(comment))
+	}
+	return result.CommentsResult{
+		TotalCount: countCommentItems(res),
+		Comments:   res,
+	}, nil
 }
 
 // DeleteCommentByID 删除评论
@@ -70,42 +74,23 @@ func countCommentItems(comments []result.CommentItemResult) int {
 	return count
 }
 
-// buildCommentTree 构建评论树结构
-func buildCommentTree(comments []model.Comment) []result.CommentItemResult {
-	// 创建评论ID到评论的映射
-	commentMap := make(map[uint]*result.CommentItemResult)
-	var rootComments []result.CommentItemResult
-
-	// 先将所有评论转换为结果模型并存储在映射中
-	for _, comment := range comments {
-		commentItem := &result.CommentItemResult{
-			ID:        comment.ID,
-			Username:  comment.Username,
-			Email:     comment.Email,
-			Content:   comment.Content,
-			ArticleID: comment.ArticleID,
-			ParentID:  comment.ParentID,
-			Children:  make([]result.CommentItemResult, 0), // 初始化Children字段
-			CreatedAt: comment.CreatedAt.Format("2006-01-02 15:04:05"),
-		}
-		commentMap[comment.ID] = commentItem
+// convertCommentToResult 递归地将model.Comment及其子评论转换为result.CommentItemResult
+func convertCommentToResult(comment model.Comment) result.CommentItemResult {
+	resultItem := result.CommentItemResult{
+		ID:        comment.ID,
+		Nickname:  comment.Nickname,
+		Email:     comment.Email,
+		Content:   comment.Content,
+		ArticleID: comment.ArticleID,
+		ParentID:  comment.ParentID,
+		Children:  make([]result.CommentItemResult, 0),
+		CreatedAt: comment.CreatedAt.Format("2006-01-02 15:04:05"),
 	}
 
-	// 构建评论树结构
-	for _, comment := range comments {
-		commentItem := commentMap[comment.ID]
-
-		// 如果是顶级评论（没有父评论），直接添加到结果中
-		if comment.ParentID == nil {
-			rootComments = append(rootComments, *commentItem)
-		} else {
-			// 如果是子评论，添加到父评论的Children列表中
-			parentID := *comment.ParentID
-			if parentComment, exists := commentMap[parentID]; exists {
-				parentComment.Children = append(parentComment.Children, *commentItem)
-			}
-		}
+	// 递归转换所有子评论
+	for _, childComment := range comment.Children {
+		resultItem.Children = append(resultItem.Children, convertCommentToResult(*childComment))
 	}
 
-	return rootComments
+	return resultItem
 }

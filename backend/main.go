@@ -136,7 +136,8 @@ func main() {
 	statisticsHandler := handler.NewStatisticsHandler(statAppService)
 
 	commentRepo := mysqlrepository.NewMySQLCommentRepository(db) // 初始化评论仓库
-	commentAppService := appservice.NewCommentAppService(commentRepo)
+	commentDomainService := domainservice.NewCommentDomainService(commentRepo)
+	commentAppService := appservice.NewCommentAppService(commentRepo, commentDomainService)
 	commentHandler := handler.NewCommentHandler(commentAppService)
 	// 注册路由
 	r := gin.Default()

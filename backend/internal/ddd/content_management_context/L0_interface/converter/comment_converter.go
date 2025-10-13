@@ -28,7 +28,7 @@ func convertCommentItems(resultItems []result.CommentItemResult) []response.Comm
 		// 创建响应评论项
 		responseItem := response.CommentItem{
 			ID:        resultItem.ID,
-			Username:  resultItem.Username,
+			Nickname:  resultItem.Nickname,
 			Email:     resultItem.Email,
 			Content:   resultItem.Content,
 			ArticleID: resultItem.ArticleID,
