@@ -16,5 +16,5 @@ type Admin struct {
 	CreatedAt time.Time `gorm:"autoCreateTime"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime"`
 
-	SocialAccounts []SocialAccount `gorm:"foreignKey:UserID"`
+	SocialAccounts []SocialAccount `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
 }

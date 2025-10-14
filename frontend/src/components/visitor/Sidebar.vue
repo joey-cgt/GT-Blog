@@ -13,7 +13,6 @@ const route = useRoute()
 
 // 使用computed确保响应式更新
 const isHomePage = computed(() => route.name === 'Home')
-const isContentPage = computed(() => ['Articles', 'Columns', 'ColumnArticles', 'Categories', 'Tags', 'About', 'ArticleContent'].includes(route.name))
 </script>
 
 <template>
@@ -32,7 +31,7 @@ const isContentPage = computed(() => ['Articles', 'Columns', 'ColumnArticles', '
       <div class="sticky-sidebar-content">
         <TableOfContents v-if="route.name === 'ArticleContent'" />
         <RecommendedArticles :article-id="route.params.id" />
-        <EmailSubscription />
+       
       </div>
     </template>
     

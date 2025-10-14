@@ -90,6 +90,8 @@ func main() {
 	columnRepo := mysqlrepository.NewMySQLColumnRepository(db)
 	adminRepo := repository.NewMySqlAdminRepository(db)
 	visitorRepo := repository.NewMySQLVisitorRepository(db)
+	commentRepo := mysqlrepository.NewMySQLCommentRepository(db) // 初始化评论仓库
+	statisticsRepo := mysqlrepository.NewMySQLStatisticsRepository(db)
 
 	// 初始化领域层（注入仓储依赖）
 	articleDomainService := domainservice.NewArticleDomainService(
@@ -99,6 +101,10 @@ func main() {
 		columnRepo,
 		categoryRepo,
 	)
+	categoryDomainService := domainservice.NewCategoryDomainService(categoryRepo)
+	columnDomainService := domainservice.NewColumnDomainService(columnRepo)
+	tagDomainService := domainservice.NewTagDomainService(tagRepo)
+	commentDomainService := domainservice.NewCommentDomainService(commentRepo)
 
 	// 初始化应用服务
 	articleAppService := appservice.NewArticleAppService(
@@ -108,21 +114,21 @@ func main() {
 		columnRepo,
 		categoryRepo,
 		articleTagRepo,
+		commentRepo,
 	)
-
-	articleHandler := handler.NewArticleHandler(articleAppService)
-
-	categoryDomainService := domainservice.NewCategoryDomainService(categoryRepo)
 	categoryAppService := appservice.NewCategoryAppService(categoryRepo, categoryDomainService)
-	categoryHander := handler.NewCategoryHandler(categoryAppService)
-
-	columnDomainService := domainservice.NewColumnDomainService(columnRepo)
 	columnAppService := appservice.NewColumnAppService(columnRepo, columnDomainService)
-	columnHandler := handler.NewColumnHandler(columnAppService)
-
-	tagDomainService := domainservice.NewTagDomainService(tagRepo)
 	tagAppService := appservice.NewTagAppService(tagRepo, tagDomainService)
+	statAppService := appservice.NewBlogStatAppsService(articleRepo, categoryRepo, tagRepo, columnRepo, statisticsRepo)
+	commentAppService := appservice.NewCommentAppService(commentRepo, commentDomainService)
+
+	// 初始化控制器
+	articleHandler := handler.NewArticleHandler(articleAppService)
+	categoryHander := handler.NewCategoryHandler(categoryAppService)
+	columnHandler := handler.NewColumnHandler(columnAppService)
 	tagHandler := handler.NewTagHandler(tagAppService)
+	statisticsHandler := handler.NewStatisticsHandler(statAppService)
+	commentHandler := handler.NewCommentHandler(commentAppService)
 
 	// 初始化admin相关服务和控制器
 	adminService := service.NewAdminService(adminRepo)
@@ -130,15 +136,6 @@ func main() {
 
 	visitorService := service.NewVisitorService(visitorRepo)
 	visitorController := controller.NewVisitorController(visitorService)
-
-	statisticsRepo := mysqlrepository.NewMySQLStatisticsRepository(db)
-	statAppService := appservice.NewBlogStatAppsService(articleRepo, categoryRepo, tagRepo, columnRepo, statisticsRepo)
-	statisticsHandler := handler.NewStatisticsHandler(statAppService)
-
-	commentRepo := mysqlrepository.NewMySQLCommentRepository(db) // 初始化评论仓库
-	commentDomainService := domainservice.NewCommentDomainService(commentRepo)
-	commentAppService := appservice.NewCommentAppService(commentRepo, commentDomainService)
-	commentHandler := handler.NewCommentHandler(commentAppService)
 	// 注册路由
 	r := gin.Default()
 

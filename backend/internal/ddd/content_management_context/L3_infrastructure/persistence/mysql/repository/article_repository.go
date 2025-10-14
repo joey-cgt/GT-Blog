@@ -616,7 +616,7 @@ func (r *MySQLArticleRepository) CountTotalLikes(ctx context.Context) (int, erro
 	var count int64
 	if err := r.db.WithContext(ctx).
 		Model(&dao.ArticleDAO{}).
-		Select("SUM(like_count)").
+		Select("COALESCE(SUM(like_count), 0)").
 		Scan(&count).
 		Error; err != nil {
 		return 0, err
@@ -628,7 +628,7 @@ func (r *MySQLArticleRepository) CountTotalViews(ctx context.Context) (int, erro
 	var count int64
 	if err := r.db.WithContext(ctx).
 		Model(&dao.ArticleDAO{}).
-		Select("SUM(view_count)").
+		Select("COALESCE(SUM(view_count), 0)").
 		Scan(&count).
 		Error; err != nil {
 		return 0, err

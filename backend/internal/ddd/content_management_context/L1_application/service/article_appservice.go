@@ -19,6 +19,7 @@ type ArticleAppService struct {
 	columnRepo           repository.ColumnRepository
 	categoryRepo         repository.CategoryRepository
 	articleTagRepo       repository.ArticleTagRepository
+	commentRepo          repository.CommentRepository
 }
 
 func NewArticleAppService(
@@ -28,6 +29,7 @@ func NewArticleAppService(
 	columnRepo repository.ColumnRepository,
 	categoryRepo repository.CategoryRepository,
 	articleTagRepo repository.ArticleTagRepository,
+	commentRepo repository.CommentRepository,
 ) *ArticleAppService {
 	return &ArticleAppService{
 		articleDomainService: articleDomainService,
@@ -36,6 +38,7 @@ func NewArticleAppService(
 		columnRepo:           columnRepo,
 		categoryRepo:         categoryRepo,
 		articleTagRepo:       articleTagRepo,
+		commentRepo:          commentRepo,
 	}
 }
 
@@ -207,6 +210,19 @@ func (s *ArticleAppService) DeleteArticle(ctx context.Context, cmd command.Delet
 
 	if err := s.articleTagRepo.DeleteArticleTagsByArticleID(ctx, cmd.ID); err != nil {
 		return err
+	}
+
+	// 级联删除相关评论
+	comments, err := s.commentRepo.GetCommentsByArticleID(ctx, uint(cmd.ID))
+	if err != nil {
+		return fmt.Errorf("获取文章评论失败: %w", err)
+	}
+	
+	// 遍历删除所有评论
+	for _, comment := range comments {
+		if err := s.commentRepo.DeleteComment(ctx, comment.ID); err != nil {
+			return fmt.Errorf("删除评论失败(ID: %d): %w", comment.ID, err)
+		}
 	}
 
 	return nil
