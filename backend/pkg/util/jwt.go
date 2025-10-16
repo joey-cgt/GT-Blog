@@ -3,6 +3,7 @@ package util
 import (
 	"errors"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -20,7 +21,13 @@ var jwtConfig struct {
 // init 初始化JWT配置
 func init() {
 	// 解析配置文件以获取JWT配置
-	configData, err := os.ReadFile("pkg/config/config.yaml")
+	workDir, err := os.Getwd()
+	if err != nil {
+		panic("Failed to get work directory: " + err.Error())
+	}
+	// 拼接配置文件路径（工作目录 + 相对路径）
+	configPath := filepath.Join(workDir, "pkg", "config", "config.yaml")
+	configData, err := os.ReadFile(configPath)
 	if err != nil {
 		// 这里可以根据需要决定是否panic或者返回错误
 		// 在初始化函数中通常会panic以确保配置正确加载
