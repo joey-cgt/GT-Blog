@@ -22,7 +22,6 @@ const isHomePage = computed(() => route.name === 'Home')
       <CategoryList />
       <ColumnsList />
       <TagCloud />
-      <EmailSubscription />
     </template>
     
     <!-- 内容页面显示博客信息和热门文章 -->

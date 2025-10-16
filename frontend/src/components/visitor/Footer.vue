@@ -64,10 +64,7 @@ onMounted(fetchBlogInfo)
         <div class="footer-section links">
           <h3>快速链接</h3>
           <ul>
-            <li><a href="#">首页</a></li>
-            <li><a href="#">文章归档</a></li>
-            <li><a href="#">关于我</a></li>
-            <li><a href="#">联系方式</a></li>
+            <li><router-link to="/about">关于我</router-link></li>
           </ul>
         </div>
         
