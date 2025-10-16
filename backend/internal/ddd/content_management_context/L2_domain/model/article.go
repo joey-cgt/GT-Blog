@@ -59,8 +59,10 @@ func (a *Article) Publish() error {
 		return fmt.Errorf("文章分类不能为空")
 	}
 
+	if a.Status != 1 {
+		a.PublishTime = time.Now()
+	}
 	a.Status = 1
-	a.PublishTime = time.Now()
 	a.UpdateTime = time.Now()
 	a.Version++
 	return nil
