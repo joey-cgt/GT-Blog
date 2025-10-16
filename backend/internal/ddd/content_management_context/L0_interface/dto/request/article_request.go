@@ -67,8 +67,8 @@ type DeleteArticleRequest struct {
 
 // 置顶/取消置顶的请求参数
 type UpdateArticleTopStatusRequest struct {
-	ID    int  `json:"id" validate:"required"`             // 文章ID（必填）
-	IsTop bool `json:"is_top" validate:"required,boolean"` // 必须明确是否置顶
+	ID    int  `json:"id" validate:"required"`            // 文章ID（必填）
+	IsTop bool `json:"isTop" validate:"required,boolean"` // 必须明确是否置顶
 }
 
 // 获取文章详情的请求参数

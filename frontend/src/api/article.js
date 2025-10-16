@@ -149,3 +149,12 @@ export function recordArticleView(articleId) {
     method: 'post',
   })
 }
+
+// 更新文章置顶状态
+export function updateArticleTop(articleId, data) {
+  return request({
+    url: `/api/v1/articles/${articleId}/top`,
+    method: 'patch',
+    data
+  })
+}

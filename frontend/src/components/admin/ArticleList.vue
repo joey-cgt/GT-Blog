@@ -155,6 +155,14 @@
             </el-button>
             <el-button
               size="small"
+              :type="row.isTop ? 'warning' : 'success'"
+              link
+              @click="handleTop(row, !row.isTop)"
+            >
+              {{ row.isTop ? '取消置顶' : '置顶' }}
+            </el-button>
+            <el-button
+              size="small"
               type="danger"
               link
               @click="handleDelete(row)"
@@ -214,7 +222,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['page-change', 'edit', 'delete', 'change-status'])
+const emit = defineEmits(['page-change', 'edit', 'delete', 'change-status', 'top'])
 
 // 搜索关键词
 const searchKeyword = ref('')
@@ -330,9 +338,9 @@ const handleDelete = (article) => {
   emit('delete', article)
 }
 
-// 更改文章状态
-const handleChangeStatus = (article, newStatus) => {
-  emit('change-status', article, newStatus)
+// 置顶文章
+const handleTop = (article, isTop) => {
+  emit('top', article, isTop)
 }
 </script>
 

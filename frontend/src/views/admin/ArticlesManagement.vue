@@ -19,7 +19,7 @@
           @page-change="handlePublishedPageChange"
           @edit="handleEditArticle"
           @delete="handleDeleteArticle"
-          @change-status="handleChangeStatus"
+          @top="handleTopArticle"
         />
       </el-tab-pane>
       
@@ -32,7 +32,6 @@
           @page-change="handleDraftPageChange"
           @edit="handleEditArticle"
           @delete="handleDeleteArticle"
-          @change-status="handleChangeStatus"
         />
       </el-tab-pane>
     </el-tabs>
@@ -44,7 +43,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import ArticleList from '../../components/admin/ArticleList.vue'
-import { getArticleList, deleteArticle } from '../../api/article.js'
+import { getArticleList, deleteArticle, updateArticleTop } from '../../api/article.js'
 
 const router = useRouter()
 const route = useRoute()
@@ -180,6 +179,20 @@ const handleChangeStatus = async (article, newStatus) => {
     loadArticles()
   } catch (error) {
     ElMessage.error('状态更新失败')
+  }
+}
+
+// 处理文章置顶
+const handleTopArticle = async (article, isTop) => {
+  try {
+    // 调用置顶API
+    await updateArticleTop(article.id, { id: article.id, isTop })
+    ElMessage.success(isTop ? '置顶成功' : '取消置顶成功')
+    // 重新加载数据
+    loadArticles()
+  } catch (error) {
+    console.error('置顶操作失败:', error)
+    ElMessage.error(isTop ? '置顶失败' : '取消置顶失败')
   }
 }
 </script>

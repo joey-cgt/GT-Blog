@@ -142,7 +142,7 @@ func main() {
 	// 关键：添加 CORS 中间件（放在所有路由之前）
 	r.Use(cors.New(cors.Config{
 		// 1. 允许的前端源：填写你的前端实际地址（不要用 *  if 前端需要带 Cookie）
-		AllowOrigins: []string{"http://localhost:5173"},
+		AllowOrigins: []string{"*"},
 		// 2. 允许的 HTTP 方法（包含预检请求的 OPTIONS 方法）
 		AllowMethods: []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		// 3. 允许的请求头（如 Content-Type、Authorization 等）
