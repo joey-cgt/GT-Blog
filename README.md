@@ -27,7 +27,7 @@ GT-Blog是一个功能丰富的个人博客平台，提供了完整的博客内�
 - **认证**：JWT
 - **日志**：Zap
 - **定时任务**：cron
-- **架构模式**：DDD (领域驱动设计)
+- **架构模式**：DDD (领域驱动设计)、MVC
 
 ## 📁 项目结构
 
@@ -79,7 +79,7 @@ gt-blog/
 
 #### 1. 克隆项目
 ```bash
-git clone https://your-repo-url/gt-blog.git
+git clone https://github.com/joey-cgt/GT-Blog.git
 cd gt-blog
 ```
 
